@@ -92,7 +92,7 @@ const Hero = () => {
           initial={{ opacity: 0, scale: 1.05 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.5, ease: "easeOut" }}
-          src="./assets/hero-model.png" 
+          src="./assets/hero-model.webp" 
           alt="Male model in luxury clothing" 
           className="w-full h-full object-cover object-center opacity-90"
         />
@@ -158,7 +158,7 @@ const FeaturedGrid = () => {
             transition={{ duration: 0.8 }}
             className="group overflow-hidden rounded-sm relative aspect-[4/5] bg-navy-dark border border-white/5"
           >
-            <img src="./assets/knit-grey.png" alt="Grey knit polo" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 opacity-80 group-hover:opacity-100" />
+            <img src="./assets/knit-grey.webp" alt="Grey knit polo" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 opacity-80 group-hover:opacity-100" />
             <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-700"></div>
           </motion.div>
           <motion.div 
@@ -168,7 +168,7 @@ const FeaturedGrid = () => {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="group overflow-hidden rounded-sm relative aspect-[4/5] bg-navy-dark border border-white/5"
           >
-            <img src="./assets/folded-clothes.png" alt="Folded premium clothes" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 opacity-80 group-hover:opacity-100" />
+            <img src="./assets/folded-clothes.webp" alt="Folded premium clothes" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 opacity-80 group-hover:opacity-100" />
             <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-700"></div>
           </motion.div>
           <motion.div 
@@ -178,7 +178,7 @@ const FeaturedGrid = () => {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="group overflow-hidden rounded-sm relative aspect-[4/5] bg-navy-dark border border-white/5"
           >
-            <img src="./assets/knit-white.png" alt="White knit polo" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 opacity-80 group-hover:opacity-100" />
+            <img src="./assets/knit-white.webp" alt="White knit polo" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 opacity-80 group-hover:opacity-100" />
             <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-700"></div>
           </motion.div>
         </div>
@@ -242,10 +242,10 @@ const FeatureIconStrip = () => {
 
 const NewCollection = () => {
   const products = [
-    { name: "Textured Knit Polo", price: "$69.00", img: "./assets/product-white-polo.png" },
-    { name: "Ribbed Knit Polo", price: "$69.00", img: "./assets/product-grey-polo.png" },
-    { name: "Cable Knit Polo", price: "$69.00", img: "./assets/product-knit-polo.png" },
-    { name: "Contrast Knit Tee", price: "$59.00", img: "./assets/product-black-tee.png" }
+    { name: "Textured Knit Polo", price: "$69.00", img: "./assets/product-white-polo.webp" },
+    { name: "Ribbed Knit Polo", price: "$69.00", img: "./assets/product-grey-polo.webp" },
+    { name: "Cable Knit Polo", price: "$69.00", img: "./assets/product-knit-polo.webp" },
+    { name: "Contrast Knit Tee", price: "$59.00", img: "./assets/product-black-tee.webp" }
   ];
 
   return (
@@ -310,7 +310,7 @@ const EditorialPromise = () => {
           transition={{ duration: 1 }}
           className="h-[50vh] lg:h-[80vh] bg-navy-dark relative"
         >
-          <img src="./assets/premium-folded.png" alt="Premium Folded Clothes" className="w-full h-full object-cover opacity-80" />
+          <img src="./assets/premium-folded.webp" alt="Premium Folded Clothes" className="w-full h-full object-cover opacity-80" />
         </motion.div>
         
         <div className="flex items-center justify-center p-12 lg:p-24 relative overflow-hidden">
