@@ -242,10 +242,10 @@ const FeatureIconStrip = () => {
 
 const NewCollection = () => {
   const products = [
-    { name: "Textured Knit Polo", price: "$69.00", img: "./assets/product-white-polo.webp" },
-    { name: "Ribbed Knit Polo", price: "$69.00", img: "./assets/product-grey-polo.webp" },
-    { name: "Cable Knit Polo", price: "$69.00", img: "./assets/product-knit-polo.webp" },
-    { name: "Contrast Knit Tee", price: "$59.00", img: "./assets/product-black-tee.webp" }
+    { name: "Textured Knit Polo", price: "750 EGP", img: "./assets/product-white-polo.webp" },
+    { name: "Ribbed Knit Polo", price: "700 EGP", img: "./assets/product-grey-polo.webp" },
+    { name: "Cable Knit Polo", price: "700 EGP", img: "./assets/product-knit-polo.webp" },
+    { name: "Contrast Knit Tee", price: "650 EGP", img: "./assets/product-black-tee.webp" }
   ];
 
   return (
