@@ -413,9 +413,8 @@ const Footer = () => {
           <div>
             <h4 className="text-gold text-xs tracking-[0.2em] font-medium uppercase mb-6">Socials</h4>
             <ul className="space-y-4 text-sm text-cream/60 font-light">
-              <li><a href="#" className="hover:text-cream transition-colors">Instagram</a></li>
-              <li><a href="#" className="hover:text-cream transition-colors">Twitter</a></li>
-              <li><a href="#" className="hover:text-cream transition-colors">Pinterest</a></li>
+              <li><a href="https://www.instagram.com/vissta.eg/" target="_blank" rel="noreferrer" className="hover:text-cream transition-colors">Instagram</a></li>
+              <li><a href="https://www.facebook.com/profile.php?id=61576275821044" target="_blank" rel="noreferrer" className="hover:text-cream transition-colors">Facebook</a></li>
             </ul>
           </div>
         </div>
