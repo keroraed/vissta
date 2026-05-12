@@ -62,7 +62,7 @@ const Navbar = () => {
             transition={{ type: 'tween', duration: 0.4 }}
             className="fixed inset-0 bg-navy z-40 flex flex-col justify-center items-center h-screen w-screen p-8"
           >
-            <button className="absolute top-6 right-8 text-cream" onClick={() => setMobileMenuOpen(false)}>
+            <button className="absolute top-6 left-6 md:left-12 text-cream" onClick={() => setMobileMenuOpen(false)}>
               <X size={32} />
             </button>
             <div className="flex flex-col space-y-8 text-center text-sm tracking-[0.2em]">
