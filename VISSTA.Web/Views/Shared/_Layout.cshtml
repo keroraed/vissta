@@ -39,9 +39,26 @@
                 <button class="nav-icon" type="button" data-search-toggle aria-label="Search">
                     <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
                 </button>
-                <a class="nav-icon desktop-only" asp-controller="Account" asp-action="Profile" aria-label="Account">
-                    <svg viewBox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                </a>
+                <div class="account-menu desktop-only" data-account-menu>
+                    <button class="nav-icon" type="button" data-account-toggle aria-expanded="false" aria-label="Account menu">
+                        <svg viewBox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    </button>
+                    <div class="account-dropdown glassmorphism" data-account-dropdown>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <a asp-controller="Account" asp-action="Profile">Profile</a>
+                            <a asp-controller="Account" asp-action="Orders">Orders</a>
+                            <form asp-controller="Account" asp-action="Logout" method="post">
+                                <button type="submit">Logout</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <a asp-controller="Account" asp-action="Login">Login</a>
+                            <a asp-controller="Account" asp-action="Register">Create account</a>
+                        }
+                    </div>
+                </div>
                 <a class="nav-icon cart-link" asp-controller="Cart" asp-action="Index" aria-label="Cart">
                     <svg viewBox="0 0 24 24"><path d="M6 7h12l-1 14H7L6 7Z"></path><path d="M9 7a3 3 0 0 1 6 0"></path></svg>
                     <span class="cart-badge" data-cart-count>@layoutCart.Count</span>
@@ -56,6 +73,15 @@
             <a asp-controller="Shop" asp-action="Index" asp-route-search="tee">TEES</a>
             <a asp-controller="Shop" asp-action="Index">COLLECTIONS</a>
             <a asp-controller="Home" asp-action="About">ABOUT</a>
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <a asp-controller="Account" asp-action="Profile">PROFILE</a>
+                <a asp-controller="Account" asp-action="Orders">ORDERS</a>
+            }
+            else
+            {
+                <a asp-controller="Account" asp-action="Login">LOGIN</a>
+            }
         </div>
 
         <div class="search-panel" data-search-panel>
@@ -105,6 +131,7 @@
     <script src="~/js/animations.js" asp-append-version="true"></script>
     <script src="~/js/search.js" asp-append-version="true"></script>
     <script src="~/js/cart.js" asp-append-version="true"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

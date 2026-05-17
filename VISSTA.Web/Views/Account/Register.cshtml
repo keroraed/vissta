@@ -2,13 +2,65 @@
 <main class="simple-page auth-page">
     <section class="auth-card glassmorphism">
         <p class="eyebrow">Account</p>
-        <h1 class="compact-title">Register</h1>
-        <form asp-controller="Account" asp-action="Register" method="post">
-            <input asp-for="FullName" placeholder="Full name" />
-            <input asp-for="Email" placeholder="Email" />
-            <input asp-for="PhoneNumber" placeholder="Phone" />
-            <input asp-for="Password" type="password" placeholder="Password" />
-            <button class="button button-primary" type="submit">Register</button>
+        <h1 class="compact-title">Create account</h1>
+        <form class="auth-form" asp-controller="Account" asp-action="Register" method="post">
+            <div asp-validation-summary="ModelOnly" class="form-summary"></div>
+            <label class="field">
+                <span>Full name</span>
+                <input asp-for="FullName" placeholder="Your full name" autocomplete="name" />
+                <span asp-validation-for="FullName" class="field-error"></span>
+            </label>
+            <label class="field">
+                <span>Email</span>
+                <input asp-for="Email" placeholder="you@example.com" autocomplete="email" />
+                <span asp-validation-for="Email" class="field-error"></span>
+            </label>
+            <label class="field">
+                <span>Phone</span>
+                <input asp-for="PhoneNumber" placeholder="+20 100 000 0000" autocomplete="tel" />
+                <span asp-validation-for="PhoneNumber" class="field-error"></span>
+            </label>
+            <label class="field">
+                <span>Password</span>
+                <input asp-for="Password" type="password" placeholder="At least 8 characters" autocomplete="new-password" />
+                <span asp-validation-for="Password" class="field-error"></span>
+            </label>
+
+            <div class="form-divider"></div>
+            <p class="form-section-label">Default shipping address</p>
+
+            <label class="field">
+                <span>Street address</span>
+                <input asp-for="Street" placeholder="Building, street, area" autocomplete="street-address" />
+                <span asp-validation-for="Street" class="field-error"></span>
+            </label>
+            <div class="form-grid">
+                <label class="field">
+                    <span>City</span>
+                    <input asp-for="City" placeholder="Cairo" autocomplete="address-level2" />
+                    <span asp-validation-for="City" class="field-error"></span>
+                </label>
+                <label class="field">
+                    <span>Governorate</span>
+                    <input asp-for="Governorate" placeholder="Cairo" autocomplete="address-level1" />
+                    <span asp-validation-for="Governorate" class="field-error"></span>
+                </label>
+            </div>
+            <div class="form-grid">
+                <label class="field">
+                    <span>Postal code</span>
+                    <input asp-for="PostalCode" placeholder="Optional" autocomplete="postal-code" />
+                    <span asp-validation-for="PostalCode" class="field-error"></span>
+                </label>
+                <label class="field">
+                    <span>Country</span>
+                    <input asp-for="Country" autocomplete="country-name" />
+                    <span asp-validation-for="Country" class="field-error"></span>
+                </label>
+            </div>
+
+            <button class="button button-primary auth-submit" type="submit">Register</button>
         </form>
+        <p class="auth-switch">Already have an account? <a asp-controller="Account" asp-action="Login">Login</a></p>
     </section>
 </main>

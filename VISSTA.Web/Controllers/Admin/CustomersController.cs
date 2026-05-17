@@ -15,7 +15,12 @@ public sealed class CustomersController(UserManager<ApplicationUser> userManager
     {
         var customers = userManager.Users
             .OrderBy(x => x.FullName)
-            .Select(x => new ProfileViewModel(x.FullName, x.Email ?? string.Empty, x.PhoneNumber ?? string.Empty))
+            .Select(x => new ProfileViewModel
+            {
+                FullName = x.FullName,
+                Email = x.Email ?? string.Empty,
+                PhoneNumber = x.PhoneNumber ?? string.Empty
+            })
             .ToList();
 
         return View("~/Views/Admin/Customers/Index.cshtml", new AdminCustomersViewModel(customers));

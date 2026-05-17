@@ -29,4 +29,11 @@ public sealed class Customer : Entity, IAggregateRoot
     public Address? DefaultAddress { get; private set; }
     public IReadOnlyCollection<Order> Orders => _orders.AsReadOnly();
     public IReadOnlyCollection<Review> Reviews => _reviews.AsReadOnly();
+
+    public void UpdateProfile(string fullName, string phoneNumber, Address? defaultAddress)
+    {
+        FullName = fullName;
+        PhoneNumber = phoneNumber;
+        DefaultAddress = defaultAddress;
+    }
 }

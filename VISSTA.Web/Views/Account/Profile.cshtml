@@ -1,11 +1,87 @@
 @model ProfileViewModel
-<main class="simple-page">
-    <section class="shell page-hero">
-        <p class="eyebrow">Profile</p>
-        <h1 class="section-title">@Model.FullName</h1>
-        <p class="section-copy">@Model.Email · @Model.PhoneNumber</p>
-        <form asp-controller="Account" asp-action="Logout" method="post">
-            <button class="button button-primary" type="submit">Logout</button>
-        </form>
+<main class="simple-page profile-page">
+    <section class="shell profile-shell">
+        <div class="profile-hero">
+            <p class="eyebrow">Profile</p>
+            <h1 class="section-title">@Model.FullName</h1>
+            <p class="section-copy">@Model.Email</p>
+        </div>
+
+        <div class="profile-layout">
+            <aside class="profile-summary glassmorphism">
+                <div class="profile-avatar">@(!string.IsNullOrWhiteSpace(Model.FullName) ? Model.FullName.Trim()[0].ToString().ToUpperInvariant() : "V")</div>
+                <h2>@Model.FullName</h2>
+                <p>@Model.Email</p>
+                <div class="profile-facts">
+                    <span>Phone</span>
+                    <strong>@Model.PhoneNumber</strong>
+                    <span>Address</span>
+                    <strong>@(Model.HasAddress ? $"{Model.City}, {Model.Governorate}" : "Not completed")</strong>
+                </div>
+                <a class="button button-secondary" asp-controller="Account" asp-action="Orders">View Orders</a>
+                <form asp-controller="Account" asp-action="Logout" method="post">
+                    <button class="text-button" type="submit">Logout</button>
+                </form>
+            </aside>
+
+            <form class="profile-form glassmorphism" asp-controller="Account" asp-action="Profile" method="post">
+                <div>
+                    <p class="eyebrow">Account Details</p>
+                    <h2 class="compact-title">Contact and shipping</h2>
+                </div>
+                <div asp-validation-summary="ModelOnly" class="form-summary"></div>
+                <input asp-for="Email" type="hidden" />
+
+                <div class="form-grid">
+                    <label class="field">
+                        <span>Full name</span>
+                        <input asp-for="FullName" autocomplete="name" />
+                        <span asp-validation-for="FullName" class="field-error"></span>
+                    </label>
+                    <label class="field">
+                        <span>Phone</span>
+                        <input asp-for="PhoneNumber" autocomplete="tel" />
+                        <span asp-validation-for="PhoneNumber" class="field-error"></span>
+                    </label>
+                </div>
+
+                <div class="form-divider"></div>
+                <p class="form-section-label">Default shipping address</p>
+
+                <label class="field">
+                    <span>Street address</span>
+                    <input asp-for="Street" placeholder="Building, street, area" autocomplete="street-address" />
+                    <span asp-validation-for="Street" class="field-error"></span>
+                </label>
+                <div class="form-grid">
+                    <label class="field">
+                        <span>City</span>
+                        <input asp-for="City" autocomplete="address-level2" />
+                        <span asp-validation-for="City" class="field-error"></span>
+                    </label>
+                    <label class="field">
+                        <span>Governorate</span>
+                        <input asp-for="Governorate" autocomplete="address-level1" />
+                        <span asp-validation-for="Governorate" class="field-error"></span>
+                    </label>
+                </div>
+                <div class="form-grid">
+                    <label class="field">
+                        <span>Postal code</span>
+                        <input asp-for="PostalCode" autocomplete="postal-code" />
+                        <span asp-validation-for="PostalCode" class="field-error"></span>
+                    </label>
+                    <label class="field">
+                        <span>Country</span>
+                        <input asp-for="Country" autocomplete="country-name" />
+                        <span asp-validation-for="Country" class="field-error"></span>
+                    </label>
+                </div>
+
+                <div class="profile-actions">
+                    <button class="button button-primary" type="submit">Save Changes</button>
+                </div>
+            </form>
+        </div>
     </section>
 </main>

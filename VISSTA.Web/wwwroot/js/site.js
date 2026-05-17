@@ -1,4 +1,24 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+const accountMenu = document.querySelector('[data-account-menu]');
+const accountToggle = document.querySelector('[data-account-toggle]');
 
-// Write your JavaScript code.
+if (accountMenu && accountToggle) {
+  accountToggle.addEventListener('click', () => {
+    const isOpen = accountMenu.classList.toggle('is-open');
+    accountToggle.setAttribute('aria-expanded', String(isOpen));
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!accountMenu.contains(event.target)) {
+      accountMenu.classList.remove('is-open');
+      accountToggle.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      accountMenu.classList.remove('is-open');
+      accountToggle.setAttribute('aria-expanded', 'false');
+      accountToggle.focus();
+    }
+  });
+}

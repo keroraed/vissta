@@ -2,14 +2,23 @@
 <main class="simple-page auth-page">
     <section class="auth-card glassmorphism">
         <p class="eyebrow">Account</p>
-        <h1 class="compact-title">Login</h1>
-        <form asp-controller="Account" asp-action="Login" method="post">
-            <input asp-for="Email" placeholder="Email" />
-            <input asp-for="Password" type="password" placeholder="Password" />
-            <label class="check"><input asp-for="RememberMe" /> Remember me</label>
+        <h1 class="compact-title">Welcome back</h1>
+        <form class="auth-form" asp-controller="Account" asp-action="Login" method="post">
+            <div asp-validation-summary="ModelOnly" class="form-summary"></div>
+            <label class="field">
+                <span>Email</span>
+                <input asp-for="Email" placeholder="you@example.com" autocomplete="email" />
+                <span asp-validation-for="Email" class="field-error"></span>
+            </label>
+            <label class="field">
+                <span>Password</span>
+                <input asp-for="Password" type="password" placeholder="Your password" autocomplete="current-password" />
+                <span asp-validation-for="Password" class="field-error"></span>
+            </label>
+            <label class="check"><input asp-for="RememberMe" /> <span>Remember me</span></label>
             <input asp-for="ReturnUrl" type="hidden" />
-            <button class="button button-primary" type="submit">Login</button>
+            <button class="button button-primary auth-submit" type="submit">Login</button>
         </form>
-        <a asp-controller="Account" asp-action="Register">Create an account</a>
+        <p class="auth-switch">New to VISSTA? <a asp-controller="Account" asp-action="Register">Create an account</a></p>
     </section>
 </main>

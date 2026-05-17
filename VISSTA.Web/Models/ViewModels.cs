@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using VISSTA.Application.DTOs;
 using VISSTA.Domain.Enums;
 
@@ -38,21 +39,78 @@ public sealed record OrderConfirmationViewModel(int OrderId, OrderDetailDto? Ord
 
 public sealed class LoginViewModel
 {
+    [Required, EmailAddress]
     public string Email { get; set; } = string.Empty;
+
+    [Required]
     public string Password { get; set; } = string.Empty;
-    public bool RememberMe { get; set; }
+
+    public bool? RememberMe { get; set; }
+
     public string? ReturnUrl { get; set; }
 }
 
 public sealed class RegisterViewModel
 {
+    [Required, MaxLength(180)]
     public string FullName { get; set; } = string.Empty;
+
+    [Required, EmailAddress]
     public string Email { get; set; } = string.Empty;
+
+    [Required, Phone]
     public string PhoneNumber { get; set; } = string.Empty;
+
+    [Required, MinLength(8), DataType(DataType.Password)]
     public string Password { get; set; } = string.Empty;
+
+    [Required, MaxLength(240)]
+    public string Street { get; set; } = string.Empty;
+
+    [Required, MaxLength(120)]
+    public string City { get; set; } = string.Empty;
+
+    [Required, MaxLength(120)]
+    public string Governorate { get; set; } = string.Empty;
+
+    [MaxLength(32)]
+    public string PostalCode { get; set; } = string.Empty;
+
+    [Required, MaxLength(80)]
+    public string Country { get; set; } = "Egypt";
 }
 
-public sealed record ProfileViewModel(string FullName, string Email, string PhoneNumber);
+public sealed class ProfileViewModel
+{
+    [Required, MaxLength(180)]
+    public string FullName { get; set; } = string.Empty;
+
+    [Required, EmailAddress]
+    public string Email { get; set; } = string.Empty;
+
+    [Required, Phone]
+    public string PhoneNumber { get; set; } = string.Empty;
+
+    [Required, MaxLength(240)]
+    public string Street { get; set; } = string.Empty;
+
+    [Required, MaxLength(120)]
+    public string City { get; set; } = string.Empty;
+
+    [Required, MaxLength(120)]
+    public string Governorate { get; set; } = string.Empty;
+
+    [MaxLength(32)]
+    public string PostalCode { get; set; } = string.Empty;
+
+    [Required, MaxLength(80)]
+    public string Country { get; set; } = "Egypt";
+
+    public bool HasAddress => !string.IsNullOrWhiteSpace(Street)
+        && !string.IsNullOrWhiteSpace(City)
+        && !string.IsNullOrWhiteSpace(Governorate)
+        && !string.IsNullOrWhiteSpace(Country);
+}
 
 public sealed record AccountOrdersViewModel(IReadOnlyCollection<OrderSummaryDto> Orders);
 
