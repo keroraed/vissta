@@ -1,0 +1,11 @@
+@model AdminCustomersViewModel
+@{
+    Layout = "_AdminLayout";
+}
+<section class="admin-head"><h1>Customers</h1></section>
+<div class="table-list">
+@foreach (var customer in Model.Customers)
+{
+    <article class="table-row glassmorphism"><span>@customer.FullName</span><span>@customer.Email</span><span>@customer.PhoneNumber</span></article>
+}
+</div>

@@ -1,0 +1,12 @@
+@model CartViewModel
+<aside class="cart-sidebar glassmorphism" data-cart-sidebar>
+    <header><h3>Your Cart</h3><button type="button" data-cart-close aria-label="Close cart">×</button></header>
+    @foreach (var item in Model.Cart.Items)
+    {
+        <article class="cart-mini-line">
+            <img src="@item.ImageUrl" alt="@item.ProductName" />
+            <div><strong>@item.ProductName</strong><span>@item.Quantity × @item.UnitPrice.ToString("N0") @item.Currency</span></div>
+        </article>
+    }
+    <a class="button button-primary" asp-controller="Cart" asp-action="Index">View Cart</a>
+</aside>

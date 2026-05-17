@@ -1,0 +1,22 @@
+@model AdminDashboardViewModel
+@{
+    Layout = "_AdminLayout";
+}
+<section class="admin-head"><h1>Dashboard</h1><p>Revenue @Model.Revenue.ToString("N0") EGP</p></section>
+<div class="admin-metrics">
+    <article class="glassmorphism"><span>Orders</span><strong>@Model.OrdersCount</strong></article>
+    <article class="glassmorphism"><span>Low Stock</span><strong>@Model.LowStockCount</strong></article>
+    <article class="glassmorphism"><span>Top Products</span><strong>@Model.TopProducts.Count</strong></article>
+</div>
+<canvas id="revenueChart" height="90"></canvas>
+<section class="admin-panel">
+    <h2>Recent Orders</h2>
+    @foreach (var order in Model.RecentOrders)
+    {
+        <a class="table-row glassmorphism" href="/admin/orders/@order.Id"><span>#@order.Id</span><span>@order.Status</span><span>@order.TotalAmount.ToString("N0") @order.Currency</span></a>
+    }
+</section>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+new Chart(document.getElementById('revenueChart'), { type: 'line', data: { labels: ['Mon','Tue','Wed','Thu','Fri'], datasets: [{ label: 'Revenue', data: [1200,1800,900,2400,@Model.Revenue], borderColor: '#D4AF73' }] } });
+</script>

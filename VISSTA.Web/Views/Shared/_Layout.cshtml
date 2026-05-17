@@ -1,0 +1,110 @@
+@using MediatR
+@using VISSTA.Application.Features.Cart
+@using VISSTA.Application.Interfaces
+@inject IMediator Mediator
+@inject ICurrentUserService CurrentUser
+@{
+    var layoutCart = await Mediator.Send(new GetCartQuery(CurrentUser.UserId, CurrentUser.SessionId));
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VISSTA - Quiet Luxury</title>
+    <link rel="icon" type="image/png" href="~/assets/favicon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <nav class="site-nav" data-nav>
+        <div class="nav-inner">
+            <button class="icon-button mobile-only" type="button" data-mobile-open aria-label="Open menu">
+                <span></span><span></span>
+            </button>
+
+            <a class="brand" asp-controller="Home" asp-action="Index">VISSTA</a>
+
+            <div class="nav-links">
+                <a asp-controller="Shop" asp-action="Index" asp-route-sort="newest">NEW ARRIVALS</a>
+                <a asp-controller="Shop" asp-action="Index" asp-route-search="polo">POLOS</a>
+                <a asp-controller="Shop" asp-action="Index" asp-route-search="tee">TEES</a>
+                <a asp-controller="Shop" asp-action="Index">COLLECTIONS</a>
+                <a asp-controller="Home" asp-action="About">ABOUT</a>
+            </div>
+
+            <div class="nav-actions">
+                <button class="nav-icon" type="button" data-search-toggle aria-label="Search">
+                    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+                </button>
+                <a class="nav-icon desktop-only" asp-controller="Account" asp-action="Profile" aria-label="Account">
+                    <svg viewBox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                </a>
+                <a class="nav-icon cart-link" asp-controller="Cart" asp-action="Index" aria-label="Cart">
+                    <svg viewBox="0 0 24 24"><path d="M6 7h12l-1 14H7L6 7Z"></path><path d="M9 7a3 3 0 0 1 6 0"></path></svg>
+                    <span class="cart-badge" data-cart-count>@layoutCart.Count</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="mobile-menu" data-mobile-menu aria-hidden="true">
+            <button class="mobile-close" type="button" data-mobile-close aria-label="Close menu">×</button>
+            <a asp-controller="Shop" asp-action="Index" asp-route-sort="newest">NEW ARRIVALS</a>
+            <a asp-controller="Shop" asp-action="Index" asp-route-search="polo">POLOS</a>
+            <a asp-controller="Shop" asp-action="Index" asp-route-search="tee">TEES</a>
+            <a asp-controller="Shop" asp-action="Index">COLLECTIONS</a>
+            <a asp-controller="Home" asp-action="About">ABOUT</a>
+        </div>
+
+        <div class="search-panel" data-search-panel>
+            <input type="search" data-search-input placeholder="Search VISSTA" autocomplete="off" />
+            <div class="search-results" data-search-results></div>
+        </div>
+    </nav>
+
+    @await Html.PartialAsync("_Notification", new NotificationViewModel(TempData["Message"] as string))
+    @RenderBody()
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-grid">
+                <div>
+                    <h4>Brand</h4>
+                    <p class="footer-brand-copy">Quiet luxury essentials crafted for a life well-dressed.</p>
+                </div>
+                <div>
+                    <h4>Shop</h4>
+                    <a asp-controller="Shop" asp-action="Index">New Arrivals</a>
+                    <a asp-controller="Shop" asp-action="Index" asp-route-search="polo">Polos & Knits</a>
+                    <a asp-controller="Shop" asp-action="Index" asp-route-search="tee">T-Shirts</a>
+                    <a asp-controller="Shop" asp-action="Index" asp-route-search="shirt">Shirts</a>
+                </div>
+                <div>
+                    <h4>Company</h4>
+                    <a asp-controller="Home" asp-action="About">About</a>
+                    <a href="#">Sustainability</a>
+                    <a href="#">Stores</a>
+                    <a href="#">Careers</a>
+                </div>
+                <div>
+                    <h4>Social</h4>
+                    <a href="https://www.instagram.com/vissta.eg/" target="_blank" rel="noreferrer">Instagram</a>
+                    <a href="https://www.facebook.com/profile.php?id=61576275821044" target="_blank" rel="noreferrer">Facebook</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 VISSTA. All rights reserved.</p>
+                <div><a href="#">Privacy Policy</a><a href="#">Terms of Service</a></div>
+            </div>
+        </div>
+    </footer>
+
+    @Html.AntiForgeryToken()
+    <script src="~/js/animations.js" asp-append-version="true"></script>
+    <script src="~/js/search.js" asp-append-version="true"></script>
+    <script src="~/js/cart.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

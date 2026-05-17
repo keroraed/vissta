@@ -1,0 +1,109 @@
+@model HomeViewModel
+
+<main class="home-page">
+    <section class="hero">
+        <div class="hero-media">
+            <div class="hero-gradient hero-gradient-left"></div>
+            <div class="hero-gradient hero-gradient-bottom"></div>
+            <img src="~/assets/hero-model.webp" alt="Male model in luxury clothing" class="hero-image" />
+        </div>
+        <div class="shell hero-shell">
+            <div class="hero-copy reveal-group">
+                <p class="eyebrow reveal">Timeless. Refined. Effortless.</p>
+                <h1 class="display reveal">The art of <br /> quiet luxury.</h1>
+                <p class="lead reveal">Elevated essentials, crafted for a life well-dressed.</p>
+                <a class="button button-primary reveal" asp-controller="Shop" asp-action="Index">Shop Collection</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="brand-philosophy">
+        <div class="section-rule"></div>
+        <div class="philosophy-copy reveal-group">
+            <p class="eyebrow reveal">Old Money. Modern Mindset.</p>
+            <p class="serif-statement reveal">Clean silhouettes. Premium fabrics. Understated details. <br /> Pieces that speak without saying a word.</p>
+        </div>
+    </section>
+
+    <section class="featured-grid">
+        <div class="shell image-grid">
+            @foreach (var product in Model.FeaturedProducts)
+            {
+                <a class="feature-tile reveal" asp-controller="Shop" asp-action="Detail" asp-route-slug="@product.Slug">
+                    <img src="@product.ImageUrl" alt="@product.Name" loading="lazy" />
+                    <span>@product.Name</span>
+                </a>
+            }
+        </div>
+    </section>
+
+    <section class="icon-strip">
+        <div class="shell pillar-grid reveal-group">
+            <article class="glassmorphism pillar reveal">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20"></path><path d="M2 12h20"></path><path d="M12 2a14.5 14.5 0 0 1 0 20"></path></svg>
+                <h4>PREMIUM FABRICS</h4><p>Carefully selected for comfort and quality.</p>
+            </article>
+            <article class="glassmorphism pillar reveal">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>
+                <h4>TIMELESS DESIGNS</h4><p>Classic pieces that never go out of style.</p>
+            </article>
+            <article class="glassmorphism pillar reveal">
+                <svg viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><path d="M4 22v-7"></path></svg>
+                <h4>EFFORTLESS STYLE</h4><p>Versatile staples for every occasion.</p>
+            </article>
+            <article class="glassmorphism pillar reveal">
+                <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg>
+                <h4>BUILT TO LAST</h4><p>Durable craftsmanship you can rely on.</p>
+            </article>
+        </div>
+    </section>
+
+    <section class="new-collection">
+        <div class="shell collection-layout">
+            <div class="collection-copy reveal-group">
+                <p class="eyebrow reveal">NEW COLLECTION</p>
+                <h2 class="section-title reveal">Summer <br />Essentials</h2>
+                <p class="section-copy reveal">Lightweight knits and breathable fabrics for the season ahead.</p>
+                <a class="button button-primary reveal" asp-controller="Shop" asp-action="Index" asp-route-sort="newest">Explore Now</a>
+            </div>
+            <div class="product-row reveal-group">
+                @foreach (var product in Model.NewCollectionProducts)
+                {
+                    <article class="product-card reveal">
+                        <a class="product-image" asp-controller="Shop" asp-action="Detail" asp-route-slug="@product.Slug">
+                            <img src="@product.ImageUrl" alt="@product.Name" loading="lazy" />
+                            <span>Quick Add</span>
+                        </a>
+                        <h4>@product.Name</h4>
+                        <p>@product.Price.ToString("N0") @product.Currency</p>
+                    </article>
+                }
+            </div>
+        </div>
+    </section>
+
+    <section class="editorial">
+        <div class="editorial-image reveal"><img src="~/assets/premium-folded.webp" alt="Premium folded clothes" loading="lazy" /></div>
+        <div class="editorial-copy">
+            <div class="spotlight"></div>
+            <div class="editorial-inner reveal-group">
+                <p class="eyebrow reveal">Our Promise</p>
+                <h2 class="section-title reveal">Quality Over Everything</h2>
+                <p class="section-copy reveal">We believe in fewer, better pieces. Thoughtfully made with integrity in every stitch.</p>
+                <a class="link-arrow reveal" asp-controller="Home" asp-action="About">Learn More <span>→</span></a>
+            </div>
+        </div>
+    </section>
+
+    <section class="newsletter">
+        <div class="section-rule"></div>
+        <div class="newsletter-inner reveal-group">
+            <h2 class="section-title reveal">Join the Club</h2>
+            <p class="section-copy reveal">Early access. New drops. Exclusive offers.</p>
+            <form class="newsletter-form reveal" data-newsletter-form>
+                <input type="email" name="email" placeholder="Enter your email" required />
+                <button class="button button-primary" type="submit">Subscribe</button>
+            </form>
+        </div>
+    </section>
+</main>

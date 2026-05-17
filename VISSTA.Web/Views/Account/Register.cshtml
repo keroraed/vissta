@@ -1,0 +1,14 @@
+@model RegisterViewModel
+<main class="simple-page auth-page">
+    <section class="auth-card glassmorphism">
+        <p class="eyebrow">Account</p>
+        <h1 class="compact-title">Register</h1>
+        <form asp-controller="Account" asp-action="Register" method="post">
+            <input asp-for="FullName" placeholder="Full name" />
+            <input asp-for="Email" placeholder="Email" />
+            <input asp-for="PhoneNumber" placeholder="Phone" />
+            <input asp-for="Password" type="password" placeholder="Password" />
+            <button class="button button-primary" type="submit">Register</button>
+        </form>
+    </section>
+</main>

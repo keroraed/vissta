@@ -1,0 +1,11 @@
+@model ProfileViewModel
+<main class="simple-page">
+    <section class="shell page-hero">
+        <p class="eyebrow">Profile</p>
+        <h1 class="section-title">@Model.FullName</h1>
+        <p class="section-copy">@Model.Email · @Model.PhoneNumber</p>
+        <form asp-controller="Account" asp-action="Logout" method="post">
+            <button class="button button-primary" type="submit">Logout</button>
+        </form>
+    </section>
+</main>

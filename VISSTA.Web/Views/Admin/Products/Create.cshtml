@@ -1,0 +1,6 @@
+@model AdminProductFormViewModel
+@{
+    Layout = "_AdminLayout";
+}
+<section class="admin-head"><h1>Create Product</h1></section>
+@await Html.PartialAsync("_ProductForm", Model)

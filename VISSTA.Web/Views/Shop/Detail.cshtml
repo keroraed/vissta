@@ -1,0 +1,45 @@
+@model ProductDetailViewModel
+<main class="simple-page">
+    <section class="shell pdp">
+        <div class="pdp-gallery">
+            @foreach (var image in Model.Product.Images.DefaultIfEmpty(new ProductImageDto(0, "/assets/product-white-polo.webp", true, 1)))
+            {
+                <img src="@image.Url" alt="@Model.Product.Name" loading="lazy" />
+            }
+        </div>
+        <div class="pdp-info">
+            <p class="eyebrow">@Model.Product.CategoryName</p>
+            <h1 class="section-title">@Model.Product.Name</h1>
+            <p class="price">@Model.Product.Price.ToString("N0") @Model.Product.Currency</p>
+            <p class="section-copy">@Model.Product.Description</p>
+            <form asp-controller="Cart" asp-action="Add" method="post" data-cart-form class="buy-box glassmorphism">
+                <input type="hidden" name="productId" value="@Model.Product.Id" />
+                <label>Size
+                    <select name="size"><option>S</option><option selected>M</option><option>L</option><option>XL</option></select>
+                </label>
+                <label>Quantity
+                    <input type="number" min="1" max="@Model.Product.Stock" name="quantity" value="1" />
+                </label>
+                <button class="button button-primary" type="submit">Add to Cart</button>
+            </form>
+        </div>
+    </section>
+    <section class="shell reviews">
+        <h2 class="compact-title">Reviews</h2>
+        @foreach (var review in Model.Product.Reviews)
+        {
+            <article class="glassmorphism review"><strong>@review.Rating/5</strong><p>@review.Body</p><small>@review.CustomerName</small></article>
+        }
+        <form asp-controller="Review" asp-action="Submit" method="post" class="review-form glassmorphism">
+            <input type="hidden" name="productId" value="@Model.Product.Id" />
+            <input type="hidden" name="slug" value="@Model.Product.Slug" />
+            <select name="rating"><option value="5">5 stars</option><option value="4">4 stars</option><option value="3">3 stars</option><option value="2">2 stars</option><option value="1">1 star</option></select>
+            <textarea name="body" placeholder="Share your thoughts"></textarea>
+            <button class="button button-primary" type="submit">Submit Review</button>
+        </form>
+    </section>
+    <section class="shell related">
+        <h2 class="compact-title">Related Pieces</h2>
+        @await Html.PartialAsync("_ProductGrid", Model.RelatedProducts)
+    </section>
+</main>

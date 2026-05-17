@@ -1,0 +1,32 @@
+@model CartViewModel
+<main class="simple-page">
+    <section class="shell cart-page">
+        <div>
+            <p class="eyebrow">Cart</p>
+            <h1 class="section-title">Your selection.</h1>
+        </div>
+        <div class="cart-list">
+            @foreach (var item in Model.Cart.Items)
+            {
+                <article class="cart-line glassmorphism">
+                    <img src="@item.ImageUrl" alt="@item.ProductName" />
+                    <div><h3>@item.ProductName</h3><p>@item.UnitPrice.ToString("N0") @item.Currency</p></div>
+                    <form asp-controller="Cart" asp-action="Update" method="post" data-cart-form>
+                        <input type="hidden" name="cartItemId" value="@item.Id" />
+                        <input type="number" name="quantity" min="1" value="@item.Quantity" />
+                        <button class="text-button" type="submit">Update</button>
+                    </form>
+                    <form asp-controller="Cart" asp-action="Remove" method="post" data-cart-form>
+                        <input type="hidden" name="cartItemId" value="@item.Id" />
+                        <button class="text-button" type="submit">Remove</button>
+                    </form>
+                </article>
+            }
+        </div>
+        <aside class="cart-summary glassmorphism">
+            <p>Subtotal</p>
+            <strong>@Model.Cart.Subtotal.ToString("N0") @Model.Cart.Currency</strong>
+            <a class="button button-primary" asp-controller="Checkout" asp-action="Index">Checkout</a>
+        </aside>
+    </section>
+</main>

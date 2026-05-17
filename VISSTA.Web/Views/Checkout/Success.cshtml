@@ -1,0 +1,9 @@
+@model OrderConfirmationViewModel
+<main class="simple-page">
+    <section class="shell page-hero">
+        <p class="eyebrow">Order Confirmed</p>
+        <h1 class="section-title">Order #@Model.OrderId is confirmed.</h1>
+        <p class="section-copy">We will send shipping updates as your order moves.</p>
+        <a class="button button-primary" asp-controller="Account" asp-action="Orders">View Orders</a>
+    </section>
+</main>

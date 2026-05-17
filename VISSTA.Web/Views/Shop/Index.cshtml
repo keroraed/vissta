@@ -1,0 +1,24 @@
+@model ShopViewModel
+<main class="simple-page">
+    <section class="shell shop-header">
+        <div>
+            <p class="eyebrow">Shop</p>
+            <h1 class="section-title">Quiet essentials, ready now.</h1>
+        </div>
+        <form class="filters glassmorphism" method="get" data-filter-form>
+            <input type="search" name="search" value="@Model.Search" placeholder="Search" />
+            <input type="number" name="minPrice" value="@Model.MinPrice" placeholder="Min" />
+            <input type="number" name="maxPrice" value="@Model.MaxPrice" placeholder="Max" />
+            <select name="sort">
+                <option value="">Featured</option>
+                <option value="newest" selected="@(Model.Sort == "newest")">Newest</option>
+                <option value="price-asc" selected="@(Model.Sort == "price-asc")">Price Low</option>
+                <option value="price-desc" selected="@(Model.Sort == "price-desc")">Price High</option>
+            </select>
+            <button class="button button-primary" type="submit">Apply</button>
+        </form>
+    </section>
+    <section class="shell" data-catalog-target>
+        @await Html.PartialAsync("_ProductGrid", Model.Products)
+    </section>
+</main>

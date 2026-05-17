@@ -1,0 +1,11 @@
+@model AdminOrdersViewModel
+@{
+    Layout = "_AdminLayout";
+}
+<section class="admin-head"><h1>Orders</h1></section>
+<div class="table-list">
+@foreach (var order in Model.Orders)
+{
+    <a class="table-row glassmorphism" href="/admin/orders/@order.Id"><span>#@order.Id</span><span>@order.Status</span><span>@order.TotalAmount.ToString("N0") @order.Currency</span><span>@order.CreatedAt.ToLocalTime().ToString("MMM d")</span></a>
+}
+</div>

@@ -1,0 +1,15 @@
+@model LoginViewModel
+<main class="simple-page auth-page">
+    <section class="auth-card glassmorphism">
+        <p class="eyebrow">Account</p>
+        <h1 class="compact-title">Login</h1>
+        <form asp-controller="Account" asp-action="Login" method="post">
+            <input asp-for="Email" placeholder="Email" />
+            <input asp-for="Password" type="password" placeholder="Password" />
+            <label class="check"><input asp-for="RememberMe" /> Remember me</label>
+            <input asp-for="ReturnUrl" type="hidden" />
+            <button class="button button-primary" type="submit">Login</button>
+        </form>
+        <a asp-controller="Account" asp-action="Register">Create an account</a>
+    </section>
+</main>

@@ -1,0 +1,20 @@
+@model AdminOrderDetailViewModel
+@{
+    Layout = "_AdminLayout";
+}
+<section class="admin-head"><h1>Order #@Model.Order.Id</h1><p>@Model.Order.Status</p></section>
+<form method="post" action="/admin/orders/@Model.Order.Id/status" class="admin-form glassmorphism">
+    <select name="status">
+        @foreach (var status in Enum.GetValues<VISSTA.Domain.Enums.OrderStatus>())
+        {
+            <option value="@status">@status</option>
+        }
+    </select>
+    <button class="button button-primary" type="submit">Update Status</button>
+</form>
+<div class="table-list">
+@foreach (var item in Model.Order.Items)
+{
+    <article class="table-row glassmorphism"><span>@item.ProductName</span><span>@item.Quantity</span><span>@item.LineTotal.ToString("N0")</span></article>
+}
+</div>

@@ -1,0 +1,5 @@
+@model NotificationViewModel
+@if (!string.IsNullOrWhiteSpace(Model.Message))
+{
+    <div class="toast @Model.Type">@Model.Message</div>
+}

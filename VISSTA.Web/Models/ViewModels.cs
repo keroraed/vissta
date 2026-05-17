@@ -1,0 +1,83 @@
+using VISSTA.Application.DTOs;
+using VISSTA.Domain.Enums;
+
+namespace VISSTA.Web.Models;
+
+public sealed record HomeViewModel(IReadOnlyCollection<ProductListDto> FeaturedProducts, IReadOnlyCollection<ProductListDto> NewCollectionProducts);
+
+public sealed record ShopViewModel(
+    IReadOnlyCollection<ProductListDto> Products,
+    int? CategoryId,
+    decimal? MinPrice,
+    decimal? MaxPrice,
+    string? Sort,
+    string? Search);
+
+public sealed record ProductDetailViewModel(ProductDetailDto Product, IReadOnlyCollection<ProductListDto> RelatedProducts);
+
+public sealed record CartViewModel(CartDto Cart);
+
+public sealed class CheckoutViewModel
+{
+    public CartDto Cart { get; set; } = new(0, [], 0, "EGP", 0);
+    public ShippingAddressInput ShippingAddress { get; set; } = new();
+    public string? CouponCode { get; set; }
+    public string PaymentToken { get; set; } = "mock";
+}
+
+public sealed class ShippingAddressInput
+{
+    public string Street { get; set; } = string.Empty;
+    public string City { get; set; } = string.Empty;
+    public string Governorate { get; set; } = string.Empty;
+    public string PostalCode { get; set; } = string.Empty;
+    public string Country { get; set; } = "Egypt";
+}
+
+public sealed record OrderConfirmationViewModel(int OrderId, OrderDetailDto? Order);
+
+public sealed class LoginViewModel
+{
+    public string Email { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
+    public bool RememberMe { get; set; }
+    public string? ReturnUrl { get; set; }
+}
+
+public sealed class RegisterViewModel
+{
+    public string FullName { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string PhoneNumber { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
+}
+
+public sealed record ProfileViewModel(string FullName, string Email, string PhoneNumber);
+
+public sealed record AccountOrdersViewModel(IReadOnlyCollection<OrderSummaryDto> Orders);
+
+public sealed record AdminDashboardViewModel(decimal Revenue, int OrdersCount, int LowStockCount, IReadOnlyCollection<OrderSummaryDto> RecentOrders, IReadOnlyCollection<ProductListDto> TopProducts);
+
+public sealed record AdminProductsViewModel(IReadOnlyCollection<ProductListDto> Products);
+
+public sealed class AdminProductFormViewModel
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Slug { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public decimal Price { get; set; }
+    public int Stock { get; set; }
+    public string Sku { get; set; } = string.Empty;
+    public int CategoryId { get; set; } = 2;
+    public bool IsActive { get; set; } = true;
+    public bool IsFeatured { get; set; }
+}
+
+public sealed record AdminOrdersViewModel(IReadOnlyCollection<OrderSummaryDto> Orders, OrderStatus? Status);
+
+public sealed record AdminOrderDetailViewModel(OrderDetailDto Order);
+
+public sealed record AdminCustomersViewModel(IReadOnlyCollection<ProfileViewModel> Customers);
+
+public sealed record NotificationViewModel(string? Message, string Type = "info");

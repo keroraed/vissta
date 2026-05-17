@@ -1,0 +1,23 @@
+@model CheckoutViewModel
+<main class="simple-page">
+    <section class="shell checkout">
+        <div>
+            <p class="eyebrow">Checkout</p>
+            <h1 class="section-title">Finish with care.</h1>
+            <form asp-controller="Checkout" asp-action="Confirm" method="post" class="checkout-form glassmorphism">
+                <input asp-for="ShippingAddress.Street" placeholder="Street" />
+                <input asp-for="ShippingAddress.City" placeholder="City" />
+                <input asp-for="ShippingAddress.Governorate" placeholder="Governorate" />
+                <input asp-for="ShippingAddress.PostalCode" placeholder="Postal code" />
+                <input asp-for="ShippingAddress.Country" placeholder="Country" />
+                <input asp-for="CouponCode" placeholder="Coupon code" />
+                <input asp-for="PaymentToken" type="hidden" value="mock" />
+                <button class="button button-primary" type="submit">Confirm Order</button>
+            </form>
+        </div>
+        <aside class="cart-summary glassmorphism">
+            <p>@Model.Cart.Count item(s)</p>
+            <strong>@Model.Cart.Subtotal.ToString("N0") @Model.Cart.Currency</strong>
+        </aside>
+    </section>
+</main>
