@@ -5,17 +5,43 @@
             <p class="eyebrow">Shop</p>
             <h1 class="section-title">Quiet essentials, ready now.</h1>
         </div>
-        <form class="filters glassmorphism" method="get" data-filter-form>
-            <input type="search" name="search" value="@Model.Search" placeholder="Search" />
-            <input type="number" name="minPrice" value="@Model.MinPrice" placeholder="Min" />
-            <input type="number" name="maxPrice" value="@Model.MaxPrice" placeholder="Max" />
-            <select name="sort">
-                <option value="">Featured</option>
-                <option value="newest" selected="@(Model.Sort == "newest")">Newest</option>
-                <option value="price-asc" selected="@(Model.Sort == "price-asc")">Price Low</option>
-                <option value="price-desc" selected="@(Model.Sort == "price-desc")">Price High</option>
-            </select>
-            <button class="button button-primary" type="submit">Apply</button>
+        <form class="filters glassmorphism filter-panel" method="get" data-filter-form>
+            <label class="filter-control filter-search">
+                <span>Search</span>
+                <span class="filter-input-shell">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="11" cy="11" r="7"></circle>
+                        <path d="m20 20-3.5-3.5"></path>
+                    </svg>
+                    <input type="search" name="search" value="@Model.Search" placeholder="Polo, tee, knit..." />
+                </span>
+            </label>
+            <div class="filter-price-group" aria-label="Price range">
+                <label class="filter-control">
+                    <span>Min</span>
+                    <input type="number" name="minPrice" value="@Model.MinPrice" placeholder="0" min="0" />
+                </label>
+                <label class="filter-control">
+                    <span>Max</span>
+                    <input type="number" name="maxPrice" value="@Model.MaxPrice" placeholder="5000" min="0" />
+                </label>
+            </div>
+            <label class="filter-control filter-sort">
+                <span>Sort</span>
+                <select name="sort">
+                    <option value="">Featured</option>
+                    <option value="newest" selected="@(Model.Sort == "newest")">Newest</option>
+                    <option value="price-asc" selected="@(Model.Sort == "price-asc")">Price Low</option>
+                    <option value="price-desc" selected="@(Model.Sort == "price-desc")">Price High</option>
+                </select>
+            </label>
+            <div class="filter-actions">
+                <button class="button button-primary" type="submit">Apply</button>
+                @if (!string.IsNullOrWhiteSpace(Model.Search) || Model.MinPrice.HasValue || Model.MaxPrice.HasValue || !string.IsNullOrWhiteSpace(Model.Sort))
+                {
+                    <a class="filter-clear" asp-controller="Shop" asp-action="Index">Clear</a>
+                }
+            </div>
         </form>
     </section>
     <section class="shell" data-catalog-target>

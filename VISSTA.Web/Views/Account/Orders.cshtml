@@ -3,13 +3,24 @@
     <section class="shell">
         <p class="eyebrow">Orders</p>
         <h1 class="section-title">Order History</h1>
-        <div class="table-list">
-            @foreach (var order in Model.Orders)
-            {
-                <article class="glassmorphism table-row">
-                    <span>#@order.Id</span><span>@order.Status</span><span>@order.TotalAmount.ToString("N0") @order.Currency</span><span>@order.CreatedAt.ToLocalTime().ToString("MMM d, yyyy")</span>
-                </article>
-            }
-        </div>
+        @if (Model.Orders.Count == 0)
+        {
+            <div class="empty-state glassmorphism">
+                <h2 class="compact-title">No orders yet</h2>
+                <p class="section-copy">Your order history will appear here once you place your first order.</p>
+                <a class="button button-primary" asp-controller="Shop" asp-action="Index">Go shopping</a>
+            </div>
+        }
+        else
+        {
+            <div class="table-list">
+                @foreach (var order in Model.Orders)
+                {
+                    <article class="glassmorphism table-row">
+                        <span>#@order.Id</span><span>@order.Status</span><span>@order.TotalAmount.ToString("N0") @order.Currency</span><span>@order.CreatedAt.ToLocalTime().ToString("MMM d, yyyy")</span>
+                    </article>
+                }
+            </div>
+        }
     </section>
 </main>

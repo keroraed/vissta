@@ -32,7 +32,7 @@ public sealed class AccountController(
             return View(model);
         }
 
-        var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe == true, lockoutOnFailure: true);
+        var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: true);
         if (!result.Succeeded)
         {
             ModelState.AddModelError(string.Empty, "Invalid login attempt.");
@@ -59,6 +59,11 @@ public sealed class AccountController(
         {
             foreach (var error in result.Errors)
             {
+                if (string.Equals(error.Code, "DuplicateUserName", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
                 ModelState.AddModelError(string.Empty, error.Description);
             }
 

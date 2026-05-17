@@ -4,12 +4,43 @@
         <div>
             <p class="eyebrow">Checkout</p>
             <h1 class="section-title">Finish with care.</h1>
-            <form asp-controller="Checkout" asp-action="Confirm" method="post" class="checkout-form glassmorphism">
-                <input asp-for="ShippingAddress.Street" placeholder="Street" />
-                <input asp-for="ShippingAddress.City" placeholder="City" />
-                <input asp-for="ShippingAddress.Governorate" placeholder="Governorate" />
-                <input asp-for="ShippingAddress.PostalCode" placeholder="Postal code" />
-                <input asp-for="ShippingAddress.Country" placeholder="Country" />
+            <form asp-controller="Checkout" asp-action="Confirm" method="post" class="checkout-form checkout-address-form glassmorphism">
+                <div asp-validation-summary="ModelOnly" class="form-summary"></div>
+                @if (Model.HasSavedAddress)
+                {
+                    <div class="address-options">
+                        <input class="address-radio" id="UseSavedAddressTrue" name="UseSavedAddress" type="radio" value="true" checked="@Model.UseSavedAddress" />
+                        <label class="address-choice" for="UseSavedAddressTrue">
+                            <span>Saved address</span>
+                            <strong>@Model.SavedAddress!.Street</strong>
+                            <small>@Model.SavedAddress.City, @Model.SavedAddress.Governorate</small>
+                            <small>@Model.SavedAddress.PostalCode @Model.SavedAddress.Country</small>
+                        </label>
+
+                        <input class="address-radio" id="UseSavedAddressFalse" name="UseSavedAddress" type="radio" value="false" checked="@(!Model.UseSavedAddress)" />
+                        <label class="address-choice address-choice-new" for="UseSavedAddressFalse">
+                            <span>New address</span>
+                            <strong>Add another delivery address</strong>
+                            <small>Use this order only.</small>
+                        </label>
+
+                        <div class="new-address-fields">
+                            <input asp-for="ShippingAddress.Street" placeholder="Street" />
+                            <input asp-for="ShippingAddress.City" placeholder="City" />
+                            <input asp-for="ShippingAddress.Governorate" placeholder="Governorate" />
+                            <input asp-for="ShippingAddress.PostalCode" placeholder="Postal code" />
+                            <input asp-for="ShippingAddress.Country" placeholder="Country" />
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <input asp-for="ShippingAddress.Street" placeholder="Street" />
+                    <input asp-for="ShippingAddress.City" placeholder="City" />
+                    <input asp-for="ShippingAddress.Governorate" placeholder="Governorate" />
+                    <input asp-for="ShippingAddress.PostalCode" placeholder="Postal code" />
+                    <input asp-for="ShippingAddress.Country" placeholder="Country" />
+                }
                 <input asp-for="CouponCode" placeholder="Coupon code" />
                 <input asp-for="PaymentToken" type="hidden" value="mock" />
                 <button class="button button-primary" type="submit">Confirm Order</button>

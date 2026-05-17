@@ -22,8 +22,11 @@ public sealed class CheckoutViewModel
 {
     public CartDto Cart { get; set; } = new(0, [], 0, "EGP", 0);
     public ShippingAddressInput ShippingAddress { get; set; } = new();
+    public ShippingAddressInput? SavedAddress { get; set; }
+    public bool UseSavedAddress { get; set; }
     public string? CouponCode { get; set; }
     public string PaymentToken { get; set; } = "mock";
+    public bool HasSavedAddress => SavedAddress?.IsComplete == true;
 }
 
 public sealed class ShippingAddressInput
@@ -33,6 +36,10 @@ public sealed class ShippingAddressInput
     public string Governorate { get; set; } = string.Empty;
     public string PostalCode { get; set; } = string.Empty;
     public string Country { get; set; } = "Egypt";
+    public bool IsComplete => !string.IsNullOrWhiteSpace(Street)
+        && !string.IsNullOrWhiteSpace(City)
+        && !string.IsNullOrWhiteSpace(Governorate)
+        && !string.IsNullOrWhiteSpace(Country);
 }
 
 public sealed record OrderConfirmationViewModel(int OrderId, OrderDetailDto? Order);
@@ -45,7 +52,7 @@ public sealed class LoginViewModel
     [Required]
     public string Password { get; set; } = string.Empty;
 
-    public bool? RememberMe { get; set; }
+    public bool RememberMe { get; set; }
 
     public string? ReturnUrl { get; set; }
 }

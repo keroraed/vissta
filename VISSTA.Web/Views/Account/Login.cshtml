@@ -12,13 +12,35 @@
             </label>
             <label class="field">
                 <span>Password</span>
-                <input asp-for="Password" type="password" placeholder="Your password" autocomplete="current-password" />
+                <div class="password-field">
+                    <input asp-for="Password" type="password" placeholder="Your password" autocomplete="current-password" data-password-input />
+                    <button class="password-toggle" type="button" aria-label="Show password" aria-pressed="false" data-password-toggle>
+                        <span class="password-icon password-icon-show" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" focusable="false">
+                                <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z"></path>
+                                <circle cx="12" cy="12" r="3.2"></circle>
+                            </svg>
+                        </span>
+                        <span class="password-icon password-icon-hide" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" focusable="false">
+                                <path d="M3 5l16 16"></path>
+                                <path d="M10.6 10.6a2.5 2.5 0 0 0 3.5 3.5"></path>
+                                <path d="M6.3 6.3C4 8 2 12 2 12s3.5 6 10 6c1.7 0 3.2-.3 4.5-.9"></path>
+                                <path d="M12 6c3.2 0 5.7 1.4 7.4 3 1.2 1.1 2.1 2.3 2.6 3-.3.5-.7 1.1-1.2 1.8"></path>
+                            </svg>
+                        </span>
+                    </button>
+                </div>
                 <span asp-validation-for="Password" class="field-error"></span>
             </label>
-            <label class="check"><input asp-for="RememberMe" /> <span>Remember me</span></label>
+            <label class="check"><input asp-for="RememberMe" type="checkbox" /> <span>Remember me</span></label>
             <input asp-for="ReturnUrl" type="hidden" />
             <button class="button button-primary auth-submit" type="submit">Login</button>
         </form>
         <p class="auth-switch">New to VISSTA? <a asp-controller="Account" asp-action="Register">Create an account</a></p>
     </section>
 </main>
+
+@section Scripts {
+    <script src="~/js/password-toggle.js" asp-append-version="true"></script>
+}

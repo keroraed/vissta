@@ -40,8 +40,20 @@ public static class DbInitializer
                     FullName = "VISSTA Admin"
                 };
 
-                await userManager.CreateAsync(admin, "Admin@123!");
-                await userManager.AddToRoleAsync(admin, "Admin");
+                var createResult = await userManager.CreateAsync(admin, "Admin@123!");
+                if (!createResult.Succeeded)
+                {
+                    throw new InvalidOperationException($"Failed to seed admin user: {string.Join(", ", createResult.Errors.Select(x => x.Description))}");
+                }
+            }
+
+            if (!await userManager.IsInRoleAsync(admin, "Admin"))
+            {
+                var roleResult = await userManager.AddToRoleAsync(admin, "Admin");
+                if (!roleResult.Succeeded)
+                {
+                    throw new InvalidOperationException($"Failed to assign Admin role: {string.Join(", ", roleResult.Errors.Select(x => x.Description))}");
+                }
             }
         }
         catch (Exception ex)
