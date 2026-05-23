@@ -5,6 +5,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
+using System.Text;
+using System.Text.RegularExpressions;
+using VISSTA.Application.DTOs;
+using VISSTA.Application.Features.Categories;
 using VISSTA.Application.Features.Products;
 using VISSTA.Web.Models;
 
@@ -17,17 +21,30 @@ public sealed class ProductsController(IMediator mediator, IWebHostEnvironment e
     [HttpGet("")]
     public async Task<IActionResult> Index(CancellationToken cancellationToken)
     {
-        var products = await mediator.Send(new GetProductListQuery(null, null, null, "newest", null), cancellationToken);
+        var products = await mediator.Send(new GetProductListQuery(null, null, null, "newest", null, true), cancellationToken);
         return View("~/Views/Admin/Products/Index.cshtml", new AdminProductsViewModel(products));
     }
 
     [HttpGet("create")]
-    public IActionResult Create() => View("~/Views/Admin/Products/Create.cshtml", new AdminProductFormViewModel());
+    public async Task<IActionResult> Create(CancellationToken cancellationToken)
+    {
+        var categories = await LoadCategoriesAsync(cancellationToken);
+        return View("~/Views/Admin/Products/Create.cshtml", new AdminProductFormViewModel { Categories = categories });
+    }
 
     [HttpPost("create")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(AdminProductFormViewModel model, CancellationToken cancellationToken)
     {
+        model.Categories = await LoadCategoriesAsync(cancellationToken);
+        if (string.IsNullOrWhiteSpace(model.Slug))
+        {
+            model.Slug = Slugify(model.Name);
+        }
+        if (string.IsNullOrWhiteSpace(model.Sku))
+        {
+            model.Sku = GenerateSku(model.Slug);
+        }
         if (!ModelState.IsValid)
         {
             return View("~/Views/Admin/Products/Create.cshtml", model);
@@ -60,6 +77,8 @@ public sealed class ProductsController(IMediator mediator, IWebHostEnvironment e
             return NotFound();
         }
 
+        var categories = await LoadCategoriesAsync(cancellationToken);
+
         return View("~/Views/Admin/Products/Edit.cshtml", new AdminProductFormViewModel
         {
             Id = product.Id,
@@ -71,7 +90,9 @@ public sealed class ProductsController(IMediator mediator, IWebHostEnvironment e
             Stock = product.Stock,
             Sku = product.Sku,
             CategoryId = product.CategoryId,
-            IsActive = true
+            Categories = categories,
+            IsActive = product.IsActive,
+            IsFeatured = product.IsFeatured
         });
     }
 
@@ -79,12 +100,16 @@ public sealed class ProductsController(IMediator mediator, IWebHostEnvironment e
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, AdminProductFormViewModel model, CancellationToken cancellationToken)
     {
+        model.Categories = await LoadCategoriesAsync(cancellationToken);
         if (!ModelState.IsValid)
         {
             var product = await mediator.Send(new GetProductByIdQuery(id), cancellationToken);
             if (product is not null)
             {
                 model.ExistingImages = product.Images;
+                model.Sku = product.Sku;
+                model.IsActive = product.IsActive;
+                model.IsFeatured = product.IsFeatured;
             }
             return View("~/Views/Admin/Products/Edit.cshtml", model);
         }
@@ -109,6 +134,9 @@ public sealed class ProductsController(IMediator mediator, IWebHostEnvironment e
         if (existingProduct is not null)
         {
             model.ExistingImages = existingProduct.Images;
+            model.Sku = existingProduct.Sku;
+            model.IsActive = existingProduct.IsActive;
+            model.IsFeatured = existingProduct.IsFeatured;
         }
 
         return View("~/Views/Admin/Products/Edit.cshtml", model);
@@ -162,5 +190,24 @@ public sealed class ProductsController(IMediator mediator, IWebHostEnvironment e
         {
             ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
         }
+    }
+
+    private Task<IReadOnlyCollection<CategoryDto>> LoadCategoriesAsync(CancellationToken cancellationToken) =>
+        mediator.Send(new GetCategoryListQuery(), cancellationToken);
+
+    private static string Slugify(string value)
+    {
+        var cleaned = Regex.Replace(value.ToLowerInvariant(), @"[^a-z0-9\s-]", string.Empty);
+        cleaned = Regex.Replace(cleaned, @"\s+", " ").Trim();
+        cleaned = cleaned.Replace(" ", "-");
+        return cleaned.Length == 0 ? "product" : cleaned;
+    }
+
+    private static string GenerateSku(string slug)
+    {
+        var baseSku = $"VIS-{slug.ToUpperInvariant()}";
+        var suffix = Guid.NewGuid().ToString("N")[..6].ToUpperInvariant();
+        var sku = $"{baseSku}-{suffix}";
+        return sku.Length <= 64 ? sku : sku[^64..];
     }
 }

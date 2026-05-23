@@ -1,10 +1,24 @@
 @model ProductDetailViewModel
 <main class="simple-page">
     <section class="shell pdp">
-        <div class="pdp-gallery">
-            @foreach (var image in Model.Product.Images.DefaultIfEmpty(new ProductImageDto(0, "/assets/product-white-polo.webp", true, 1)))
+        @{
+            var galleryImages = Model.Product.Images.DefaultIfEmpty(new ProductImageDto(0, "/assets/product-white-polo.webp", true, 1)).ToList();
+        }
+        <div class="pdp-gallery" data-pdp-gallery>
+            <div class="pdp-gallery-stack">
+                @for (var index = 0; index < galleryImages.Count; index++)
+                {
+                    var image = galleryImages[index];
+                    <img class="pdp-gallery-image @(index == 0 ? "is-active" : null)" src="@image.Url" alt="@Model.Product.Name" loading="@(index == 0 ? "eager" : "lazy")" data-pdp-image />
+                }
+            </div>
+            @if (galleryImages.Count > 1)
             {
-                <img src="@image.Url" alt="@Model.Product.Name" loading="lazy" />
+                <div class="pdp-gallery-controls" aria-label="Product images">
+                    <button class="pdp-gallery-button" type="button" aria-label="Previous image" data-pdp-prev>&#8592;</button>
+                    <span class="pdp-gallery-count" data-pdp-count>1 / @galleryImages.Count</span>
+                    <button class="pdp-gallery-button" type="button" aria-label="Next image" data-pdp-next>&#8594;</button>
+                </div>
             }
         </div>
         <div class="pdp-info">

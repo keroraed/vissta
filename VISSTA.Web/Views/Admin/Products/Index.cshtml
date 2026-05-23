@@ -10,11 +10,29 @@
 <div class="table-list">
 @foreach (var product in Model.Products)
 {
-    <article class="table-row glassmorphism admin-product-row">
-        <img class="admin-product-image" src="@product.ImageUrl" alt="@product.Name" loading="lazy" />
-        <span>@product.Name</span>
-        <span>@product.Price.ToString("N0") @product.Currency</span>
-        <span>Stock @product.Stock</span>
+    <article class="table-row glassmorphism admin-product-row admin-product-row--list">
+        <div class="admin-product-media">
+            <img class="admin-product-image" src="@product.ImageUrl" alt="@product.Name" loading="lazy" />
+        </div>
+        <div class="admin-product-info">
+            <strong class="admin-product-name">@product.Name</strong>
+            <small class="admin-product-meta">@product.CategoryName</small>
+        </div>
+        <div class="admin-product-metric">
+            <span class="admin-product-label">Price</span>
+            <strong>@product.Price.ToString("N0") @product.Currency</strong>
+        </div>
+        <div class="admin-product-metric">
+            <span class="admin-product-label">Stock</span>
+            <strong>@product.Stock</strong>
+        </div>
+        <div class="admin-product-status">
+            <span class="status-pill">@(product.IsActive ? "Active" : "Inactive")</span>
+            @if (product.IsFeatured)
+            {
+                <small>Featured</small>
+            }
+        </div>
         <div class="admin-row-actions">
             <a class="text-button" href="/admin/products/edit/@product.Id">Edit</a>
             <form method="post" action="/admin/products/delete/@product.Id">

@@ -22,7 +22,7 @@ public sealed class AddToCartCommandValidator : AbstractValidator<AddToCartComma
     }
 }
 
-public sealed class CartHandlers(ICartRepository carts, IUnitOfWork unitOfWork) :
+public sealed class CartHandlers(ICartRepository carts, IRepository<Customer> customers, IUnitOfWork unitOfWork) :
     IRequestHandler<GetCartQuery, CartDto>,
     IRequestHandler<AddToCartCommand, CartDto>,
     IRequestHandler<RemoveFromCartCommand, CartDto>,
@@ -69,13 +69,23 @@ public sealed class CartHandlers(ICartRepository carts, IUnitOfWork unitOfWork) 
 
     private async Task<Domain.Entities.Cart> GetOrCreateCart(string? customerId, string sessionId, CancellationToken cancellationToken)
     {
-        var cart = await carts.GetActiveCartAsync(customerId, sessionId, cancellationToken);
+        var resolvedCustomerId = customerId;
+        if (!string.IsNullOrWhiteSpace(customerId))
+        {
+            var customerExists = customers.QueryReadOnly().Any(x => x.Id == customerId);
+            if (!customerExists)
+            {
+                resolvedCustomerId = null;
+            }
+        }
+
+        var cart = await carts.GetActiveCartAsync(resolvedCustomerId, sessionId, cancellationToken);
         if (cart is not null)
         {
             return cart;
         }
 
-        cart = new Domain.Entities.Cart(customerId, sessionId);
+        cart = new Domain.Entities.Cart(resolvedCustomerId, sessionId);
         await carts.AddAsync(cart, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
         return cart;

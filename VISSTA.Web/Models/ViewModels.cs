@@ -150,6 +150,7 @@ public sealed class AdminProductFormViewModel
     public int Stock { get; set; }
     public string Sku { get; set; } = string.Empty;
     public int CategoryId { get; set; } = 2;
+    public IReadOnlyCollection<CategoryDto> Categories { get; set; } = Array.Empty<CategoryDto>();
     public bool IsActive { get; set; } = true;
     public bool IsFeatured { get; set; }
 }
@@ -161,6 +162,17 @@ public sealed record AdminOrderDetailViewModel(OrderDetailDto Order);
 public sealed record AdminCustomersViewModel(IReadOnlyCollection<ProfileViewModel> Customers);
 
 public sealed record AdminCouponsViewModel(IReadOnlyCollection<CouponDto> Coupons);
+
+public sealed record AdminCategoriesViewModel(IReadOnlyCollection<CategoryDto> Categories);
+
+public sealed class AdminCategoryFormViewModel
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Slug { get; set; } = string.Empty;
+    public int? ParentCategoryId { get; set; }
+    public IReadOnlyCollection<CategoryDto> Categories { get; set; } = Array.Empty<CategoryDto>();
+}
 
 public sealed class AdminCouponFormViewModel
 {

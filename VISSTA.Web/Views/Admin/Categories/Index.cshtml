@@ -1,0 +1,30 @@
+@model AdminCategoriesViewModel
+@{
+    Layout = "_AdminLayout";
+    var categoryLookup = Model.Categories.ToDictionary(c => c.Id, c => c.Name);
+}
+<section class="admin-head">
+    <h1>Categories</h1>
+    <a class="button button-primary" href="/admin/categories/create">Create</a>
+</section>
+@if (TempData["CategoryAdminMessage"] is string message)
+{
+    <div class="form-summary admin-message">@message</div>
+}
+<div class="table-list">
+@foreach (var category in Model.Categories)
+{
+    <article class="table-row glassmorphism admin-category-row">
+        <span>@category.Name</span>
+        <span>@category.Slug</span>
+        <span>@(category.ParentCategoryId is null ? "-" : categoryLookup.GetValueOrDefault(category.ParentCategoryId.Value, "-"))</span>
+        <div class="admin-row-actions">
+            <a class="text-button" href="/admin/categories/edit/@category.Id">Edit</a>
+            <form method="post" action="/admin/categories/delete/@category.Id">
+                @Html.AntiForgeryToken()
+                <button class="text-button" type="submit">Delete</button>
+            </form>
+        </div>
+    </article>
+}
+</div>

@@ -1,0 +1,6 @@
+@model AdminCategoryFormViewModel
+@{
+    Layout = "_AdminLayout";
+}
+<section class="admin-head"><h1>Edit Category</h1></section>
+@await Html.PartialAsync("~/Views/Admin/Categories/_CategoryForm.cshtml", Model)

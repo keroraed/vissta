@@ -17,7 +17,7 @@ public sealed class DashboardController(IMediator mediator) : Controller
     public async Task<IActionResult> Index(CancellationToken cancellationToken)
     {
         var orders = await mediator.Send(new GetAllOrdersQuery(), cancellationToken);
-        var products = await mediator.Send(new GetProductListQuery(null, null, null, null, null), cancellationToken);
+        var products = await mediator.Send(new GetProductListQuery(null, null, null, null, null, true), cancellationToken);
         var coupons = await mediator.Send(new GetCouponsQuery(), cancellationToken);
         var discounts = orders.Sum(x => x.DiscountAmount);
         var model = new AdminDashboardViewModel(

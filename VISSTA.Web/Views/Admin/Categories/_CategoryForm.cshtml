@@ -1,0 +1,15 @@
+@model AdminCategoryFormViewModel
+<form method="post" class="admin-form glassmorphism">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="form-summary"></div>
+    <input asp-for="Name" placeholder="Name" />
+    <input asp-for="Slug" placeholder="Slug (auto if blank)" />
+    <select asp-for="ParentCategoryId">
+        <option value="">No parent</option>
+        @foreach (var category in Model.Categories)
+        {
+            <option value="@category.Id" selected="@(Model.ParentCategoryId == category.Id)">@category.Name</option>
+        }
+    </select>
+    <button class="button button-primary" type="submit">Save</button>
+</form>

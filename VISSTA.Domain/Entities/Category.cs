@@ -27,4 +27,11 @@ public sealed class Category : Entity, IAggregateRoot
     public Category? ParentCategory { get; private set; }
     public IReadOnlyCollection<Category> Children => _children.AsReadOnly();
     public IReadOnlyCollection<Product> Products => _products.AsReadOnly();
+
+    public void Update(string name, string slug, int? parentCategoryId)
+    {
+        Name = name;
+        Slug = slug;
+        ParentCategoryId = parentCategoryId;
+    }
 }

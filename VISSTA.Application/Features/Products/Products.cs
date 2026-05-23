@@ -7,7 +7,7 @@ using VISSTA.Domain.ValueObjects;
 
 namespace VISSTA.Application.Features.Products;
 
-public sealed record GetProductListQuery(int? CategoryId, decimal? MinPrice, decimal? MaxPrice, string? Sort, string? Search) : IRequest<IReadOnlyCollection<ProductListDto>>;
+public sealed record GetProductListQuery(int? CategoryId, decimal? MinPrice, decimal? MaxPrice, string? Sort, string? Search, bool IncludeInactive = false) : IRequest<IReadOnlyCollection<ProductListDto>>;
 public sealed record GetFeaturedProductsQuery(int Count = 3) : IRequest<IReadOnlyCollection<ProductListDto>>;
 public sealed record GetProductByIdQuery(int Id) : IRequest<ProductDetailDto?>;
 public sealed record GetProductBySlugQuery(string Slug) : IRequest<ProductDetailDto?>;
@@ -27,7 +27,7 @@ public sealed class CreateProductCommandValidator : AbstractValidator<CreateProd
         RuleFor(x => x.Price).GreaterThan(0);
         RuleFor(x => x.Stock).GreaterThanOrEqualTo(0);
         RuleFor(x => x.Sku).NotEmpty().MaximumLength(64);
-        RuleFor(x => x.CategoryId).InclusiveBetween(1, 3);
+        RuleFor(x => x.CategoryId).GreaterThan(0);
     }
 }
 
@@ -38,7 +38,7 @@ public sealed class UpdateProductCommandValidator : AbstractValidator<UpdateProd
         RuleFor(x => x.Id).GreaterThan(0);
         RuleFor(x => x.Name).NotEmpty().MaximumLength(160);
         RuleFor(x => x.Price).GreaterThan(0);
-        RuleFor(x => x.CategoryId).InclusiveBetween(1, 3);
+        RuleFor(x => x.CategoryId).GreaterThan(0);
     }
 }
 
@@ -55,7 +55,11 @@ public sealed class ProductHandlers(IProductRepository products, IUnitOfWork uni
 {
     public Task<IReadOnlyCollection<ProductListDto>> Handle(GetProductListQuery request, CancellationToken cancellationToken)
     {
-        var query = products.QueryReadOnly().Where(x => x.IsActive);
+        var query = products.QueryReadOnly();
+        if (!request.IncludeInactive)
+        {
+            query = query.Where(x => x.IsActive);
+        }
 
         if (request.CategoryId is not null)
         {
@@ -207,7 +211,8 @@ public sealed class ProductHandlers(IProductRepository products, IUnitOfWork uni
         x.Images.OrderByDescending(i => i.IsPrimary).ThenBy(i => i.DisplayOrder).Select(i => i.Url).FirstOrDefault() ?? "/assets/product-white-polo.webp",
         x.Category == null ? "VISSTA" : x.Category.Name,
         x.IsFeatured,
-        x.Stock);
+        x.Stock,
+        x.IsActive);
 
     private static ProductDetailDto ToDetailDto(Product x) => new(
         x.Id,
@@ -220,6 +225,8 @@ public sealed class ProductHandlers(IProductRepository products, IUnitOfWork uni
         x.SKU,
         x.CategoryId,
         x.Category == null ? "VISSTA" : x.Category.Name,
+        x.IsActive,
+        x.IsFeatured,
         x.Images.OrderByDescending(i => i.IsPrimary).ThenBy(i => i.DisplayOrder).Select(i => new ProductImageDto(i.Id, i.Url, i.IsPrimary, i.DisplayOrder)).ToList(),
         x.Reviews.Where(r => r.IsApproved).Select(r => new ReviewDto(r.Id, r.Customer == null ? "VISSTA Customer" : r.Customer.FullName, r.Rating, r.Body, r.CreatedAt)).ToList());
 }

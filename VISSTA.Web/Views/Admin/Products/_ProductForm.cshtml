@@ -5,6 +5,7 @@
     <input asp-for="Name" placeholder="Name" />
     <input asp-for="Slug" placeholder="Slug" />
     <textarea asp-for="Description" placeholder="Description"></textarea>
+    <input asp-for="Sku" type="hidden" />
     @if (Model.ExistingImages.Count > 0)
     {
         <text>
@@ -26,8 +27,13 @@
     <div class="admin-image-preview" data-image-preview></div>
     <input asp-for="Price" type="number" step="0.01" placeholder="Price" />
     <input asp-for="Stock" type="number" placeholder="Stock" />
-    <input asp-for="Sku" placeholder="SKU" />
-    <select asp-for="CategoryId"><option value="1">Women's</option><option value="2">Men's</option><option value="3">Accessories</option></select>
+    <select asp-for="CategoryId">
+        <option value="">Select category</option>
+        @foreach (var category in Model.Categories)
+        {
+            <option value="@category.Id" selected="@(Model.CategoryId == category.Id)">@category.Name</option>
+        }
+    </select>
     <label class="check"><input asp-for="IsFeatured" /> Featured</label>
     <label class="check"><input asp-for="IsActive" /> Active</label>
     <button class="button button-primary" type="submit">Save</button>

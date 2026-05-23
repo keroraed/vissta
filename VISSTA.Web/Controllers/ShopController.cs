@@ -10,7 +10,7 @@ public sealed class ShopController(IMediator mediator) : Controller
     [ResponseCache(Duration = 60, VaryByQueryKeys = new[] { "categoryId", "minPrice", "maxPrice", "sort", "search" })]
     public async Task<IActionResult> Index(int? categoryId, decimal? minPrice, decimal? maxPrice, string? sort, string? search, CancellationToken cancellationToken)
     {
-        var products = await mediator.Send(new GetProductListQuery(categoryId, minPrice, maxPrice, sort, search), cancellationToken);
+        var products = await mediator.Send(new GetProductListQuery(categoryId, minPrice, maxPrice, sort, search, false), cancellationToken);
 
         if (Request.Headers.XRequestedWith == "XMLHttpRequest")
         {
@@ -29,7 +29,7 @@ public sealed class ShopController(IMediator mediator) : Controller
             return NotFound();
         }
 
-        var related = await mediator.Send(new GetProductListQuery(null, null, null, null, null), cancellationToken);
+        var related = await mediator.Send(new GetProductListQuery(null, null, null, null, null, false), cancellationToken);
         return View(new ProductDetailViewModel(product, related.Where(x => x.Id != product.Id).Take(4).ToList()));
     }
 }

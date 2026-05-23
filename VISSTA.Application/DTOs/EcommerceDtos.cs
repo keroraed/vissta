@@ -11,7 +11,8 @@ public sealed record ProductListDto(
     string ImageUrl,
     string CategoryName,
     bool IsFeatured,
-    int Stock);
+    int Stock,
+    bool IsActive);
 
 public sealed record ProductDetailDto(
     int Id,
@@ -24,6 +25,8 @@ public sealed record ProductDetailDto(
     string Sku,
     int CategoryId,
     string CategoryName,
+    bool IsActive,
+    bool IsFeatured,
     IReadOnlyCollection<ProductImageDto> Images,
     IReadOnlyCollection<ReviewDto> Reviews);
 
