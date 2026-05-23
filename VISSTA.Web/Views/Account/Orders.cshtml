@@ -16,9 +16,13 @@
             <div class="table-list">
                 @foreach (var order in Model.Orders)
                 {
-                    <article class="glassmorphism table-row">
-                        <span>#@order.Id</span><span>@order.Status</span><span>@order.TotalAmount.ToString("N0") @order.Currency</span><span>@order.CreatedAt.ToLocalTime().ToString("MMM d, yyyy")</span>
-                    </article>
+                    <a class="glassmorphism table-row order-row" asp-controller="Account" asp-action="Order" asp-route-id="@order.Id">
+                        <span>#@order.Id</span>
+                        <span>@order.Status</span>
+                        <span>@order.TotalAmount.ToString("N0") @order.Currency</span>
+                        <span>@order.CreatedAt.ToLocalTime().ToString("MMM d, yyyy")</span>
+                        <span class="button button-primary button-small order-details-button">Details</span>
+                    </a>
                 }
             </div>
         }

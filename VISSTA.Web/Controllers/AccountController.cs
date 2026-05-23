@@ -175,6 +175,19 @@ public sealed class AccountController(
         return View(new AccountOrdersViewModel(orders));
     }
 
+    [Authorize]
+    [HttpGet("Account/Orders/{id:int}")]
+    public async Task<IActionResult> Order(int id, CancellationToken cancellationToken)
+    {
+        if (currentUser.UserId is null)
+        {
+            return Challenge();
+        }
+
+        var order = await mediator.Send(new GetOrderByIdQuery(id, currentUser.UserId), cancellationToken);
+        return order is null ? NotFound() : View(order);
+    }
+
     [HttpPost]
     [Authorize]
     [ValidateAntiForgeryToken]

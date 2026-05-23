@@ -143,6 +143,21 @@ public sealed class OrderHandlers(
             order.ShippingAddress.City,
             order.ShippingAddress.Governorate,
             order.ShippingAddress.PostalCode,
-            order.OrderItems.Select(x => new OrderItemDto(x.ProductId, x.Product?.Name ?? "VISSTA Product", x.Quantity, x.UnitPrice.Amount, x.UnitPrice.Amount * x.Quantity)).ToList());
+            order.OrderItems.Select(x =>
+            {
+                var imageUrl = x.Product?.Images
+                    .OrderBy(image => image.DisplayOrder)
+                    .FirstOrDefault(image => image.IsPrimary)?.Url
+                    ?? x.Product?.Images.OrderBy(image => image.DisplayOrder).FirstOrDefault()?.Url
+                    ?? "/assets/product-white-polo.webp";
+
+                return new OrderItemDto(
+                    x.ProductId,
+                    x.Product?.Name ?? "VISSTA Product",
+                    imageUrl,
+                    x.Quantity,
+                    x.UnitPrice.Amount,
+                    x.UnitPrice.Amount * x.Quantity);
+            }).ToList());
     }
 }

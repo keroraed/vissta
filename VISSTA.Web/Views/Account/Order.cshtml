@@ -1,0 +1,36 @@
+@model OrderDetailDto
+<main class="simple-page">
+    <section class="shell">
+        <p class="eyebrow">Order Details</p>
+        <h1 class="section-title">Order #@Model.Id</h1>
+
+        <div class="cart-order-summary glassmorphism order-detail-summary">
+            <div class="summary-head">
+                <p>@Model.Status</p>
+                <span>@Model.CreatedAt.ToLocalTime().ToString("MMM d, yyyy")</span>
+            </div>
+            <div class="summary-row">
+                <span>Total</span>
+                <strong>@Model.TotalAmount.ToString("N0") @Model.Currency</strong>
+            </div>
+            <div class="summary-note">
+                @Model.Street, @Model.City, @Model.Governorate @Model.PostalCode
+            </div>
+        </div>
+
+        <div class="table-list order-detail-items">
+            @foreach (var item in Model.Items)
+            {
+                <article class="glassmorphism table-row order-detail-row">
+                    <img class="order-item-image" src="@item.ImageUrl" alt="@item.ProductName" loading="lazy" />
+                    <span>@item.ProductName</span>
+                    <span>Qty @item.Quantity</span>
+                    <span>@item.UnitPrice.ToString("N0") @Model.Currency</span>
+                    <span>@item.LineTotal.ToString("N0") @Model.Currency</span>
+                </article>
+            }
+        </div>
+
+        <a class="summary-link order-detail-back" asp-controller="Account" asp-action="Orders">Back to orders</a>
+    </section>
+</main>

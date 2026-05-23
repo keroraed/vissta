@@ -46,7 +46,7 @@ public sealed record OrderDetailDto(
     string PostalCode,
     IReadOnlyCollection<OrderItemDto> Items);
 
-public sealed record OrderItemDto(int ProductId, string ProductName, int Quantity, decimal UnitPrice, decimal LineTotal);
+public sealed record OrderItemDto(int ProductId, string ProductName, string ImageUrl, int Quantity, decimal UnitPrice, decimal LineTotal);
 
 public sealed record ReviewDto(int Id, string CustomerName, int Rating, string Body, DateTime CreatedAt);
 
