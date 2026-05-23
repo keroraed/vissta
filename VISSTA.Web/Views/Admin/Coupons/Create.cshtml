@@ -1,0 +1,13 @@
+@model AdminCouponFormViewModel
+@{
+    Layout = "_AdminLayout";
+}
+
+<section class="admin-head">
+    <div>
+        <p>Discounts</p>
+        <h1>Create Coupon</h1>
+    </div>
+</section>
+
+@await Html.PartialAsync("~/Views/Admin/Coupons/_CouponForm.cshtml", Model)

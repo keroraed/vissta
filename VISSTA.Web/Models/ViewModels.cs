@@ -121,7 +121,18 @@ public sealed class ProfileViewModel
 
 public sealed record AccountOrdersViewModel(IReadOnlyCollection<OrderSummaryDto> Orders);
 
-public sealed record AdminDashboardViewModel(decimal Revenue, int OrdersCount, int LowStockCount, IReadOnlyCollection<OrderSummaryDto> RecentOrders, IReadOnlyCollection<ProductListDto> TopProducts);
+public sealed record AdminDashboardViewModel(
+    decimal Revenue,
+    decimal GrossRevenue,
+    decimal Discounts,
+    decimal AverageOrderValue,
+    int OrdersCount,
+    int PendingOrdersCount,
+    int LowStockCount,
+    int ActiveCouponsCount,
+    IReadOnlyCollection<OrderSummaryDto> RecentOrders,
+    IReadOnlyCollection<ProductListDto> TopProducts,
+    IReadOnlyCollection<ProductListDto> LowStockProducts);
 
 public sealed record AdminProductsViewModel(IReadOnlyCollection<ProductListDto> Products);
 
@@ -144,5 +155,28 @@ public sealed record AdminOrdersViewModel(IReadOnlyCollection<OrderSummaryDto> O
 public sealed record AdminOrderDetailViewModel(OrderDetailDto Order);
 
 public sealed record AdminCustomersViewModel(IReadOnlyCollection<ProfileViewModel> Customers);
+
+public sealed record AdminCouponsViewModel(IReadOnlyCollection<CouponDto> Coupons);
+
+public sealed class AdminCouponFormViewModel
+{
+    public int Id { get; set; }
+
+    [Required, MaxLength(40)]
+    public string Code { get; set; } = string.Empty;
+
+    public DiscountType DiscountType { get; set; } = DiscountType.Percentage;
+
+    [Range(0.01, 100000)]
+    public decimal Value { get; set; }
+
+    [DataType(DataType.Date)]
+    public DateTime ExpiryDate { get; set; } = DateTime.UtcNow.Date.AddMonths(1);
+
+    [Range(1, 100000)]
+    public int MaxUses { get; set; } = 100;
+
+    public bool IsActive { get; set; } = true;
+}
 
 public sealed record NotificationViewModel(string? Message, string Type = "info");

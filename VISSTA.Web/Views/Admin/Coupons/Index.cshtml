@@ -1,0 +1,42 @@
+@model AdminCouponsViewModel
+@{
+    Layout = "_AdminLayout";
+}
+
+<section class="admin-head">
+    <div>
+        <p>Discounts</p>
+        <h1>Coupons</h1>
+    </div>
+    <a class="button button-primary" href="/admin/coupons/create">Create Coupon</a>
+</section>
+
+<section class="admin-panel glassmorphism">
+    <div class="admin-table admin-coupon-table">
+        <div class="admin-table-row admin-table-row-head">
+            <span>Code</span>
+            <span>Discount</span>
+            <span>Usage</span>
+            <span>Expires</span>
+            <span>Status</span>
+            <span></span>
+        </div>
+        @foreach (var coupon in Model.Coupons)
+        {
+            <div class="admin-table-row">
+                <span>@coupon.Code</span>
+                <span>@(coupon.DiscountType == "Percentage" ? $"{coupon.Value:N0}%" : $"{coupon.Value:N0} EGP")</span>
+                <span>@coupon.UsedCount / @coupon.MaxUses</span>
+                <span>@coupon.ExpiryDate.ToLocalTime().ToString("MMM d, yyyy")</span>
+                <span class="status-pill">@(coupon.IsValid ? "Active" : "Inactive")</span>
+                <span class="admin-row-actions">
+                    <a href="/admin/coupons/edit/@coupon.Id">Edit</a>
+                    <form method="post" action="/admin/coupons/delete/@coupon.Id">
+                        @Html.AntiForgeryToken()
+                        <button class="text-button" type="submit">Delete</button>
+                    </form>
+                </span>
+            </div>
+        }
+    </div>
+</section>

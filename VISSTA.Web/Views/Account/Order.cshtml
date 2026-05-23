@@ -10,6 +10,17 @@
                 <span>@Model.CreatedAt.ToLocalTime().ToString("MMM d, yyyy")</span>
             </div>
             <div class="summary-row">
+                <span>Subtotal</span>
+                <strong>@Model.SubtotalAmount.ToString("N0") @Model.Currency</strong>
+            </div>
+            @if (Model.DiscountAmount > 0)
+            {
+                <div class="summary-row">
+                    <span>Discount @(string.IsNullOrWhiteSpace(Model.CouponCode) ? string.Empty : $"({Model.CouponCode})")</span>
+                    <strong>-@Model.DiscountAmount.ToString("N0") @Model.Currency</strong>
+                </div>
+            }
+            <div class="summary-row">
                 <span>Total</span>
                 <strong>@Model.TotalAmount.ToString("N0") @Model.Currency</strong>
             </div>

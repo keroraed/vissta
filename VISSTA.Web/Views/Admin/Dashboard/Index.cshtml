@@ -2,21 +2,103 @@
 @{
     Layout = "_AdminLayout";
 }
-<section class="admin-head"><h1>Dashboard</h1><p>Revenue @Model.Revenue.ToString("N0") EGP</p></section>
-<div class="admin-metrics">
-    <article class="glassmorphism"><span>Orders</span><strong>@Model.OrdersCount</strong></article>
-    <article class="glassmorphism"><span>Low Stock</span><strong>@Model.LowStockCount</strong></article>
-    <article class="glassmorphism"><span>Top Products</span><strong>@Model.TopProducts.Count</strong></article>
-</div>
-<canvas id="revenueChart" height="90"></canvas>
-<section class="admin-panel">
-    <h2>Recent Orders</h2>
-    @foreach (var order in Model.RecentOrders)
-    {
-        <a class="table-row glassmorphism" href="/admin/orders/@order.Id"><span>#@order.Id</span><span>@order.Status</span><span>@order.TotalAmount.ToString("N0") @order.Currency</span></a>
-    }
+
+<section class="admin-head admin-dashboard-head">
+    <div>
+        <p>Overview</p>
+        <h1>Dashboard</h1>
+    </div>
+    <a class="button button-primary" href="/admin/products/create">New Product</a>
 </section>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-new Chart(document.getElementById('revenueChart'), { type: 'line', data: { labels: ['Mon','Tue','Wed','Thu','Fri'], datasets: [{ label: 'Revenue', data: [1200,1800,900,2400,@Model.Revenue], borderColor: '#D4AF73' }] } });
-</script>
+
+<div class="admin-metrics admin-metrics-wide">
+    <article class="glassmorphism">
+        <span>Net Revenue</span>
+        <strong>@Model.Revenue.ToString("N0") EGP</strong>
+        <small>After discounts</small>
+    </article>
+    <article class="glassmorphism">
+        <span>Orders</span>
+        <strong>@Model.OrdersCount</strong>
+        <small>@Model.PendingOrdersCount pending or confirmed</small>
+    </article>
+    <article class="glassmorphism">
+        <span>Average Order</span>
+        <strong>@Model.AverageOrderValue.ToString("N0") EGP</strong>
+        <small>Across all orders</small>
+    </article>
+    <article class="glassmorphism">
+        <span>Discounts</span>
+        <strong>@Model.Discounts.ToString("N0") EGP</strong>
+        <small>@Model.ActiveCouponsCount active coupons</small>
+    </article>
+</div>
+
+<div class="admin-dashboard-grid">
+    <section class="admin-panel glassmorphism">
+        <div class="admin-panel-head">
+            <h2>Recent Orders</h2>
+            <a href="/admin/orders">View all</a>
+        </div>
+        <div class="admin-table">
+            @foreach (var order in Model.RecentOrders)
+            {
+                <a class="admin-table-row" href="/admin/orders/@order.Id">
+                    <span>#@order.Id</span>
+                    <span class="status-pill">@order.Status</span>
+                    <span>@order.TotalAmount.ToString("N0") @order.Currency</span>
+                    <span>@order.CreatedAt.ToLocalTime().ToString("MMM d")</span>
+                </a>
+            }
+        </div>
+    </section>
+
+    <section class="admin-panel glassmorphism">
+        <div class="admin-panel-head">
+            <h2>Stock Watch</h2>
+            <a href="/admin/products">Products</a>
+        </div>
+        @if (Model.LowStockProducts.Count == 0)
+        {
+            <p class="admin-muted">No products are currently low on stock.</p>
+        }
+        else
+        {
+            <div class="admin-table">
+                @foreach (var product in Model.LowStockProducts)
+                {
+                    <a class="admin-table-row" href="/admin/products/edit/@product.Id">
+                        <span>@product.Name</span>
+                        <span>@product.CategoryName</span>
+                        <span>@product.Stock left</span>
+                    </a>
+                }
+            </div>
+        }
+    </section>
+
+    <section class="admin-panel glassmorphism">
+        <div class="admin-panel-head">
+            <h2>Top Products</h2>
+            <a href="/admin/products">Manage</a>
+        </div>
+        <div class="admin-product-list">
+            @foreach (var product in Model.TopProducts)
+            {
+                <a class="admin-product-row" href="/admin/products/edit/@product.Id">
+                    <img src="@product.ImageUrl" alt="@product.Name" />
+                    <span>@product.Name</span>
+                    <strong>@product.Price.ToString("N0") @product.Currency</strong>
+                </a>
+            }
+        </div>
+    </section>
+
+    <section class="admin-panel glassmorphism admin-finance-panel">
+        <h2>Revenue Health</h2>
+        <div class="admin-finance-row"><span>Gross revenue</span><strong>@Model.GrossRevenue.ToString("N0") EGP</strong></div>
+        <div class="admin-finance-row"><span>Discounts issued</span><strong>@Model.Discounts.ToString("N0") EGP</strong></div>
+        <div class="admin-finance-row"><span>Net revenue</span><strong>@Model.Revenue.ToString("N0") EGP</strong></div>
+        <a class="button button-secondary" href="/admin/coupons">Manage Coupons</a>
+    </section>
+</div>

@@ -14,6 +14,8 @@ public sealed class Order : Entity, IAggregateRoot
         CustomerId = string.Empty;
         ShippingAddress = new Address(string.Empty, string.Empty, string.Empty, string.Empty);
         TotalAmount = Money.Zero();
+        SubtotalAmount = Money.Zero();
+        DiscountAmount = Money.Zero();
     }
 
     public Order(string customerId, Address shippingAddress)
@@ -22,6 +24,8 @@ public sealed class Order : Entity, IAggregateRoot
         ShippingAddress = shippingAddress;
         Status = OrderStatus.Pending;
         TotalAmount = Money.Zero();
+        SubtotalAmount = Money.Zero();
+        DiscountAmount = Money.Zero();
         CreatedAt = DateTime.UtcNow;
     }
 
@@ -31,7 +35,10 @@ public sealed class Order : Entity, IAggregateRoot
     public OrderStatus Status { get; private set; }
     public IReadOnlyCollection<OrderItem> OrderItems => _orderItems.AsReadOnly();
     public Address ShippingAddress { get; private set; }
+    public Money SubtotalAmount { get; private set; }
+    public Money DiscountAmount { get; private set; }
     public Money TotalAmount { get; private set; }
+    public string? CouponCode { get; private set; }
     public DateTime CreatedAt { get; private set; }
 
     public void AddItem(int productId, int quantity, Money unitPrice)
@@ -59,8 +66,22 @@ public sealed class Order : Entity, IAggregateRoot
 
     public void RecalculateTotal()
     {
-        TotalAmount = _orderItems
+        SubtotalAmount = _orderItems
             .Select(x => x.UnitPrice.Multiply(x.Quantity))
             .Aggregate(Money.Zero(), (current, next) => current.Add(next));
+        TotalAmount = new Money(Math.Max(0, SubtotalAmount.Amount - DiscountAmount.Amount), SubtotalAmount.Currency);
+    }
+
+    public void ApplyDiscount(string couponCode, decimal discountAmount)
+    {
+        if (discountAmount <= 0)
+        {
+            return;
+        }
+
+        var boundedDiscount = Math.Min(discountAmount, SubtotalAmount.Amount);
+        CouponCode = couponCode.Trim().ToUpperInvariant();
+        DiscountAmount = new Money(boundedDiscount, SubtotalAmount.Currency);
+        RecalculateTotal();
     }
 }

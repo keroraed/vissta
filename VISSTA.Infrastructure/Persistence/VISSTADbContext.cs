@@ -103,6 +103,17 @@ public sealed class VISSTADbContext(DbContextOptions<VISSTADbContext> options) :
                 money.Property(x => x.Amount).HasColumnName("TotalAmount").HasPrecision(18, 2);
                 money.Property(x => x.Currency).HasColumnName("Currency").HasMaxLength(3);
             });
+            entity.OwnsOne(x => x.SubtotalAmount, money =>
+            {
+                money.Property(x => x.Amount).HasColumnName("SubtotalAmount").HasPrecision(18, 2);
+                money.Property(x => x.Currency).HasColumnName("SubtotalCurrency").HasMaxLength(3);
+            });
+            entity.OwnsOne(x => x.DiscountAmount, money =>
+            {
+                money.Property(x => x.Amount).HasColumnName("DiscountAmount").HasPrecision(18, 2);
+                money.Property(x => x.Currency).HasColumnName("DiscountCurrency").HasMaxLength(3);
+            });
+            entity.Property(x => x.CouponCode).HasMaxLength(40);
             entity.HasOne(x => x.Customer).WithMany(x => x.Orders).HasForeignKey(x => x.CustomerId).OnDelete(DeleteBehavior.Restrict);
             entity.Metadata.FindNavigation(nameof(Order.OrderItems))?.SetPropertyAccessMode(PropertyAccessMode.Field);
         });
@@ -156,6 +167,7 @@ public sealed class VISSTADbContext(DbContextOptions<VISSTADbContext> options) :
             entity.HasIndex(x => x.Code).IsUnique();
             entity.Property(x => x.DiscountType).HasConversion<string>().HasMaxLength(32);
             entity.Property(x => x.Value).HasPrecision(18, 2);
+            entity.Property(x => x.IsActive).HasDefaultValue(true);
         });
 
         builder.Entity<NewsletterSubscription>(entity =>

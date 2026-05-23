@@ -279,6 +279,11 @@ namespace VISSTA.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("ExpiryDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
                     b.Property<int>("MaxUses")
                         .HasColumnType("int");
 
@@ -356,6 +361,10 @@ namespace VISSTA.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CouponCode")
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -1075,9 +1084,63 @@ namespace VISSTA.Infrastructure.Persistence.Migrations
                                 .HasForeignKey("OrderId");
                         });
 
+                    b.OwnsOne("VISSTA.Domain.ValueObjects.Money", "SubtotalAmount", b1 =>
+                        {
+                            b1.Property<int>("OrderId")
+                                .HasColumnType("int");
+
+                            b1.Property<decimal>("Amount")
+                                .HasPrecision(18, 2)
+                                .HasColumnType("decimal(18,2)")
+                                .HasColumnName("SubtotalAmount");
+
+                            b1.Property<string>("Currency")
+                                .IsRequired()
+                                .HasMaxLength(3)
+                                .HasColumnType("nvarchar(3)")
+                                .HasColumnName("SubtotalCurrency");
+
+                            b1.HasKey("OrderId");
+
+                            b1.ToTable("Orders");
+
+                            b1.WithOwner()
+                                .HasForeignKey("OrderId");
+                        });
+
+                    b.OwnsOne("VISSTA.Domain.ValueObjects.Money", "DiscountAmount", b1 =>
+                        {
+                            b1.Property<int>("OrderId")
+                                .HasColumnType("int");
+
+                            b1.Property<decimal>("Amount")
+                                .HasPrecision(18, 2)
+                                .HasColumnType("decimal(18,2)")
+                                .HasColumnName("DiscountAmount");
+
+                            b1.Property<string>("Currency")
+                                .IsRequired()
+                                .HasMaxLength(3)
+                                .HasColumnType("nvarchar(3)")
+                                .HasColumnName("DiscountCurrency");
+
+                            b1.HasKey("OrderId");
+
+                            b1.ToTable("Orders");
+
+                            b1.WithOwner()
+                                .HasForeignKey("OrderId");
+                        });
+
                     b.Navigation("Customer");
 
+                    b.Navigation("DiscountAmount")
+                        .IsRequired();
+
                     b.Navigation("ShippingAddress")
+                        .IsRequired();
+
+                    b.Navigation("SubtotalAmount")
                         .IsRequired();
 
                     b.Navigation("TotalAmount")

@@ -56,16 +56,25 @@ public sealed class CheckoutController(
             return View(await BuildCheckoutModelAsync(cart, model, cancellationToken));
         }
 
-        var orderId = await mediator.Send(new PlaceOrderCommand(
-            currentUser.UserId,
-            currentUser.SessionId,
-            shippingAddress.Street,
-            shippingAddress.City,
-            shippingAddress.Governorate,
-            shippingAddress.PostalCode,
-            shippingAddress.Country,
-            model.PaymentToken,
-            model.CouponCode), cancellationToken);
+        int orderId;
+        try
+        {
+            orderId = await mediator.Send(new PlaceOrderCommand(
+                currentUser.UserId,
+                currentUser.SessionId,
+                shippingAddress.Street,
+                shippingAddress.City,
+                shippingAddress.Governorate,
+                shippingAddress.PostalCode,
+                shippingAddress.Country,
+                model.PaymentToken,
+                model.CouponCode), cancellationToken);
+        }
+        catch (InvalidOperationException ex)
+        {
+            ModelState.AddModelError(string.Empty, ex.Message);
+            return View(await BuildCheckoutModelAsync(cart, model, cancellationToken));
+        }
 
         return RedirectToAction(nameof(Success), new { id = orderId });
     }

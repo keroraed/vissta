@@ -29,6 +29,7 @@ public sealed class PlaceOrderCommandValidator : AbstractValidator<PlaceOrderCom
 public sealed class OrderHandlers(
     IOrderRepository orders,
     ICartRepository carts,
+    IRepository<Coupon> coupons,
     IPaymentService payments,
     IUnitOfWork unitOfWork) :
     IRequestHandler<PlaceOrderCommand, int>,
@@ -56,6 +57,22 @@ public sealed class OrderHandlers(
 
             order.AddItem(item.ProductId, item.Quantity, item.Product.Price);
             item.Product.RecordSale(item.Quantity);
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.CouponCode))
+        {
+            var normalizedCode = request.CouponCode.Trim().ToUpperInvariant();
+            var coupon = coupons.Query()
+                .FirstOrDefault(x => x.Code == normalizedCode);
+
+            if (coupon is null || !coupon.IsValid(DateTime.UtcNow))
+            {
+                throw new InvalidOperationException("Coupon code is invalid or expired.");
+            }
+
+            var discount = coupon.CalculateDiscount(order.SubtotalAmount.Amount);
+            order.ApplyDiscount(coupon.Code, discount);
+            coupon.MarkUsed();
         }
 
         var payment = await payments.ChargeAsync(order.TotalAmount.Amount, order.TotalAmount.Currency, request.PaymentToken, cancellationToken);
@@ -103,7 +120,7 @@ public sealed class OrderHandlers(
         var history = orders.QueryReadOnly()
             .Where(x => x.CustomerId == request.CustomerId)
             .OrderByDescending(x => x.CreatedAt)
-            .Select(x => new OrderSummaryDto(x.Id, x.Status.ToString(), x.TotalAmount.Amount, x.TotalAmount.Currency, x.CreatedAt))
+            .Select(x => new OrderSummaryDto(x.Id, x.Status.ToString(), x.TotalAmount.Amount, x.TotalAmount.Currency, x.CreatedAt, x.DiscountAmount.Amount, x.CouponCode))
             .ToList();
 
         return Task.FromResult<IReadOnlyCollection<OrderSummaryDto>>(history);
@@ -119,7 +136,7 @@ public sealed class OrderHandlers(
 
         var history = query
             .OrderByDescending(x => x.CreatedAt)
-            .Select(x => new OrderSummaryDto(x.Id, x.Status.ToString(), x.TotalAmount.Amount, x.TotalAmount.Currency, x.CreatedAt))
+            .Select(x => new OrderSummaryDto(x.Id, x.Status.ToString(), x.TotalAmount.Amount, x.TotalAmount.Currency, x.CreatedAt, x.DiscountAmount.Amount, x.CouponCode))
             .ToList();
 
         return Task.FromResult<IReadOnlyCollection<OrderSummaryDto>>(history);
@@ -136,6 +153,8 @@ public sealed class OrderHandlers(
         return new OrderDetailDto(
             order.Id,
             order.Status.ToString(),
+            order.SubtotalAmount.Amount,
+            order.DiscountAmount.Amount,
             order.TotalAmount.Amount,
             order.TotalAmount.Currency,
             order.CreatedAt,
@@ -143,6 +162,7 @@ public sealed class OrderHandlers(
             order.ShippingAddress.City,
             order.ShippingAddress.Governorate,
             order.ShippingAddress.PostalCode,
+            order.CouponCode,
             order.OrderItems.Select(x =>
             {
                 var imageUrl = x.Product?.Images
