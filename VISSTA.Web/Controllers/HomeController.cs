@@ -14,6 +14,7 @@ public sealed class HomeController(IMediator mediator) : Controller
         return View(new HomeViewModel(featured, collection.Take(4).ToList()));
     }
 
+    [HttpGet("/About")]
     public IActionResult About() => View();
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

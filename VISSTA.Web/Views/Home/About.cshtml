@@ -1,8 +1,96 @@
-@model object
-<main class="simple-page">
-    <section class="shell page-hero">
-        <p class="eyebrow">About VISSTA</p>
-        <h1 class="section-title">Old money restraint, modern Egyptian ease.</h1>
-        <p class="section-copy">VISSTA creates elevated essentials with clean silhouettes, premium fabrics, and a refusal to shout.</p>
+<main class="about-page">
+    <section class="about-hero">
+        <div class="about-hero-media">
+            <div class="hero-gradient hero-gradient-left"></div>
+            <div class="about-image-shade"></div>
+            <img src="~/assets/hero-section-aboutPage.webp" alt="VISSTA editorial campaign" class="about-hero-image" />
+        </div>
+        <div class="shell about-hero-shell">
+            <div class="about-hero-copy reveal-group">
+                <p class="eyebrow reveal">ABOUT US</p>
+                <h1 class="display reveal"><span>Timeless style.</span><br /><span>Built on purpose.</span></h1>
+                <p class="lead reveal">Vissta is more than clothing - it's a commitment to timeless design, premium quality, and intentional living. We create elevated essentials that are made to be worn, and made to last.</p>
+                <a class="button button-primary reveal" href="#our-story">Our Story</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="about-story" id="our-story">
+        <div class="section-rule"></div>
+        <div class="about-story-spotlight"></div>
+        <div class="shell about-story-inner reveal-group">
+            <p class="eyebrow reveal">OUR STORY</p>
+            <h2 class="section-title reveal">Simplicity. Quality. Timelessness.</h2>
+            <p class="serif-statement reveal">Founded with a passion for thoughtful design and enduring quality, Vissta began with a simple idea: create pieces that elevate the everyday.</p>
+            <p class="section-copy reveal">Every garment is crafted with meticulous attention to detail and a dedication to the finest materials. Because true style isn't about trends - it's about pieces that stay with you.</p>
+        </div>
+    </section>
+
+    <section class="about-values">
+        <div class="shell">
+            <div class="about-section-head reveal-group">
+                <p class="eyebrow reveal">WHAT WE VALUE</p>
+                <h2 class="section-title reveal">Quiet principles. Lasting pieces.</h2>
+            </div>
+            <div class="about-value-grid reveal-group">
+                <article class="glassmorphism about-value-card reveal">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z"></path><path d="m8.5 9.5 3.5 2 3.5-2"></path><path d="M12 12v5"></path></svg>
+                    <h3>QUALITY OVER EVERYTHING</h3>
+                    <p>We use premium materials and expert craftsmanship in every stitch.</p>
+                </article>
+                <article class="glassmorphism about-value-card reveal">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+                    <h3>TIMELESS DESIGN</h3>
+                    <p>Clean silhouettes and refined details that never go out of style.</p>
+                </article>
+                <article class="glassmorphism about-value-card reveal">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path><path d="m9 12 2 2 4-4"></path></svg>
+                    <h3>MADE TO LAST</h3>
+                    <p>Built with durability in mind, so you can wear it for years to come.</p>
+                </article>
+                <article class="glassmorphism about-value-card reveal">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21a8 8 0 0 0-16 0"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    <h3>CUSTOMER FIRST</h3>
+                    <p>Our community is at the heart of everything we do.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="about-statistics">
+        <div class="shell about-statistics-layout">
+            <div class="about-stat-grid reveal-group">
+                <article class="glassmorphism about-stat-card reveal">
+                    <strong>10K+</strong>
+                    <span>Happy Customers</span>
+                </article>
+                <article class="glassmorphism about-stat-card reveal">
+                    <strong>50+</strong>
+                    <span>Premium Products</span>
+                </article>
+                <article class="glassmorphism about-stat-card reveal">
+                    <strong>25+</strong>
+                    <span>Countries Shipped</span>
+                </article>
+                <article class="glassmorphism about-stat-card reveal">
+                    <strong>4.8/5</strong>
+                    <span>Customer Rating</span>
+                </article>
+            </div>
+            <div class="about-stat-image reveal">
+                <img src="~/assets/statistics-image.webp" alt="VISSTA premium garment detail" loading="lazy" />
+            </div>
+        </div>
+    </section>
+
+    <section class="about-promise">
+        <div class="section-rule"></div>
+        <div class="about-promise-spotlight"></div>
+        <div class="shell about-promise-inner reveal-group">
+            <p class="eyebrow reveal">OUR PROMISE</p>
+            <h2 class="section-title reveal">Quality over everything.</h2>
+            <p class="section-copy reveal">We believe in fewer, better pieces. Thoughtfully made with integrity in every stitch, designed to become part of your story.</p>
+            <a class="button button-primary reveal" asp-controller="Shop" asp-action="Index">Learn More About Our Products</a>
+        </div>
     </section>
 </main>

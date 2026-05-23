@@ -28,7 +28,7 @@
             <a class="brand" asp-controller="Home" asp-action="Index">VISSTA</a>
 
             <div class="nav-links">
-                <a asp-controller="Shop" asp-action="Index" asp-route-sort="newest">NEW ARRIVALS</a>
+                <a asp-controller="Home" asp-action="Index">HOME</a>
                 <a asp-controller="Shop" asp-action="Index">COLLECTIONS</a>
                 <a asp-controller="Home" asp-action="About">ABOUT</a>
             </div>
@@ -66,7 +66,7 @@
 
         <div class="mobile-menu" data-mobile-menu aria-hidden="true">
             <button class="mobile-close" type="button" data-mobile-close aria-label="Close menu">×</button>
-            <a asp-controller="Shop" asp-action="Index" asp-route-sort="newest">NEW ARRIVALS</a>
+            <a asp-controller="Home" asp-action="Index">HOME</a>
             <a asp-controller="Shop" asp-action="Index">COLLECTIONS</a>
             <a asp-controller="Home" asp-action="About">ABOUT</a>
             @if (User.Identity?.IsAuthenticated == true)
