@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using VISSTA.Application.Features.Coupons;
 using VISSTA.Application.Features.Orders;
 using VISSTA.Application.Features.Products;
+using VISSTA.Application.Features.Reviews;
 using VISSTA.Web.Models;
 
 namespace VISSTA.Web.Controllers.Admin;
@@ -19,6 +20,7 @@ public sealed class DashboardController(IMediator mediator) : Controller
         var orders = await mediator.Send(new GetAllOrdersQuery(), cancellationToken);
         var products = await mediator.Send(new GetProductListQuery(null, null, null, null, null, true), cancellationToken);
         var coupons = await mediator.Send(new GetCouponsQuery(), cancellationToken);
+        var reviews = await mediator.Send(new GetRecentReviewsQuery(6), cancellationToken);
         var discounts = orders.Sum(x => x.DiscountAmount);
         var model = new AdminDashboardViewModel(
             orders.Sum(x => x.TotalAmount),
@@ -31,7 +33,8 @@ public sealed class DashboardController(IMediator mediator) : Controller
             coupons.Count(x => x.IsValid),
             orders.Take(6).ToList(),
             products.OrderByDescending(x => x.IsFeatured).ThenByDescending(x => x.Stock).Take(5).ToList(),
-            products.Where(x => x.Stock <= 5).OrderBy(x => x.Stock).Take(5).ToList());
+            products.Where(x => x.Stock <= 5).OrderBy(x => x.Stock).Take(5).ToList(),
+            reviews);
 
         return View("~/Views/Admin/Dashboard/Index.cshtml", model);
     }

@@ -80,6 +80,15 @@ public sealed record CouponDto(
     bool IsActive,
     bool IsValid);
 
-public sealed record ReviewDto(int Id, string CustomerName, int Rating, string Body, DateTime CreatedAt);
+public sealed record ReviewDto(
+    int Id,
+    string CustomerName,
+    int Rating,
+    string Body,
+    DateTime CreatedAt,
+    int ProductId = 0,
+    string ProductName = "",
+    string ProductSlug = "",
+    bool IsApproved = false);
 
 public sealed record SearchSuggestionDto(int Id, string Name, string Slug, string ImageUrl, decimal Price);

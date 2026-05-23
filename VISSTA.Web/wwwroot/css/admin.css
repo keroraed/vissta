@@ -58,6 +58,18 @@ a.admin-table-row:hover { border-color: rgba(212,175,115,.3); background: rgba(1
 .admin-detail-list div { display: grid; gap: 5px; padding-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,.07); }
 .admin-detail-list span { color: rgba(245,241,234,.58); text-transform: uppercase; letter-spacing: .13em; font-size: .62rem; font-weight: 700; }
 .admin-detail-list strong { color: var(--cream); font-weight: 500; overflow-wrap: anywhere; }
+.admin-review-list { display: grid; gap: 12px; }
+.admin-dashboard-reviews { margin-top: 22px; }
+.admin-dashboard-reviews .admin-review-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.admin-review-card { display: grid; gap: 12px; padding: 14px; border: 1px solid rgba(255,255,255,.07); border-radius: 8px; background: rgba(4,11,21,.28); }
+.admin-review-card strong { display: block; margin-top: 4px; color: var(--cream); font-weight: 600; }
+.admin-review-card small { display: block; margin-top: 5px; color: rgba(245,241,234,.55); font-size: .76rem; }
+.admin-review-card p { margin: 0; color: rgba(245,241,234,.72); line-height: 1.6; }
+.admin-stars { color: var(--gold); letter-spacing: .08em; }
+.admin-review-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.admin-review-actions a, .admin-review-actions button, .admin-review-actions span { color: var(--gold); text-transform: uppercase; letter-spacing: .13em; font-size: .64rem; font-weight: 700; }
+.admin-review-actions button { border: 0; background: transparent; padding: 0; cursor: pointer; }
+.admin-review-actions form { margin: 0; }
 .admin-form { max-width: 760px; padding: 24px; display: grid; gap: 16px; }
 .admin-form textarea { min-height: 180px; resize: vertical; }
 .admin-form-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 8px; }
@@ -83,4 +95,5 @@ a.admin-table-row:hover { border-color: rgba(212,175,115,.3); background: rgba(1
   .admin-row-actions, .admin-form-actions { justify-content: stretch; flex-direction: column; align-items: stretch; }
   .admin-product-row .admin-row-actions { justify-self: stretch; }
   .admin-form-actions .button { width: 100%; }
+  .admin-dashboard-reviews .admin-review-list { grid-template-columns: 1fr; }
 }

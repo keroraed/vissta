@@ -38,7 +38,7 @@
             </form>
         </div>
     </section>
-    <section class="shell reviews">
+    <section class="shell reviews" id="reviews">
         <h2 class="compact-title">Reviews</h2>
         @foreach (var review in Model.Product.Reviews)
         {
@@ -47,8 +47,24 @@
         <form asp-controller="Review" asp-action="Submit" method="post" class="review-form glassmorphism">
             <input type="hidden" name="productId" value="@Model.Product.Id" />
             <input type="hidden" name="slug" value="@Model.Product.Slug" />
-            <select name="rating"><option value="5">5 stars</option><option value="4">4 stars</option><option value="3">3 stars</option><option value="2">2 stars</option><option value="1">1 star</option></select>
-            <textarea name="body" placeholder="Share your thoughts"></textarea>
+            <div class="review-form-head">
+                <span>Rate this piece</span>
+                <div class="star-rating" aria-label="Rating">
+                    @for (var rating = 5; rating >= 1; rating--)
+                    {
+                        if (rating == 5)
+                        {
+                            <input type="radio" id="rating-@rating" name="rating" value="@rating" checked />
+                        }
+                        else
+                        {
+                            <input type="radio" id="rating-@rating" name="rating" value="@rating" />
+                        }
+                        <label for="rating-@rating" aria-label="@rating star@(rating == 1 ? "" : "s")">☆</label>
+                    }
+                </div>
+            </div>
+            <textarea name="body" placeholder="Share your thoughts" required maxlength="1500"></textarea>
             <button class="button button-primary" type="submit">Submit Review</button>
         </form>
     </section>

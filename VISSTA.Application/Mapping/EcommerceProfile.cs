@@ -11,6 +11,8 @@ public sealed class EcommerceProfile : Profile
         CreateMap<Category, CategoryDto>();
         CreateMap<ProductImage, ProductImageDto>();
         CreateMap<Review, ReviewDto>()
-            .ForCtorParam("CustomerName", opt => opt.MapFrom(src => src.Customer == null ? "VISSTA Customer" : src.Customer.FullName));
+            .ForCtorParam("CustomerName", opt => opt.MapFrom(src => src.Customer == null ? "VISSTA Customer" : src.Customer.FullName))
+            .ForCtorParam("ProductName", opt => opt.MapFrom(src => src.Product == null ? "VISSTA Product" : src.Product.Name))
+            .ForCtorParam("ProductSlug", opt => opt.MapFrom(src => src.Product == null ? string.Empty : src.Product.Slug));
     }
 }

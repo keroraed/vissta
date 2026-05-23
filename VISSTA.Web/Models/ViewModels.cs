@@ -133,7 +133,8 @@ public sealed record AdminDashboardViewModel(
     int ActiveCouponsCount,
     IReadOnlyCollection<OrderSummaryDto> RecentOrders,
     IReadOnlyCollection<ProductListDto> TopProducts,
-    IReadOnlyCollection<ProductListDto> LowStockProducts);
+    IReadOnlyCollection<ProductListDto> LowStockProducts,
+    IReadOnlyCollection<ReviewDto> RecentReviews);
 
 public sealed record AdminProductsViewModel(IReadOnlyCollection<ProductListDto> Products);
 

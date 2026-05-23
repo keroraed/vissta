@@ -228,5 +228,14 @@ public sealed class ProductHandlers(IProductRepository products, IUnitOfWork uni
         x.IsActive,
         x.IsFeatured,
         x.Images.OrderByDescending(i => i.IsPrimary).ThenBy(i => i.DisplayOrder).Select(i => new ProductImageDto(i.Id, i.Url, i.IsPrimary, i.DisplayOrder)).ToList(),
-        x.Reviews.Where(r => r.IsApproved).Select(r => new ReviewDto(r.Id, r.Customer == null ? "VISSTA Customer" : r.Customer.FullName, r.Rating, r.Body, r.CreatedAt)).ToList());
+        x.Reviews.Where(r => r.IsApproved).Select(r => new ReviewDto(
+            r.Id,
+            r.Customer == null ? "VISSTA Customer" : r.Customer.FullName,
+            r.Rating,
+            r.Body,
+            r.CreatedAt,
+            r.ProductId,
+            x.Name,
+            x.Slug,
+            r.IsApproved)).ToList());
 }
