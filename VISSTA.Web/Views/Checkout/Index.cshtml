@@ -46,9 +46,28 @@
                 <button class="button button-primary" type="submit">Confirm Order</button>
             </form>
         </div>
-        <aside class="cart-summary glassmorphism">
-            <p>@Model.Cart.Count item(s)</p>
-            <strong>@Model.Cart.Subtotal.ToString("N0") @Model.Cart.Currency</strong>
+        <aside class="cart-summary checkout-summary glassmorphism">
+            <div class="summary-head">
+                <p>Order summary</p>
+                <span>@Model.Cart.Count item(s)</span>
+            </div>
+            <div class="checkout-summary-items">
+                @foreach (var item in Model.Cart.Items)
+                {
+                    <article class="summary-item">
+                        <img src="@item.ImageUrl" alt="@item.ProductName" />
+                        <div>
+                            <h3>@item.ProductName</h3>
+                            <p>Qty @item.Quantity</p>
+                        </div>
+                        <strong>@item.LineTotal.ToString("N0") @item.Currency</strong>
+                    </article>
+                }
+            </div>
+            <div class="summary-row">
+                <span>Subtotal</span>
+                <strong>@Model.Cart.Subtotal.ToString("N0") @Model.Cart.Currency</strong>
+            </div>
         </aside>
     </section>
 </main>

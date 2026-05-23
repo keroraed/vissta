@@ -29,8 +29,6 @@
 
             <div class="nav-links">
                 <a asp-controller="Shop" asp-action="Index" asp-route-sort="newest">NEW ARRIVALS</a>
-                <a asp-controller="Shop" asp-action="Index" asp-route-search="polo">POLOS</a>
-                <a asp-controller="Shop" asp-action="Index" asp-route-search="tee">TEES</a>
                 <a asp-controller="Shop" asp-action="Index">COLLECTIONS</a>
                 <a asp-controller="Home" asp-action="About">ABOUT</a>
             </div>
@@ -69,8 +67,6 @@
         <div class="mobile-menu" data-mobile-menu aria-hidden="true">
             <button class="mobile-close" type="button" data-mobile-close aria-label="Close menu">×</button>
             <a asp-controller="Shop" asp-action="Index" asp-route-sort="newest">NEW ARRIVALS</a>
-            <a asp-controller="Shop" asp-action="Index" asp-route-search="polo">POLOS</a>
-            <a asp-controller="Shop" asp-action="Index" asp-route-search="tee">TEES</a>
             <a asp-controller="Shop" asp-action="Index">COLLECTIONS</a>
             <a asp-controller="Home" asp-action="About">ABOUT</a>
             @if (User.Identity?.IsAuthenticated == true)
@@ -103,8 +99,6 @@
                 <div>
                     <h4>Shop</h4>
                     <a asp-controller="Shop" asp-action="Index">New Arrivals</a>
-                    <a asp-controller="Shop" asp-action="Index" asp-route-search="polo">Polos & Knits</a>
-                    <a asp-controller="Shop" asp-action="Index" asp-route-search="tee">T-Shirts</a>
                     <a asp-controller="Shop" asp-action="Index" asp-route-search="shirt">Shirts</a>
                 </div>
                 <div>
