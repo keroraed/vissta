@@ -3,9 +3,25 @@
     Layout = "_AdminLayout";
 }
 <section class="admin-head"><h1>Products</h1><a class="button button-primary" href="/admin/products/create">Create</a></section>
+@if (TempData["ProductAdminMessage"] is string message)
+{
+    <div class="form-summary admin-message">@message</div>
+}
 <div class="table-list">
 @foreach (var product in Model.Products)
 {
-    <article class="table-row glassmorphism"><span>@product.Name</span><span>@product.Price.ToString("N0") @product.Currency</span><span>Stock @product.Stock</span><a href="/admin/products/edit/@product.Id">Edit</a></article>
+    <article class="table-row glassmorphism admin-product-row">
+        <img class="admin-product-image" src="@product.ImageUrl" alt="@product.Name" loading="lazy" />
+        <span>@product.Name</span>
+        <span>@product.Price.ToString("N0") @product.Currency</span>
+        <span>Stock @product.Stock</span>
+        <div class="admin-row-actions">
+            <a class="text-button" href="/admin/products/edit/@product.Id">Edit</a>
+            <form method="post" action="/admin/products/delete/@product.Id">
+                @Html.AntiForgeryToken()
+                <button class="text-button" type="submit">Delete</button>
+            </form>
+        </div>
+    </article>
 }
 </div>

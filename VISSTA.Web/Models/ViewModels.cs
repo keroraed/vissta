@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 using VISSTA.Application.DTOs;
 using VISSTA.Domain.Enums;
 
@@ -142,6 +143,9 @@ public sealed class AdminProductFormViewModel
     public string Name { get; set; } = string.Empty;
     public string Slug { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
+    public IReadOnlyCollection<ProductImageDto> ExistingImages { get; set; } = Array.Empty<ProductImageDto>();
+    public int[] RemoveImageIds { get; set; } = Array.Empty<int>();
+    public IFormFile[]? ImageFiles { get; set; }
     public decimal Price { get; set; }
     public int Stock { get; set; }
     public string Sku { get; set; } = string.Empty;

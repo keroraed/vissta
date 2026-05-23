@@ -13,8 +13,8 @@ public sealed record GetProductByIdQuery(int Id) : IRequest<ProductDetailDto?>;
 public sealed record GetProductBySlugQuery(string Slug) : IRequest<ProductDetailDto?>;
 public sealed record SearchProductsQuery(string Term) : IRequest<IReadOnlyCollection<SearchSuggestionDto>>;
 
-public sealed record CreateProductCommand(string Name, string Slug, string Description, decimal Price, int Stock, string Sku, int CategoryId, bool IsFeatured) : IRequest<int>;
-public sealed record UpdateProductCommand(int Id, string Name, string Slug, string Description, decimal Price, int CategoryId, bool IsActive, bool IsFeatured) : IRequest<bool>;
+public sealed record CreateProductCommand(string Name, string Slug, string Description, decimal Price, int Stock, string Sku, int CategoryId, bool IsFeatured, IReadOnlyCollection<string> ImageUrls) : IRequest<int>;
+public sealed record UpdateProductCommand(int Id, string Name, string Slug, string Description, decimal Price, int CategoryId, bool IsActive, bool IsFeatured, IReadOnlyCollection<string> ImageUrls, IReadOnlyCollection<int> RemoveImageIds) : IRequest<bool>;
 public sealed record DeleteProductCommand(int Id) : IRequest<bool>;
 public sealed record UpdateStockCommand(int ProductId, int Stock) : IRequest<bool>;
 
@@ -27,6 +27,7 @@ public sealed class CreateProductCommandValidator : AbstractValidator<CreateProd
         RuleFor(x => x.Price).GreaterThan(0);
         RuleFor(x => x.Stock).GreaterThanOrEqualTo(0);
         RuleFor(x => x.Sku).NotEmpty().MaximumLength(64);
+        RuleFor(x => x.CategoryId).InclusiveBetween(1, 3);
     }
 }
 
@@ -37,6 +38,7 @@ public sealed class UpdateProductCommandValidator : AbstractValidator<UpdateProd
         RuleFor(x => x.Id).GreaterThan(0);
         RuleFor(x => x.Name).NotEmpty().MaximumLength(160);
         RuleFor(x => x.Price).GreaterThan(0);
+        RuleFor(x => x.CategoryId).InclusiveBetween(1, 3);
     }
 }
 
@@ -139,6 +141,11 @@ public sealed class ProductHandlers(IProductRepository products, IUnitOfWork uni
         var product = new Product(request.Name, request.Slug, request.Description, new Money(request.Price), request.Stock, request.Sku, request.CategoryId, request.IsFeatured);
         await products.AddAsync(product, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
+        if (request.ImageUrls.Count > 0)
+        {
+            product.ReplaceImages(request.ImageUrls);
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+        }
         return product.Id;
     }
 
@@ -151,6 +158,16 @@ public sealed class ProductHandlers(IProductRepository products, IUnitOfWork uni
         }
 
         product.Update(request.Name, request.Slug, request.Description, new Money(request.Price), request.CategoryId, request.IsActive, request.IsFeatured);
+        if (request.ImageUrls.Count > 0 || request.RemoveImageIds.Count > 0)
+        {
+            var removeSet = request.RemoveImageIds.Count > 0 ? request.RemoveImageIds.ToHashSet() : null;
+            var remainingUrls = product.Images
+                .Where(image => removeSet is null || !removeSet.Contains(image.Id))
+                .OrderBy(image => image.DisplayOrder)
+                .Select(image => image.Url);
+            var updatedUrls = remainingUrls.Concat(request.ImageUrls).ToList();
+            product.ReplaceImages(updatedUrls);
+        }
         await unitOfWork.SaveChangesAsync(cancellationToken);
         return true;
     }
@@ -163,7 +180,7 @@ public sealed class ProductHandlers(IProductRepository products, IUnitOfWork uni
             return false;
         }
 
-        products.Remove(product);
+        product.Deactivate();
         await unitOfWork.SaveChangesAsync(cancellationToken);
         return true;
     }
@@ -201,6 +218,7 @@ public sealed class ProductHandlers(IProductRepository products, IUnitOfWork uni
         x.Price.Currency,
         x.Stock,
         x.SKU,
+        x.CategoryId,
         x.Category == null ? "VISSTA" : x.Category.Name,
         x.Images.OrderByDescending(i => i.IsPrimary).ThenBy(i => i.DisplayOrder).Select(i => new ProductImageDto(i.Id, i.Url, i.IsPrimary, i.DisplayOrder)).ToList(),
         x.Reviews.Where(r => r.IsApproved).Select(r => new ReviewDto(r.Id, r.Customer == null ? "VISSTA Customer" : r.Customer.FullName, r.Rating, r.Body, r.CreatedAt)).ToList());

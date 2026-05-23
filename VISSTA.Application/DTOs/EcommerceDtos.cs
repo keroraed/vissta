@@ -22,6 +22,7 @@ public sealed record ProductDetailDto(
     string Currency,
     int Stock,
     string Sku,
+    int CategoryId,
     string CategoryName,
     IReadOnlyCollection<ProductImageDto> Images,
     IReadOnlyCollection<ReviewDto> Reviews);
@@ -32,7 +33,17 @@ public sealed record CartItemDto(int Id, int ProductId, string ProductName, stri
 
 public sealed record CartDto(int Id, IReadOnlyCollection<CartItemDto> Items, decimal Subtotal, string Currency, int Count);
 
-public sealed record OrderSummaryDto(int Id, string Status, decimal TotalAmount, string Currency, DateTime CreatedAt, decimal DiscountAmount = 0, string? CouponCode = null);
+public sealed record OrderSummaryDto(
+    int Id,
+    string Status,
+    decimal TotalAmount,
+    string Currency,
+    DateTime CreatedAt,
+    decimal DiscountAmount = 0,
+    string? CouponCode = null,
+    string CustomerName = "VISSTA Customer",
+    string CustomerPhone = "",
+    int ItemCount = 0);
 
 public sealed record OrderDetailDto(
     int Id,
@@ -47,7 +58,11 @@ public sealed record OrderDetailDto(
     string Governorate,
     string PostalCode,
     string? CouponCode,
-    IReadOnlyCollection<OrderItemDto> Items);
+    IReadOnlyCollection<OrderItemDto> Items,
+    string CustomerId = "",
+    string CustomerName = "VISSTA Customer",
+    string CustomerPhone = "",
+    string Country = "");
 
 public sealed record OrderItemDto(int ProductId, string ProductName, string ImageUrl, int Quantity, decimal UnitPrice, decimal LineTotal);
 

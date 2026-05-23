@@ -4,20 +4,27 @@
 }
 <section class="admin-head">
     <div>
-        <p>@Model.Order.Status</p>
+        <p>@Model.Order.CreatedAt.ToLocalTime().ToString("MMM d, yyyy h:mm tt")</p>
         <h1>Order #@Model.Order.Id</h1>
     </div>
+    <span class="status-pill">@Model.Order.Status</span>
 </section>
 
 <div class="admin-detail-grid">
     <section class="admin-panel glassmorphism">
-        <h2>Order Items</h2>
+        <div class="admin-panel-head">
+            <h2>Order Items</h2>
+            <span class="admin-muted">@Model.Order.Items.Sum(item => item.Quantity) total items</span>
+        </div>
         <div class="admin-product-list">
             @foreach (var item in Model.Order.Items)
             {
                 <article class="admin-product-row">
                     <img src="@item.ImageUrl" alt="@item.ProductName" />
-                    <span>@item.ProductName</span>
+                    <span>
+                        <strong>@item.ProductName</strong>
+                        <small>@item.UnitPrice.ToString("N0") @Model.Order.Currency each</small>
+                    </span>
                     <span>Qty @item.Quantity</span>
                     <strong>@item.LineTotal.ToString("N0") @Model.Order.Currency</strong>
                 </article>
@@ -25,25 +32,36 @@
         </div>
     </section>
 
-    <aside class="admin-panel glassmorphism admin-finance-panel">
-        <h2>Summary</h2>
-        <div class="admin-finance-row"><span>Subtotal</span><strong>@Model.Order.SubtotalAmount.ToString("N0") @Model.Order.Currency</strong></div>
-        <div class="admin-finance-row"><span>Discount</span><strong>-@Model.Order.DiscountAmount.ToString("N0") @Model.Order.Currency</strong></div>
-        @if (!string.IsNullOrWhiteSpace(Model.Order.CouponCode))
-        {
-            <div class="admin-finance-row"><span>Coupon</span><strong>@Model.Order.CouponCode</strong></div>
-        }
-        <div class="admin-finance-row"><span>Total</span><strong>@Model.Order.TotalAmount.ToString("N0") @Model.Order.Currency</strong></div>
-        <div class="summary-note">@Model.Order.Street, @Model.Order.City, @Model.Order.Governorate @Model.Order.PostalCode</div>
-        <form method="post" action="/admin/orders/@Model.Order.Id/status" class="admin-status-form">
-            @Html.AntiForgeryToken()
-            <select name="status">
-                @foreach (var status in Enum.GetValues<VISSTA.Domain.Enums.OrderStatus>())
-                {
-                    <option value="@status" selected="@(Model.Order.Status == status.ToString())">@status</option>
-                }
-            </select>
-            <button class="button button-primary" type="submit">Update Status</button>
-        </form>
-    </aside>
+    <div class="admin-side-stack">
+        <aside class="admin-panel glassmorphism admin-customer-panel">
+            <h2>Customer</h2>
+            <div class="admin-detail-list">
+                <div><span>Name</span><strong>@Model.Order.CustomerName</strong></div>
+                <div><span>Phone</span><strong>@(string.IsNullOrWhiteSpace(Model.Order.CustomerPhone) ? "Not provided" : Model.Order.CustomerPhone)</strong></div>
+                <div><span>Customer ID</span><strong>@Model.Order.CustomerId</strong></div>
+            </div>
+            <div class="summary-note">@Model.Order.Street, @Model.Order.City, @Model.Order.Governorate @Model.Order.PostalCode, @Model.Order.Country</div>
+        </aside>
+
+        <aside class="admin-panel glassmorphism admin-finance-panel">
+            <h2>Summary</h2>
+            <div class="admin-finance-row"><span>Subtotal</span><strong>@Model.Order.SubtotalAmount.ToString("N0") @Model.Order.Currency</strong></div>
+            <div class="admin-finance-row"><span>Discount</span><strong>-@Model.Order.DiscountAmount.ToString("N0") @Model.Order.Currency</strong></div>
+            @if (!string.IsNullOrWhiteSpace(Model.Order.CouponCode))
+            {
+                <div class="admin-finance-row"><span>Coupon</span><strong>@Model.Order.CouponCode</strong></div>
+            }
+            <div class="admin-finance-row admin-finance-total"><span>Total</span><strong>@Model.Order.TotalAmount.ToString("N0") @Model.Order.Currency</strong></div>
+            <form method="post" action="/admin/orders/@Model.Order.Id/status" class="admin-status-form">
+                @Html.AntiForgeryToken()
+                <select name="status">
+                    @foreach (var status in Enum.GetValues<VISSTA.Domain.Enums.OrderStatus>())
+                    {
+                        <option value="@status" selected="@(Model.Order.Status == status.ToString())">@status</option>
+                    }
+                </select>
+                <button class="button button-primary" type="submit">Update Status</button>
+            </form>
+        </aside>
+    </div>
 </div>

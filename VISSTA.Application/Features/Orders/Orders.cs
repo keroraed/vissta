@@ -120,7 +120,17 @@ public sealed class OrderHandlers(
         var history = orders.QueryReadOnly()
             .Where(x => x.CustomerId == request.CustomerId)
             .OrderByDescending(x => x.CreatedAt)
-            .Select(x => new OrderSummaryDto(x.Id, x.Status.ToString(), x.TotalAmount.Amount, x.TotalAmount.Currency, x.CreatedAt, x.DiscountAmount.Amount, x.CouponCode))
+            .Select(x => new OrderSummaryDto(
+                x.Id,
+                x.Status.ToString(),
+                x.TotalAmount.Amount,
+                x.TotalAmount.Currency,
+                x.CreatedAt,
+                x.DiscountAmount.Amount,
+                x.CouponCode,
+                x.Customer == null ? "VISSTA Customer" : x.Customer.FullName,
+                x.Customer == null ? string.Empty : x.Customer.PhoneNumber,
+                x.OrderItems.Sum(item => item.Quantity)))
             .ToList();
 
         return Task.FromResult<IReadOnlyCollection<OrderSummaryDto>>(history);
@@ -136,7 +146,17 @@ public sealed class OrderHandlers(
 
         var history = query
             .OrderByDescending(x => x.CreatedAt)
-            .Select(x => new OrderSummaryDto(x.Id, x.Status.ToString(), x.TotalAmount.Amount, x.TotalAmount.Currency, x.CreatedAt, x.DiscountAmount.Amount, x.CouponCode))
+            .Select(x => new OrderSummaryDto(
+                x.Id,
+                x.Status.ToString(),
+                x.TotalAmount.Amount,
+                x.TotalAmount.Currency,
+                x.CreatedAt,
+                x.DiscountAmount.Amount,
+                x.CouponCode,
+                x.Customer == null ? "VISSTA Customer" : x.Customer.FullName,
+                x.Customer == null ? string.Empty : x.Customer.PhoneNumber,
+                x.OrderItems.Sum(item => item.Quantity)))
             .ToList();
 
         return Task.FromResult<IReadOnlyCollection<OrderSummaryDto>>(history);
@@ -178,6 +198,10 @@ public sealed class OrderHandlers(
                     x.Quantity,
                     x.UnitPrice.Amount,
                     x.UnitPrice.Amount * x.Quantity);
-            }).ToList());
+            }).ToList(),
+            order.CustomerId,
+            order.Customer == null ? "VISSTA Customer" : order.Customer.FullName,
+            order.Customer == null ? string.Empty : order.Customer.PhoneNumber,
+            order.ShippingAddress.Country);
     }
 }

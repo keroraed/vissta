@@ -1,11 +1,57 @@
 @model AdminOrdersViewModel
 @{
     Layout = "_AdminLayout";
+    var totalRevenue = Model.Orders.Sum(order => order.TotalAmount);
+    var totalItems = Model.Orders.Sum(order => order.ItemCount);
+    var statuses = Enum.GetValues<VISSTA.Domain.Enums.OrderStatus>();
 }
-<section class="admin-head"><h1>Orders</h1></section>
-<div class="table-list">
-@foreach (var order in Model.Orders)
-{
-    <a class="table-row glassmorphism" href="/admin/orders/@order.Id"><span>#@order.Id</span><span>@order.Status</span><span>@order.TotalAmount.ToString("N0") @order.Currency</span><span>@order.CreatedAt.ToLocalTime().ToString("MMM d")</span></a>
-}
-</div>
+<section class="admin-head">
+    <div>
+        <p>@(Model.Status?.ToString() ?? "All statuses")</p>
+        <h1>Orders</h1>
+    </div>
+</section>
+
+<section class="admin-metrics admin-order-metrics">
+    <article class="glassmorphism"><span>Orders</span><strong>@Model.Orders.Count</strong></article>
+    <article class="glassmorphism"><span>Revenue</span><strong>@totalRevenue.ToString("N0") EGP</strong></article>
+    <article class="glassmorphism"><span>Items Sold</span><strong>@totalItems</strong></article>
+</section>
+
+<nav class="admin-filter-bar" aria-label="Order filters">
+    <a class="@(Model.Status is null ? "is-active" : null)" href="/admin/orders">All</a>
+    @foreach (var status in statuses)
+    {
+        <a class="@(Model.Status == status ? "is-active" : null)" href="/admin/orders?status=@status">@status</a>
+    }
+</nav>
+
+<section class="admin-panel glassmorphism">
+    <div class="admin-table admin-orders-table">
+        <div class="admin-table-row admin-table-row-head">
+            <span>Order</span>
+            <span>Customer</span>
+            <span>Status</span>
+            <span>Items</span>
+            <span>Total</span>
+            <span>Date</span>
+        </div>
+        @foreach (var order in Model.Orders)
+        {
+            <a class="admin-table-row admin-order-row" href="/admin/orders/@order.Id">
+                <span>#@order.Id</span>
+                <span>
+                    <strong>@order.CustomerName</strong>
+                    @if (!string.IsNullOrWhiteSpace(order.CustomerPhone))
+                    {
+                        <small>@order.CustomerPhone</small>
+                    }
+                </span>
+                <span><span class="status-pill">@order.Status</span></span>
+                <span>@order.ItemCount item@(order.ItemCount == 1 ? "" : "s")</span>
+                <span>@order.TotalAmount.ToString("N0") @order.Currency</span>
+                <span>@order.CreatedAt.ToLocalTime().ToString("MMM d, yyyy h:mm tt")</span>
+            </a>
+        }
+    </div>
+</section>

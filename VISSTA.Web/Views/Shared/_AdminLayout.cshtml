@@ -17,6 +17,7 @@
         <a href="/admin/customers">Customers</a>
     </aside>
     <main class="admin-main">@RenderBody()</main>
+    <script src="~/js/admin-products.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

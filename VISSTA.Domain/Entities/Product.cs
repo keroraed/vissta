@@ -66,6 +66,11 @@ public sealed class Product : Entity, IAggregateRoot
         }
     }
 
+    public void Deactivate()
+    {
+        IsActive = false;
+    }
+
     public void RecordSale(int quantity)
     {
         if (quantity <= 0)
@@ -84,6 +89,23 @@ public sealed class Product : Entity, IAggregateRoot
         if (Stock == 0)
         {
             AddDomainEvent(new ProductStockDepletedEvent(Id, SKU));
+        }
+    }
+
+    public void ReplaceImages(IEnumerable<string> urls)
+    {
+        _images.Clear();
+        var index = 0;
+        foreach (var url in urls)
+        {
+            var trimmed = url.Trim();
+            if (string.IsNullOrWhiteSpace(trimmed))
+            {
+                continue;
+            }
+
+            _images.Add(new ProductImage(Id, trimmed, index == 0, index));
+            index++;
         }
     }
 }
