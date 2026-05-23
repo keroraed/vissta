@@ -35,7 +35,18 @@
     event.preventDefault();
     const form = event.currentTarget;
     const target = document.querySelector('[data-catalog-target]');
-    const url = `${form.action || window.location.pathname}?${new URLSearchParams(new FormData(form)).toString()}`;
+    const action = form.getAttribute('action') || window.location.pathname;
+    const params = new URLSearchParams();
+
+    for (const [key, value] of new FormData(form)) {
+      const trimmed = String(value ?? '').trim();
+      if (trimmed.length > 0) {
+        params.set(key, trimmed);
+      }
+    }
+
+    const query = params.toString();
+    const url = query ? `${action}?${query}` : action;
     const response = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
     if (target) target.innerHTML = await response.text();
     history.replaceState(null, '', url);
