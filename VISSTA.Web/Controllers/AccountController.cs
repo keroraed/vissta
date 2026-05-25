@@ -39,6 +39,12 @@ public sealed class AccountController(
             return View(model);
         }
 
+        var user = await userManager.FindByEmailAsync(model.Email);
+        if (user is not null && await userManager.IsInRoleAsync(user, "Admin"))
+        {
+            return LocalRedirect("/admin");
+        }
+
         return LocalRedirect(model.ReturnUrl ?? "/");
     }
 

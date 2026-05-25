@@ -16,3 +16,15 @@
     });
   });
 })();
+
+document.addEventListener('click', (event) => {
+  const toggle = event.target.closest('[data-customer-toggle]');
+  if (!toggle) return;
+
+  const card = toggle.closest('.admin-review-card');
+  const panel = card?.querySelector('[data-customer-panel]');
+  if (!panel) return;
+
+  const isVisible = panel.classList.toggle('is-visible');
+  toggle.setAttribute('aria-expanded', String(isVisible));
+});

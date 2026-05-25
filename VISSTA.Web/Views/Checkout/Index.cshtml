@@ -15,6 +15,17 @@
                             <strong>@Model.SavedAddress!.Street</strong>
                             <small>@Model.SavedAddress.City, @Model.SavedAddress.Governorate</small>
                             <small>@Model.SavedAddress.PostalCode @Model.SavedAddress.Country</small>
+                            <button
+                                type="button"
+                                class="text-button address-edit"
+                                data-edit-saved-address
+                                data-street="@Model.SavedAddress.Street"
+                                data-city="@Model.SavedAddress.City"
+                                data-governorate="@Model.SavedAddress.Governorate"
+                                data-postal="@Model.SavedAddress.PostalCode"
+                                data-country="@Model.SavedAddress.Country">
+                                Edit
+                            </button>
                         </label>
 
                         <input class="address-radio" id="UseSavedAddressFalse" name="UseSavedAddress" type="radio" value="false" checked="@(!Model.UseSavedAddress)" />
@@ -24,7 +35,7 @@
                             <small>Use this order only.</small>
                         </label>
 
-                        <div class="new-address-fields">
+                        <div class="new-address-fields" data-address-fields>
                             <input asp-for="ShippingAddress.Street" placeholder="Street" />
                             <input asp-for="ShippingAddress.City" placeholder="City" />
                             <input asp-for="ShippingAddress.Governorate" placeholder="Governorate" />

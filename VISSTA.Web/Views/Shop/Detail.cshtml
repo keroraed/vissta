@@ -29,7 +29,7 @@
             <h1 class="section-title">@Model.Product.Name</h1>
             <p class="price">@Model.Product.Price.ToString("N0") @Model.Product.Currency</p>
             <p class="section-copy">@Model.Product.Description</p>
-            <form asp-controller="Cart" asp-action="Add" method="post" data-cart-form class="buy-box glassmorphism buy-box-modern" data-buy-box>
+            <form asp-controller="Cart" asp-action="Add" method="post" data-cart-form data-cart-add class="buy-box glassmorphism buy-box-modern" data-buy-box>
                 <input type="hidden" name="productId" value="@Model.Product.Id" />
                 <div class="buy-control">
                     <span>Size</span>

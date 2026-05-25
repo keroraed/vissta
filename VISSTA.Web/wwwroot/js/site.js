@@ -135,3 +135,74 @@ document.querySelectorAll('[data-buy-box]').forEach((box) => {
     }
   });
 });
+
+document.querySelectorAll('[data-edit-saved-address]').forEach((button) => {
+  button.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const form = button.closest('form');
+    if (!form) return;
+
+    const useSaved = form.querySelector('#UseSavedAddressTrue');
+    const useNew = form.querySelector('#UseSavedAddressFalse');
+    const fields = form.querySelector('[data-address-fields]');
+
+    if (useNew) {
+      useNew.checked = true;
+      useNew.dispatchEvent(new Event('change', { bubbles: true }));
+    } else if (useSaved) {
+      useSaved.checked = false;
+    }
+
+    if (fields) {
+      fields.dataset.prefill = 'true';
+      fields.classList.add('is-visible');
+    }
+
+    const setValue = (name, value) => {
+      const input = form.querySelector(`[name="ShippingAddress.${name}"]`);
+      if (input) input.value = value || '';
+    };
+
+    setValue('Street', button.dataset.street);
+    setValue('City', button.dataset.city);
+    setValue('Governorate', button.dataset.governorate);
+    setValue('PostalCode', button.dataset.postal);
+    setValue('Country', button.dataset.country);
+  });
+});
+
+document.querySelectorAll('[name="UseSavedAddress"]').forEach((radio) => {
+  radio.addEventListener('change', () => {
+    const form = radio.closest('form');
+    if (!form) return;
+    const fields = form.querySelector('[data-address-fields]');
+    if (radio.id === 'UseSavedAddressTrue') {
+      if (fields) {
+        fields.classList.remove('is-visible');
+        delete fields.dataset.prefill;
+      }
+      return;
+    }
+
+    if (!fields) return;
+
+    fields.classList.add('is-visible');
+    if (fields.dataset.prefill === 'true') {
+      delete fields.dataset.prefill;
+      return;
+    }
+
+    const setValue = (name, value) => {
+      const input = form.querySelector(`[name="ShippingAddress.${name}"]`);
+      if (input) input.value = value;
+    };
+
+    setValue('Street', '');
+    setValue('City', '');
+    setValue('Governorate', '');
+    setValue('PostalCode', '');
+    setValue('Country', 'Egypt');
+  });
+});

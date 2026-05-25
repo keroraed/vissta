@@ -31,6 +31,7 @@
                     <p>@review.Body</p>
                     <div class="admin-review-actions">
                         <span class="status-pill">@(review.IsApproved ? "Approved" : "Pending")</span>
+                        <button type="button" class="admin-review-customer-toggle" data-customer-toggle aria-expanded="false">Customer</button>
                         @if (!string.IsNullOrWhiteSpace(review.ProductSlug))
                         {
                             <a href="/shop/@review.ProductSlug" target="_blank" rel="noreferrer">View product</a>
@@ -43,6 +44,11 @@
                                 <button type="submit">Approve</button>
                             </form>
                         }
+                    </div>
+                    <div class="admin-review-customer" data-customer-panel>
+                        <span>Name: @review.CustomerName</span>
+                        <span>Phone: @review.CustomerPhone</span>
+                        <span>Id: @review.CustomerId</span>
                     </div>
                 </article>
             }

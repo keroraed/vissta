@@ -70,6 +70,8 @@ a.admin-table-row:hover { border-color: rgba(212,175,115,.3); background: rgba(1
 .admin-review-actions a, .admin-review-actions button, .admin-review-actions span { color: var(--gold); text-transform: uppercase; letter-spacing: .13em; font-size: .64rem; font-weight: 700; }
 .admin-review-actions button { border: 0; background: transparent; padding: 0; cursor: pointer; }
 .admin-review-actions form { margin: 0; }
+.admin-review-customer { display: none; margin-top: 6px; gap: 6px; padding: 10px; border: 1px dashed rgba(212,175,115,.25); border-radius: 6px; color: rgba(245,241,234,.72); font-size: .76rem; }
+.admin-review-customer.is-visible { display: grid; }
 .admin-form { max-width: 760px; padding: 24px; display: grid; gap: 16px; }
 .admin-form textarea { min-height: 180px; resize: vertical; }
 .admin-size-stock-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }

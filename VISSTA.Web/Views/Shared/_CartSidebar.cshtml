@@ -1,12 +1,51 @@
 @model CartViewModel
-<aside class="cart-sidebar glassmorphism" data-cart-sidebar>
-    <header><h3>Your Cart</h3><button type="button" data-cart-close aria-label="Close cart">x</button></header>
-    @foreach (var item in Model.Cart.Items)
-    {
-        <article class="cart-mini-line">
-            <img src="@item.ImageUrl" alt="@item.ProductName" />
-            <div><strong>@item.ProductName</strong><span>Size @item.Size - @item.Quantity x @item.UnitPrice.ToString("N0") @item.Currency</span></div>
-        </article>
-    }
-    <a class="button button-primary" asp-controller="Cart" asp-action="Index">View Cart</a>
+<aside class="cart-sidebar glassmorphism" data-cart-sidebar aria-hidden="true">
+    <header>
+        <div>
+            <h3>Your Cart</h3>
+            <span class="cart-mini-count" data-cart-mini-count>@Model.Cart.Count item(s)</span>
+        </div>
+        <button type="button" class="cart-close" data-cart-close aria-label="Close cart">x</button>
+    </header>
+    <div class="cart-mini-list" data-cart-sidebar-items>
+        @if (Model.Cart.Count == 0)
+        {
+            <p class="cart-mini-empty">Your cart is empty.</p>
+        }
+        else
+        {
+            @foreach (var item in Model.Cart.Items)
+            {
+                <article class="cart-mini-line">
+                    <img src="@item.ImageUrl" alt="@item.ProductName" />
+                    <div class="cart-mini-info">
+                        <strong>@item.ProductName</strong>
+                        <span>Size @item.Size - @item.UnitPrice.ToString("N0") @item.Currency</span>
+                        <div class="cart-mini-actions">
+                            <form class="mini-qty-form" asp-controller="Cart" asp-action="Update" method="post" data-cart-form data-auto-cart-form>
+                                <input type="hidden" name="cartItemId" value="@item.Id" />
+                                <div class="mini-qty-stepper" role="group" aria-label="Adjust quantity">
+                                    <button type="button" data-mini-qty-minus aria-label="Decrease quantity">-</button>
+                                    <input type="number" name="quantity" min="1" value="@item.Quantity" data-cart-quantity />
+                                    <button type="button" data-mini-qty-plus aria-label="Increase quantity">+</button>
+                                </div>
+                            </form>
+                            <form class="mini-remove-form" asp-controller="Cart" asp-action="Remove" method="post" data-cart-form>
+                                <input type="hidden" name="cartItemId" value="@item.Id" />
+                                <button class="text-button mini-remove" type="submit">Remove</button>
+                            </form>
+                        </div>
+                    </div>
+                </article>
+            }
+        }
+    </div>
+    <div class="cart-mini-footer">
+        <div class="cart-mini-subtotal">
+            <span>Subtotal</span>
+            <strong data-cart-mini-subtotal>@Model.Cart.Subtotal.ToString("N0") @Model.Cart.Currency</strong>
+        </div>
+        <a class="button button-primary" asp-controller="Checkout" asp-action="Index">Checkout</a>
+        <a class="summary-link" asp-controller="Cart" asp-action="Index">View cart</a>
+    </div>
 </aside>

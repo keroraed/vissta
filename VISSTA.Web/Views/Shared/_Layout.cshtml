@@ -1,6 +1,7 @@
 @using MediatR
 @using VISSTA.Application.Features.Cart
 @using VISSTA.Application.Interfaces
+@using VISSTA.Web.Models
 @inject IMediator Mediator
 @inject ICurrentUserService CurrentUser
 @{
@@ -88,6 +89,8 @@
 
     @await Html.PartialAsync("_Notification", new NotificationViewModel(TempData["Message"] as string))
     @RenderBody()
+    <div class="cart-overlay" data-cart-overlay></div>
+    @await Html.PartialAsync("_CartSidebar", new CartViewModel(layoutCart))
 
     <footer class="footer">
         <div class="footer-inner">

@@ -92,6 +92,8 @@ public sealed record ReviewDto(
     int ProductId = 0,
     string ProductName = "",
     string ProductSlug = "",
-    bool IsApproved = false);
+    bool IsApproved = false,
+    string CustomerId = "",
+    string CustomerPhone = "");
 
 public sealed record SearchSuggestionDto(int Id, string Name, string Slug, string ImageUrl, decimal Price);

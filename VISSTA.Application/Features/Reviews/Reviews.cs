@@ -72,7 +72,9 @@ public sealed class ReviewHandlers(IRepository<Review> reviews, IRepository<Cust
                 x.ProductId,
                 x.Product == null ? "VISSTA Product" : x.Product.Name,
                 x.Product == null ? string.Empty : x.Product.Slug,
-                x.IsApproved))
+                x.IsApproved,
+                x.CustomerId,
+                x.Customer == null ? string.Empty : x.Customer.PhoneNumber))
             .ToList();
 
         return Task.FromResult<IReadOnlyCollection<ReviewDto>>(items);
@@ -99,7 +101,9 @@ public sealed class ReviewHandlers(IRepository<Review> reviews, IRepository<Cust
                 x.ProductId,
                 x.Product == null ? "VISSTA Product" : x.Product.Name,
                 x.Product == null ? string.Empty : x.Product.Slug,
-                x.IsApproved))
+                x.IsApproved,
+                x.CustomerId,
+                x.Customer == null ? string.Empty : x.Customer.PhoneNumber))
             .ToList();
 
         return Task.FromResult<IReadOnlyCollection<ReviewDto>>(items);
@@ -125,7 +129,9 @@ public sealed class ReviewHandlers(IRepository<Review> reviews, IRepository<Cust
                 x.ProductId,
                 x.Product == null ? "VISSTA Product" : x.Product.Name,
                 x.Product == null ? string.Empty : x.Product.Slug,
-                x.IsApproved))
+                x.IsApproved,
+                x.CustomerId,
+                x.Customer == null ? string.Empty : x.Customer.PhoneNumber))
             .ToList();
 
         return Task.FromResult<IReadOnlyCollection<ReviewDto>>(items);
