@@ -206,3 +206,95 @@ document.querySelectorAll('[name="UseSavedAddress"]').forEach((radio) => {
     setValue('Country', 'Egypt');
   });
 });
+
+const checkoutForm = document.querySelector('[data-checkout-form]');
+if (checkoutForm) {
+  const couponInput = checkoutForm.querySelector('[data-coupon-input]');
+  const token = checkoutForm.querySelector('input[name="__RequestVerificationToken"]')?.value;
+  const subtotalEl = document.querySelector('[data-summary-subtotal]');
+  const discountRow = document.querySelector('[data-summary-discount-row]');
+  const discountEl = document.querySelector('[data-summary-discount]');
+  const totalEl = document.querySelector('[data-summary-total]');
+  const couponStatus = document.querySelector('[data-summary-coupon-status]');
+
+  const formatMoney = (value, currency) => `${Number(value).toLocaleString()} ${currency}`;
+
+  const resetSummary = () => {
+    if (!subtotalEl || !totalEl) return;
+    const subtotal = Number(subtotalEl.dataset.subtotal || 0);
+    const currency = subtotalEl.dataset.currency || '';
+    totalEl.textContent = formatMoney(subtotal, currency);
+    if (discountRow) {
+      discountRow.classList.add('is-hidden');
+    }
+    couponStatus?.classList.remove('is-visible');
+    if (discountEl) {
+      discountEl.textContent = `-${formatMoney(0, currency)}`;
+    }
+    couponStatus?.classList.remove('is-visible');
+  };
+
+  const applySummary = (data) => {
+    if (!subtotalEl || !totalEl) return;
+    const currency = data.currency || subtotalEl.dataset.currency || '';
+    const discount = Number(data.discountAmount || 0);
+    const total = Number(data.totalAmount || subtotalEl.dataset.subtotal || 0);
+
+    totalEl.textContent = formatMoney(total, currency);
+
+    if (discount > 0 && discountRow && discountEl) {
+      discountRow.classList.remove('is-hidden');
+      discountEl.textContent = `-${formatMoney(discount, currency)}`;
+      couponStatus?.classList.toggle('is-visible', Boolean(data.valid));
+      return;
+    }
+
+    resetSummary();
+  };
+
+  let debounceTimer;
+  let requestId = 0;
+
+  const validateCoupon = async (code) => {
+    if (!code) {
+      resetSummary();
+      return;
+    }
+
+    if (!token) {
+      return;
+    }
+
+    const currentRequest = ++requestId;
+    const response = await fetch('/Checkout/ValidateCoupon', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        RequestVerificationToken: token
+      },
+      body: new URLSearchParams({ couponCode: code })
+    });
+
+    if (!response.ok || currentRequest !== requestId) {
+      return;
+    }
+
+    const data = await response.json();
+    applySummary(data || {});
+  };
+
+  const scheduleValidation = () => {
+    if (!couponInput) return;
+    window.clearTimeout(debounceTimer);
+    debounceTimer = window.setTimeout(() => {
+      validateCoupon(couponInput.value.trim());
+    }, 350);
+  };
+
+  couponInput?.addEventListener('input', scheduleValidation);
+  couponInput?.addEventListener('blur', scheduleValidation);
+
+  if (couponInput?.value) {
+    scheduleValidation();
+  }
+}

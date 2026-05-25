@@ -64,12 +64,12 @@
         }
         else
         {
-            <div class="admin-table">
+            <div class="admin-table admin-stock-table">
                 @foreach (var product in Model.LowStockProducts)
                 {
                     <a class="admin-table-row" href="/admin/products/edit/@product.Id">
+                        <img class="admin-product-image" src="@product.ImageUrl" alt="@product.Name" loading="lazy" />
                         <span>@product.Name</span>
-                        <span>@product.CategoryName</span>
                         <span>@product.Stock left</span>
                     </a>
                 }
@@ -83,7 +83,7 @@
             <a href="/admin/products">Manage</a>
         </div>
         <div class="admin-product-list">
-            @foreach (var product in Model.TopProducts)
+            @foreach (var product in Model.TopProducts.Take(3))
             {
                 <a class="admin-product-row" href="/admin/products/edit/@product.Id">
                     <img src="@product.ImageUrl" alt="@product.Name" />
@@ -109,7 +109,10 @@
             <p class="admin-muted">Moderation</p>
             <h2>Product Reviews</h2>
         </div>
-        <span class="admin-muted">@Model.RecentReviews.Count review@(Model.RecentReviews.Count == 1 ? "" : "s")</span>
+        <div class="admin-panel-actions">
+            <span class="admin-muted">@Model.RecentReviews.Count review@(Model.RecentReviews.Count == 1 ? "" : "s")</span>
+            <a class="text-button" href="/admin/reviews">More</a>
+        </div>
     </div>
     @if (Model.RecentReviews.Count == 0)
     {
@@ -118,7 +121,7 @@
     else
     {
         <div class="admin-review-list">
-            @foreach (var review in Model.RecentReviews)
+            @foreach (var review in Model.RecentReviews.Take(2))
             {
                 var stars = new string('*', review.Rating).PadRight(5, '-');
                 <article class="admin-review-card">

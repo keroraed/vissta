@@ -5,6 +5,7 @@
 .admin-sidebar a:not(.brand):hover { background: rgba(212,175,115,.1); color: var(--gold); transform: translateX(2px); }
 .admin-main { min-width: 0; padding: 40px; }
 .admin-head { display: flex; justify-content: space-between; align-items: center; gap: 24px; margin-bottom: 32px; }
+.admin-head-actions { display: inline-flex; align-items: center; gap: 12px; }
 .admin-head h1 { margin: 0; font-family: var(--font-display); font-size: clamp(2.4rem, 5vw, 3.4rem); line-height: 1; font-weight: 500; }
 .admin-head p { margin: 0 0 10px; color: var(--gold); text-transform: uppercase; letter-spacing: .16em; font-size: .68rem; font-weight: 700; }
 .admin-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-bottom: 32px; }
@@ -20,8 +21,10 @@
 .admin-panel-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 18px; }
 .admin-panel-head h2 { margin: 0; }
 .admin-panel-head a, .admin-row-actions a { color: var(--gold); text-transform: uppercase; letter-spacing: .13em; font-size: .66rem; }
+.admin-panel-actions { display: inline-flex; align-items: center; gap: 14px; }
 .admin-table { display: grid; gap: 10px; }
 .admin-table-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; align-items: center; min-height: 56px; padding: 14px; border: 1px solid rgba(255,255,255,.06); border-radius: 7px; background: rgba(4,11,21,.28); color: rgba(245,241,234,.78); transition: border-color .25s ease, background .25s ease, transform .25s ease; }
+.admin-stock-table .admin-table-row { grid-template-columns: 72px minmax(0, 1fr) auto; }
 a.admin-table-row:hover { border-color: rgba(212,175,115,.3); background: rgba(10,29,55,.52); transform: translateY(-1px); }
 .admin-table-row-head { color: var(--gold); text-transform: uppercase; letter-spacing: .12em; font-size: .64rem; font-weight: 700; background: transparent; border-color: rgba(212,175,115,.12); }
 .admin-coupon-table .admin-table-row { grid-template-columns: 1fr 1fr 1fr 1fr .8fr 1fr; }
@@ -47,7 +50,8 @@ a.admin-table-row:hover { border-color: rgba(212,175,115,.3); background: rgba(1
 .admin-product-metric { display: grid; gap: 4px; }
 .admin-product-label { color: rgba(245,241,234,.55); font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; }
 .admin-product-status { display: grid; gap: 6px; justify-items: start; }
-.admin-message { margin: -16px 0 24px; }
+.admin-message { margin: -16px 0 24px; color: #22c55e; }
+.admin-message.form-summary { color: #22c55e; }
 .admin-finance-panel { display: grid; gap: 16px; }
 .admin-finance-row { display: flex; justify-content: space-between; gap: 18px; align-items: baseline; padding-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,.07); }
 .admin-finance-row span { color: rgba(245,241,234,.62); }

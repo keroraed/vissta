@@ -4,20 +4,27 @@
         <div>
             <p class="eyebrow">Checkout</p>
             <h1 class="section-title">Finish with care.</h1>
-            <form asp-controller="Checkout" asp-action="Confirm" method="post" class="checkout-form checkout-address-form glassmorphism">
+            <form asp-controller="Checkout" asp-action="Confirm" method="post" class="checkout-form checkout-address-form glassmorphism" data-checkout-form>
                 <div asp-validation-summary="ModelOnly" class="form-summary"></div>
                 @if (!(User.Identity?.IsAuthenticated ?? false))
                 {
-                    <label class="field">
-                        <span>Name</span>
-                        <input asp-for="GuestName" placeholder="Full name" />
-                        <span asp-validation-for="GuestName" class="field-error"></span>
-                    </label>
-                    <label class="field">
-                        <span>Email</span>
-                        <input asp-for="GuestEmail" placeholder="you@example.com" />
-                        <span asp-validation-for="GuestEmail" class="field-error"></span>
-                    </label>
+                    <div class="form-grid checkout-inline-fields">
+                        <label class="field">
+                            <span>Name</span>
+                            <input asp-for="GuestName" placeholder="Full name" />
+                            <span asp-validation-for="GuestName" class="field-error"></span>
+                        </label>
+                        <label class="field">
+                            <span>Email</span>
+                            <input asp-for="GuestEmail" placeholder="you@example.com" />
+                            <span asp-validation-for="GuestEmail" class="field-error"></span>
+                        </label>
+                        <label class="field">
+                            <span>Phone</span>
+                            <input asp-for="GuestPhone" placeholder="Phone number" />
+                            <span asp-validation-for="GuestPhone" class="field-error"></span>
+                        </label>
+                    </div>
                 }
                 @if (Model.HasSavedAddress)
                 {
@@ -49,25 +56,62 @@
                         </label>
 
                         <div class="new-address-fields" data-address-fields>
-                            <input asp-for="ShippingAddress.Street" placeholder="Street" />
-                            <input asp-for="ShippingAddress.City" placeholder="City" />
-                            <input asp-for="ShippingAddress.Governorate" placeholder="Governorate" />
-                            <input asp-for="ShippingAddress.PostalCode" placeholder="Postal code" />
-                            <input asp-for="ShippingAddress.Country" placeholder="Country" />
+                            <label class="field">
+                                <span>Street</span>
+                                <input asp-for="ShippingAddress.Street" placeholder="Street" />
+                            </label>
+                            <label class="field">
+                                <span>City</span>
+                                <input asp-for="ShippingAddress.City" placeholder="City" />
+                            </label>
+                            <label class="field">
+                                <span>Governorate</span>
+                                <input asp-for="ShippingAddress.Governorate" placeholder="Governorate" />
+                            </label>
+                            <label class="field">
+                                <span>Postal code</span>
+                                <input asp-for="ShippingAddress.PostalCode" placeholder="Postal code" />
+                            </label>
+                            <label class="field">
+                                <span>Country</span>
+                                <input asp-for="ShippingAddress.Country" placeholder="Country" />
+                            </label>
                         </div>
                     </div>
                 }
                 else
                 {
-                    <input asp-for="ShippingAddress.Street" placeholder="Street" />
-                    <input asp-for="ShippingAddress.City" placeholder="City" />
-                    <input asp-for="ShippingAddress.Governorate" placeholder="Governorate" />
-                    <input asp-for="ShippingAddress.PostalCode" placeholder="Postal code" />
-                    <input asp-for="ShippingAddress.Country" placeholder="Country" />
+                    <div class="form-grid checkout-inline-fields">
+                        <label class="field">
+                            <span>Street</span>
+                            <input asp-for="ShippingAddress.Street" placeholder="Street" />
+                        </label>
+                        <label class="field">
+                            <span>City</span>
+                            <input asp-for="ShippingAddress.City" placeholder="City" />
+                        </label>
+                        <label class="field">
+                            <span>Governorate</span>
+                            <input asp-for="ShippingAddress.Governorate" placeholder="Governorate" />
+                        </label>
+                        <label class="field">
+                            <span>Postal code</span>
+                            <input asp-for="ShippingAddress.PostalCode" placeholder="Postal code" />
+                        </label>
+                        <label class="field">
+                            <span>Country</span>
+                            <input asp-for="ShippingAddress.Country" placeholder="Country" />
+                        </label>
+                    </div>
                 }
-                <input asp-for="CouponCode" placeholder="Coupon code" />
                 <input asp-for="PaymentToken" type="hidden" value="mock" />
-                <button class="button button-primary" type="submit">Confirm Order</button>
+                <div class="checkout-action-row">
+                    <div class="coupon-input-row">
+                        <input asp-for="CouponCode" placeholder="Coupon code" data-coupon-input />
+                        <span class="summary-coupon-status" data-summary-coupon-status aria-hidden="true">&#10003;</span>
+                    </div>
+                    <button class="button button-primary" type="submit">Confirm Order</button>
+                </div>
             </form>
         </div>
         <aside class="cart-summary checkout-summary glassmorphism">
@@ -90,7 +134,15 @@
             </div>
             <div class="summary-row">
                 <span>Subtotal</span>
-                <strong>@Model.Cart.Subtotal.ToString("N0") @Model.Cart.Currency</strong>
+                <strong data-summary-subtotal data-subtotal="@Model.Cart.Subtotal" data-currency="@Model.Cart.Currency">@Model.Cart.Subtotal.ToString("N0") @Model.Cart.Currency</strong>
+            </div>
+            <div class="summary-row is-hidden" data-summary-discount-row>
+                <span>Discount</span>
+                <strong data-summary-discount>-0 @Model.Cart.Currency</strong>
+            </div>
+            <div class="summary-row summary-total">
+                <span>Total</span>
+                <strong data-summary-total>@Model.Cart.Subtotal.ToString("N0") @Model.Cart.Currency</strong>
             </div>
         </aside>
     </section>

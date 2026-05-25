@@ -404,7 +404,20 @@ body.is-cart-open { overflow: hidden; }
 .empty-state { margin-top: 24px; padding: 32px; display: grid; gap: 16px; text-align: center; }
 .empty-state .button { justify-self: center; }
 .checkout-address-form { gap: 18px; border-radius: 8px; }
+.checkout-address-form { display: grid; }
 .checkout-address-form > input { min-height: 50px; }
+.checkout-inline-fields { gap: 16px; }
+.checkout-action-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: end; }
+.checkout-action-row .button { min-height: 50px; }
+.summary-row[data-summary-discount-row] { color: var(--gold); }
+.summary-row[data-summary-discount-row] strong { color: var(--gold); }
+.coupon-input-row { position: relative; display: flex; align-items: center; }
+.coupon-input-row input { width: 100%; }
+.coupon-input-row input { padding-right: 44px; }
+.coupon-input-row .summary-coupon-status { position: absolute; right: 14px; top: 50%; margin-left: 0; transform: translateY(-50%) scale(.9); }
+.summary-coupon-status { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; margin-left: 8px; border-radius: 999px; background: rgba(34, 197, 94, .18); color: #22c55e; font-size: .7rem; line-height: 1; opacity: 0; transform: scale(.9); transition: opacity .2s ease, transform .2s ease; }
+.summary-coupon-status.is-visible { opacity: 1; transform: scale(1); }
+.is-hidden { display: none; }
 .address-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 .address-radio { position: absolute; opacity: 0; pointer-events: none; }
 .address-choice { min-height: 148px; display: grid; align-content: start; gap: 8px; padding: 18px; border: 1px solid rgba(212,175,115,.18); border-radius: 8px; background: rgba(4,11,21,.42); color: rgba(245,241,234,.72); cursor: pointer; transition: transform .24s cubic-bezier(.2,.9,.24,1.18), border-color .24s ease, background .24s ease, box-shadow .24s ease; }
@@ -415,6 +428,7 @@ body.is-cart-open { overflow: hidden; }
 .address-radio:checked + .address-choice { transform: translateY(-2px); border-color: rgba(212,175,115,.62); background: linear-gradient(145deg, rgba(10,29,55,.78), rgba(212,175,115,.11)); box-shadow: 0 18px 46px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.08); }
 .address-radio:focus-visible + .address-choice { outline: 2px solid rgba(212,175,115,.72); outline-offset: 3px; }
 .new-address-fields { grid-column: 1 / -1; display: none; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; padding-top: 4px; }
+.new-address-fields .field { gap: 8px; }
 .new-address-fields.is-visible { display: grid; }
 #UseSavedAddressFalse:checked ~ .new-address-fields { display: grid; }
 .checkout .cart-summary { grid-area: auto; }
@@ -500,6 +514,7 @@ body.is-cart-open { overflow: hidden; }
   .summary-item { grid-template-columns: 52px minmax(0, 1fr); }
   .summary-item strong { grid-column: 2; }
   .form-grid { grid-template-columns: 1fr; }
+  .checkout-action-row { grid-template-columns: 1fr; }
   .auth-card, .profile-summary, .profile-form { padding: 22px; }
   .profile-actions { justify-content: stretch; }
   .profile-actions .button { width: 100%; }

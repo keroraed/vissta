@@ -1,0 +1,30 @@
+@model AdminStockSettingsViewModel
+@{
+    Layout = "_AdminLayout";
+}
+
+<section class="admin-head">
+    <div>
+        <p>Inventory</p>
+        <h1>Stock Settings</h1>
+    </div>
+    <a class="text-button" href="/admin/products">Back to products</a>
+</section>
+
+@if (TempData["SettingsMessage"] is string message)
+{
+    <div class="form-summary admin-message">@message</div>
+}
+
+<form method="post" class="admin-form glassmorphism">
+    @Html.AntiForgeryToken()
+    <label class="field">
+        <span>Low Stock Threshold</span>
+        <input asp-for="LowStockThreshold" type="number" min="1" max="999" />
+        <span asp-validation-for="LowStockThreshold" class="field-error"></span>
+    </label>
+    <p class="admin-muted">Products at or below this number will appear in Stock Watch.</p>
+    <div class="admin-form-actions">
+        <button type="submit" class="button button-primary">Save</button>
+    </div>
+</form>

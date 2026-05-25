@@ -45,6 +45,10 @@
                     <div class="account-dropdown glassmorphism" data-account-dropdown>
                         @if (User.Identity?.IsAuthenticated == true)
                         {
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a href="/admin/dashboard">Dashboard</a>
+                            }
                             <a asp-controller="Account" asp-action="Profile">Profile</a>
                             <a asp-controller="Account" asp-action="Orders">Orders</a>
                             <form asp-controller="Account" asp-action="Logout" method="post">
@@ -72,6 +76,10 @@
             <a asp-controller="Home" asp-action="About">ABOUT</a>
             @if (User.Identity?.IsAuthenticated == true)
             {
+                @if (User.IsInRole("Admin"))
+                {
+                    <a href="/admin/dashboard">DASHBOARD</a>
+                }
                 <a asp-controller="Account" asp-action="Profile">PROFILE</a>
                 <a asp-controller="Account" asp-action="Orders">ORDERS</a>
             }

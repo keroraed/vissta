@@ -19,6 +19,7 @@ public sealed class VISSTADbContext(DbContextOptions<VISSTADbContext> options) :
     public DbSet<Coupon> Coupons => Set<Coupon>();
     public DbSet<NewsletterSubscription> NewsletterSubscriptions => Set<NewsletterSubscription>();
     public DbSet<WishlistItem> WishlistItems => Set<WishlistItem>();
+    public DbSet<AppSetting> AppSettings => Set<AppSetting>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -191,6 +192,15 @@ public sealed class VISSTADbContext(DbContextOptions<VISSTADbContext> options) :
             entity.HasKey(x => x.Id);
             entity.Property(x => x.CustomerId).HasMaxLength(450).IsRequired();
             entity.HasOne(x => x.Product).WithMany().HasForeignKey(x => x.ProductId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<AppSetting>(entity =>
+        {
+            entity.ToTable("AppSettings");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.Key).HasMaxLength(120).IsRequired();
+            entity.Property(x => x.Value).HasMaxLength(400).IsRequired();
+            entity.HasIndex(x => x.Key).IsUnique();
         });
 
         SeedCatalog(builder);

@@ -27,6 +27,9 @@ public sealed class CheckoutViewModel
 
     [EmailAddress]
     public string GuestEmail { get; set; } = string.Empty;
+
+    [Phone, MaxLength(32)]
+    public string GuestPhone { get; set; } = string.Empty;
     public ShippingAddressInput ShippingAddress { get; set; } = new();
     public ShippingAddressInput? SavedAddress { get; set; }
     public bool UseSavedAddress { get; set; }
@@ -142,6 +145,12 @@ public sealed record AdminDashboardViewModel(
     IReadOnlyCollection<ReviewDto> RecentReviews);
 
 public sealed record AdminProductsViewModel(IReadOnlyCollection<ProductListDto> Products);
+
+public sealed class AdminStockSettingsViewModel
+{
+    [Range(1, 999)]
+    public int LowStockThreshold { get; set; } = 5;
+}
 
 public sealed class AdminProductFormViewModel
 {

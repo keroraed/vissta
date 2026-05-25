@@ -15,7 +15,8 @@ namespace VISSTA.Web.Controllers;
 public sealed class CheckoutController(
     IMediator mediator,
     ICurrentUserService currentUser,
-    IRepository<Customer> customers) : Controller
+    IRepository<Customer> customers,
+    IRepository<Coupon> coupons) : Controller
 {
     public async Task<IActionResult> Index(CancellationToken cancellationToken)
     {
@@ -45,6 +46,12 @@ public sealed class CheckoutController(
             if (string.IsNullOrWhiteSpace(model.GuestEmail) || !emailValidator.IsValid(model.GuestEmail))
             {
                 ModelState.AddModelError(nameof(model.GuestEmail), "A valid email is required for guest checkout.");
+            }
+
+            var phoneValidator = new PhoneAttribute();
+            if (string.IsNullOrWhiteSpace(model.GuestPhone) || !phoneValidator.IsValid(model.GuestPhone))
+            {
+                ModelState.AddModelError(nameof(model.GuestPhone), "A valid phone number is required for guest checkout.");
             }
         }
 
@@ -85,7 +92,8 @@ public sealed class CheckoutController(
                 model.PaymentToken,
                 model.CouponCode,
                 currentUser.IsAuthenticated ? null : model.GuestName,
-                currentUser.IsAuthenticated ? null : model.GuestEmail), cancellationToken);
+                currentUser.IsAuthenticated ? null : model.GuestEmail,
+                currentUser.IsAuthenticated ? null : model.GuestPhone), cancellationToken);
         }
         catch (InvalidOperationException ex)
         {
@@ -104,6 +112,64 @@ public sealed class CheckoutController(
     }
 
     public IActionResult Failed() => View();
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ValidateCoupon([FromForm] string? couponCode, CancellationToken cancellationToken)
+    {
+        var cart = await mediator.Send(new GetCartQuery(currentUser.UserId, currentUser.SessionId), cancellationToken);
+        if (cart.Count == 0)
+        {
+            return Json(new
+            {
+                valid = false,
+                discountAmount = 0m,
+                totalAmount = cart.Subtotal,
+                currency = cart.Currency,
+                code = string.Empty
+            });
+        }
+
+        if (string.IsNullOrWhiteSpace(couponCode))
+        {
+            return Json(new
+            {
+                valid = false,
+                discountAmount = 0m,
+                totalAmount = cart.Subtotal,
+                currency = cart.Currency,
+                code = string.Empty
+            });
+        }
+
+        var normalized = couponCode.Trim().ToUpperInvariant();
+        var coupon = await coupons.QueryReadOnly()
+            .FirstOrDefaultAsync(x => x.Code == normalized, cancellationToken);
+
+        if (coupon is null || !coupon.IsValid(DateTime.UtcNow))
+        {
+            return Json(new
+            {
+                valid = false,
+                discountAmount = 0m,
+                totalAmount = cart.Subtotal,
+                currency = cart.Currency,
+                code = string.Empty
+            });
+        }
+
+        var discount = coupon.CalculateDiscount(cart.Subtotal);
+        var total = Math.Max(0, cart.Subtotal - discount);
+
+        return Json(new
+        {
+            valid = true,
+            discountAmount = discount,
+            totalAmount = total,
+            currency = cart.Currency,
+            code = coupon.Code
+        });
+    }
 
     private async Task<CheckoutViewModel> BuildCheckoutModelAsync(CartDto cart, CheckoutViewModel? posted, CancellationToken cancellationToken)
     {

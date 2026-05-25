@@ -19,7 +19,8 @@ public sealed record PlaceOrderCommand(
     string PaymentToken,
     string? CouponCode,
     string? CustomerName,
-    string? CustomerEmail) : IRequest<int>;
+    string? CustomerEmail,
+    string? CustomerPhone) : IRequest<int>;
 public sealed record CancelOrderCommand(int OrderId, string CustomerId) : IRequest<bool>;
 public sealed record UpdateOrderStatusCommand(int OrderId, OrderStatus Status) : IRequest<bool>;
 public sealed record GetOrderHistoryQuery(string CustomerId) : IRequest<IReadOnlyCollection<OrderSummaryDto>>;
@@ -61,13 +62,15 @@ public sealed class OrderHandlers(
                 : request.CustomerId.StartsWith("guest:", StringComparison.OrdinalIgnoreCase)
                     ? "Guest Checkout"
                     : "VISSTA Customer";
-            await customers.AddAsync(new Customer(request.CustomerId, displayName, string.Empty, request.CustomerEmail), cancellationToken);
+            var phone = request.CustomerPhone ?? string.Empty;
+            await customers.AddAsync(new Customer(request.CustomerId, displayName, phone, request.CustomerEmail), cancellationToken);
         }
-        else if (!string.IsNullOrWhiteSpace(request.CustomerName) || !string.IsNullOrWhiteSpace(request.CustomerEmail))
+        else if (!string.IsNullOrWhiteSpace(request.CustomerName) || !string.IsNullOrWhiteSpace(request.CustomerEmail) || !string.IsNullOrWhiteSpace(request.CustomerPhone))
         {
             var name = !string.IsNullOrWhiteSpace(request.CustomerName) ? request.CustomerName : customer.FullName;
             var email = !string.IsNullOrWhiteSpace(request.CustomerEmail) ? request.CustomerEmail : customer.Email;
-            customer.UpdateProfile(name, customer.PhoneNumber, email, customer.DefaultAddress);
+            var phone = !string.IsNullOrWhiteSpace(request.CustomerPhone) ? request.CustomerPhone : customer.PhoneNumber;
+            customer.UpdateProfile(name, phone, email, customer.DefaultAddress);
             customers.Update(customer);
         }
 
@@ -111,7 +114,7 @@ public sealed class OrderHandlers(
             throw new InvalidOperationException(payment.FailureReason ?? "Payment failed.");
         }
 
-        order.ChangeStatus(OrderStatus.Confirmed);
+        order.ChangeStatus(OrderStatus.Pending);
         await orders.AddAsync(order, cancellationToken);
         cart.Clear();
         await unitOfWork.SaveChangesAsync(cancellationToken);
