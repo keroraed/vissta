@@ -36,7 +36,7 @@ public sealed class ReviewHandlers(IRepository<Review> reviews, IRepository<Cust
         var customer = customers.Query().FirstOrDefault(x => x.Id == request.CustomerId);
         if (customer is null)
         {
-            await customers.AddAsync(new Customer(request.CustomerId, request.CustomerName, request.CustomerPhone), cancellationToken);
+            await customers.AddAsync(new Customer(request.CustomerId, request.CustomerName, request.CustomerPhone, string.Empty), cancellationToken);
         }
 
         var review = new Review(request.ProductId, request.CustomerId, request.Rating, request.Body);

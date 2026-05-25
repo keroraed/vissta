@@ -379,10 +379,10 @@ body.is-cart-open { overflow: hidden; }
 .form-section-label { margin: 0; }
 .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 16px; }
 .check { display: inline-flex; align-items: center; gap: 12px; width: fit-content; margin-top: 2px; color: rgba(245,241,234,.82); cursor: pointer; user-select: none; }
-.check input[type="checkbox"] { width: 22px; height: 22px; flex: 0 0 22px; margin: 0; appearance: none; border: 1px solid rgba(212,175,115,.62); border-radius: 5px; background: rgba(4,11,21,.66); display: grid; place-items: center; cursor: pointer; transition: background .2s ease, border-color .2s ease, box-shadow .2s ease; }
-.check input[type="checkbox"]::before { content: ""; width: 7px; height: 12px; border-right: 2px solid var(--navy); border-bottom: 2px solid var(--navy); transform: translateY(-1px) rotate(45deg) scale(0); transform-origin: center; transition: transform .16s ease; }
-.check input[type="checkbox"]:checked { background: var(--gold); border-color: var(--gold); box-shadow: 0 0 0 3px rgba(212,175,115,.14); }
-.check input[type="checkbox"]:checked::before { transform: translateY(-1px) rotate(45deg) scale(1); }
+.check input[type="checkbox"] { width: 20px; height: 20px; flex: 0 0 20px; margin: 0; appearance: none; -webkit-appearance: none; border: 1px solid rgba(212,175,115,.62); border-radius: 5px; background: rgba(4,11,21,.66); display: flex; align-items: center; justify-content: center; cursor: pointer; color: #C9A84C; transition: background .2s ease, border-color .2s ease, box-shadow .2s ease; }
+.check input[type="checkbox"]::after { content: "✓"; font-size: .85rem; line-height: 1; opacity: 0; transition: opacity .16s ease; }
+.check input[type="checkbox"]:checked { border-color: #C9A84C; box-shadow: 0 0 0 3px rgba(201,168,76,.16); }
+.check input[type="checkbox"]:checked::after { opacity: 1; }
 .check input[type="checkbox"]:focus-visible { outline: 2px solid rgba(212,175,115,.72); outline-offset: 3px; }
 .check span { line-height: 1; }
 .table-list { display: grid; gap: 12px; }

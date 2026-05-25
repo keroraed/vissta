@@ -1,6 +1,6 @@
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using VISSTA.Application.DTOs;
 using VISSTA.Application.Features.Cart;
@@ -12,7 +12,6 @@ using VISSTA.Web.Models;
 
 namespace VISSTA.Web.Controllers;
 
-[Authorize]
 public sealed class CheckoutController(
     IMediator mediator,
     ICurrentUserService currentUser,
@@ -34,9 +33,25 @@ public sealed class CheckoutController(
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Confirm(CheckoutViewModel model, CancellationToken cancellationToken)
     {
-        if (currentUser.UserId is null)
+        var customerId = currentUser.UserId ?? $"guest:{currentUser.SessionId}";
+        if (!currentUser.IsAuthenticated)
         {
-            return Challenge();
+            if (string.IsNullOrWhiteSpace(model.GuestName))
+            {
+                ModelState.AddModelError(nameof(model.GuestName), "Name is required for guest checkout.");
+            }
+
+            var emailValidator = new EmailAddressAttribute();
+            if (string.IsNullOrWhiteSpace(model.GuestEmail) || !emailValidator.IsValid(model.GuestEmail))
+            {
+                ModelState.AddModelError(nameof(model.GuestEmail), "A valid email is required for guest checkout.");
+            }
+        }
+
+        if (!ModelState.IsValid)
+        {
+            var cartModel = await mediator.Send(new GetCartQuery(currentUser.UserId, currentUser.SessionId), cancellationToken);
+            return View(await BuildCheckoutModelAsync(cartModel, model, cancellationToken));
         }
 
         var cart = await mediator.Send(new GetCartQuery(currentUser.UserId, currentUser.SessionId), cancellationToken);
@@ -46,7 +61,7 @@ public sealed class CheckoutController(
             return RedirectToAction("Index", "Cart");
         }
 
-        var shippingAddress = model.UseSavedAddress
+        var shippingAddress = model.UseSavedAddress && currentUser.UserId is not null
             ? await GetSavedAddressAsync(currentUser.UserId, cancellationToken)
             : ToAddress(model.ShippingAddress);
 
@@ -60,7 +75,7 @@ public sealed class CheckoutController(
         try
         {
             orderId = await mediator.Send(new PlaceOrderCommand(
-                currentUser.UserId,
+                customerId,
                 currentUser.SessionId,
                 shippingAddress.Street,
                 shippingAddress.City,
@@ -68,7 +83,9 @@ public sealed class CheckoutController(
                 shippingAddress.PostalCode,
                 shippingAddress.Country,
                 model.PaymentToken,
-                model.CouponCode), cancellationToken);
+                model.CouponCode,
+                currentUser.IsAuthenticated ? null : model.GuestName,
+                currentUser.IsAuthenticated ? null : model.GuestEmail), cancellationToken);
         }
         catch (InvalidOperationException ex)
         {
@@ -81,7 +98,8 @@ public sealed class CheckoutController(
 
     public async Task<IActionResult> Success(int id, CancellationToken cancellationToken)
     {
-        var order = await mediator.Send(new GetOrderByIdQuery(id, currentUser.UserId), cancellationToken);
+        var customerId = currentUser.UserId ?? $"guest:{currentUser.SessionId}";
+        var order = await mediator.Send(new GetOrderByIdQuery(id, customerId), cancellationToken);
         return View(new OrderConfirmationViewModel(id, order));
     }
 

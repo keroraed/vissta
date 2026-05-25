@@ -74,6 +74,11 @@ a.admin-table-row:hover { border-color: rgba(212,175,115,.3); background: rgba(1
 .admin-review-customer.is-visible { display: grid; }
 .admin-form { max-width: 760px; padding: 24px; display: grid; gap: 16px; }
 .admin-form textarea { min-height: 180px; resize: vertical; }
+.admin-form [data-image-upload] { width: 100%; min-height: 52px; padding: 10px 12px; border: 1px solid rgba(212,175,115,.32); border-radius: 8px; background: rgba(4,11,21,.42); color: rgba(245,241,234,.78); transition: border-color .2s ease, box-shadow .2s ease, background .2s ease; }
+.admin-form [data-image-upload]::file-selector-button { margin-right: 12px; border: 1px solid rgba(212,175,115,.55); border-radius: 999px; background: rgba(212,175,115,.16); color: var(--gold); padding: 8px 14px; cursor: pointer; text-transform: uppercase; letter-spacing: .12em; font-size: .62rem; font-weight: 700; transition: background .2s ease, color .2s ease, border-color .2s ease; }
+.admin-form [data-image-upload]::file-selector-button:hover { background: var(--gold); color: var(--navy); border-color: var(--gold); }
+.admin-form [data-image-upload]:hover { border-color: rgba(212,175,115,.6); }
+.admin-form [data-image-upload]:focus { outline: 0; border-color: rgba(212,175,115,.78); box-shadow: 0 0 0 3px rgba(212,175,115,.12); background: rgba(4,11,21,.58); }
 .admin-size-stock-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
 .admin-size-stock-grid label { display: grid; gap: 8px; }
 .admin-size-stock-grid span { color: var(--gold); text-transform: uppercase; letter-spacing: .14em; font-size: .62rem; font-weight: 700; }

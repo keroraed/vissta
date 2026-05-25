@@ -8,7 +8,18 @@ using VISSTA.Domain.ValueObjects;
 
 namespace VISSTA.Application.Features.Orders;
 
-public sealed record PlaceOrderCommand(string CustomerId, string SessionId, string Street, string City, string Governorate, string PostalCode, string Country, string PaymentToken, string? CouponCode) : IRequest<int>;
+public sealed record PlaceOrderCommand(
+    string CustomerId,
+    string SessionId,
+    string Street,
+    string City,
+    string Governorate,
+    string PostalCode,
+    string Country,
+    string PaymentToken,
+    string? CouponCode,
+    string? CustomerName,
+    string? CustomerEmail) : IRequest<int>;
 public sealed record CancelOrderCommand(int OrderId, string CustomerId) : IRequest<bool>;
 public sealed record UpdateOrderStatusCommand(int OrderId, OrderStatus Status) : IRequest<bool>;
 public sealed record GetOrderHistoryQuery(string CustomerId) : IRequest<IReadOnlyCollection<OrderSummaryDto>>;
@@ -29,6 +40,7 @@ public sealed class PlaceOrderCommandValidator : AbstractValidator<PlaceOrderCom
 public sealed class OrderHandlers(
     IOrderRepository orders,
     ICartRepository carts,
+    IRepository<Customer> customers,
     IRepository<Coupon> coupons,
     IPaymentService payments,
     IUnitOfWork unitOfWork) :
@@ -41,6 +53,24 @@ public sealed class OrderHandlers(
 {
     public async Task<int> Handle(PlaceOrderCommand request, CancellationToken cancellationToken)
     {
+        var customer = customers.Query().FirstOrDefault(x => x.Id == request.CustomerId);
+        if (customer is null)
+        {
+            var displayName = !string.IsNullOrWhiteSpace(request.CustomerName)
+                ? request.CustomerName
+                : request.CustomerId.StartsWith("guest:", StringComparison.OrdinalIgnoreCase)
+                    ? "Guest Checkout"
+                    : "VISSTA Customer";
+            await customers.AddAsync(new Customer(request.CustomerId, displayName, string.Empty, request.CustomerEmail), cancellationToken);
+        }
+        else if (!string.IsNullOrWhiteSpace(request.CustomerName) || !string.IsNullOrWhiteSpace(request.CustomerEmail))
+        {
+            var name = !string.IsNullOrWhiteSpace(request.CustomerName) ? request.CustomerName : customer.FullName;
+            var email = !string.IsNullOrWhiteSpace(request.CustomerEmail) ? request.CustomerEmail : customer.Email;
+            customer.UpdateProfile(name, customer.PhoneNumber, email, customer.DefaultAddress);
+            customers.Update(customer);
+        }
+
         var cart = await carts.GetActiveCartAsync(request.CustomerId, request.SessionId, cancellationToken);
         if (cart is null || cart.CartItems.Count == 0)
         {

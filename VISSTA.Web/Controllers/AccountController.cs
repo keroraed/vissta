@@ -104,7 +104,7 @@ public sealed class AccountController(
         }
 
         var address = new Address(model.Street, model.City, model.Governorate, model.PostalCode, model.Country);
-        await customers.AddAsync(new Customer(user.Id, model.FullName, model.PhoneNumber, address), cancellationToken);
+        await customers.AddAsync(new Customer(user.Id, model.FullName, model.PhoneNumber, user.Email ?? string.Empty, address), cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
         await signInManager.SignInAsync(user, isPersistent: false);
         return RedirectToAction("Index", "Home");
@@ -161,11 +161,11 @@ public sealed class AccountController(
 
         if (customer is null)
         {
-            await customers.AddAsync(new Customer(user.Id, model.FullName, model.PhoneNumber, address), cancellationToken);
+            await customers.AddAsync(new Customer(user.Id, model.FullName, model.PhoneNumber, user.Email ?? string.Empty, address), cancellationToken);
         }
         else
         {
-            customer.UpdateProfile(model.FullName, model.PhoneNumber, address);
+            customer.UpdateProfile(model.FullName, model.PhoneNumber, user.Email ?? string.Empty, address);
             customers.Update(customer);
         }
 

@@ -13,27 +13,31 @@ public sealed class Customer : Entity, IAggregateRoot
         Id = string.Empty;
         FullName = string.Empty;
         PhoneNumber = string.Empty;
+        Email = string.Empty;
     }
 
-    public Customer(string id, string fullName, string phoneNumber, Address? defaultAddress = null)
+    public Customer(string id, string fullName, string phoneNumber, string email = "", Address? defaultAddress = null)
     {
         Id = id;
         FullName = fullName;
         PhoneNumber = phoneNumber;
+        Email = email;
         DefaultAddress = defaultAddress;
     }
 
     public string Id { get; private set; }
     public string FullName { get; private set; }
     public string PhoneNumber { get; private set; }
+    public string Email { get; private set; }
     public Address? DefaultAddress { get; private set; }
     public IReadOnlyCollection<Order> Orders => _orders.AsReadOnly();
     public IReadOnlyCollection<Review> Reviews => _reviews.AsReadOnly();
 
-    public void UpdateProfile(string fullName, string phoneNumber, Address? defaultAddress)
+    public void UpdateProfile(string fullName, string phoneNumber, string email, Address? defaultAddress)
     {
         FullName = fullName;
         PhoneNumber = phoneNumber;
+        Email = email;
         DefaultAddress = defaultAddress;
     }
 }

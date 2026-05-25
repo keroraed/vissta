@@ -6,6 +6,19 @@
             <h1 class="section-title">Finish with care.</h1>
             <form asp-controller="Checkout" asp-action="Confirm" method="post" class="checkout-form checkout-address-form glassmorphism">
                 <div asp-validation-summary="ModelOnly" class="form-summary"></div>
+                @if (!(User.Identity?.IsAuthenticated ?? false))
+                {
+                    <label class="field">
+                        <span>Name</span>
+                        <input asp-for="GuestName" placeholder="Full name" />
+                        <span asp-validation-for="GuestName" class="field-error"></span>
+                    </label>
+                    <label class="field">
+                        <span>Email</span>
+                        <input asp-for="GuestEmail" placeholder="you@example.com" />
+                        <span asp-validation-for="GuestEmail" class="field-error"></span>
+                    </label>
+                }
                 @if (Model.HasSavedAddress)
                 {
                     <div class="address-options">

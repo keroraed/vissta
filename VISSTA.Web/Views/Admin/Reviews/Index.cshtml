@@ -19,8 +19,9 @@
     else
     {
         <div class="admin-review-list">
-            @foreach (var review in Model.Reviews)
+            @foreach (var item in Model.Reviews)
             {
+                var review = item.Review;
                 var stars = new string('*', review.Rating).PadRight(5, '-');
                 <article class="admin-review-card">
                     <div>
@@ -47,6 +48,7 @@
                     </div>
                     <div class="admin-review-customer" data-customer-panel>
                         <span>Name: @review.CustomerName</span>
+                        <span>Email: @item.CustomerEmail</span>
                         <span>Phone: @review.CustomerPhone</span>
                         <span>Id: @review.CustomerId</span>
                     </div>

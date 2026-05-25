@@ -22,6 +22,11 @@ public sealed record CartViewModel(CartDto Cart);
 public sealed class CheckoutViewModel
 {
     public CartDto Cart { get; set; } = new(0, [], 0, "EGP", 0);
+    [MaxLength(180)]
+    public string GuestName { get; set; } = string.Empty;
+
+    [EmailAddress]
+    public string GuestEmail { get; set; } = string.Empty;
     public ShippingAddressInput ShippingAddress { get; set; } = new();
     public ShippingAddressInput? SavedAddress { get; set; }
     public bool UseSavedAddress { get; set; }
@@ -166,7 +171,9 @@ public sealed record AdminOrderDetailViewModel(OrderDetailDto Order);
 
 public sealed record AdminCustomersViewModel(IReadOnlyCollection<ProfileViewModel> Customers);
 
-public sealed record AdminReviewsViewModel(IReadOnlyCollection<ReviewDto> Reviews);
+public sealed record AdminReviewItemViewModel(ReviewDto Review, string CustomerEmail);
+
+public sealed record AdminReviewsViewModel(IReadOnlyCollection<AdminReviewItemViewModel> Reviews);
 
 public sealed record AdminCouponsViewModel(IReadOnlyCollection<CouponDto> Coupons);
 

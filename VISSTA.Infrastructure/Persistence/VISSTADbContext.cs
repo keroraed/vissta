@@ -76,6 +76,7 @@ public sealed class VISSTADbContext(DbContextOptions<VISSTADbContext> options) :
             entity.HasKey(x => x.Id);
             entity.Property(x => x.FullName).HasMaxLength(180).IsRequired();
             entity.Property(x => x.PhoneNumber).HasMaxLength(32);
+            entity.Property(x => x.Email).HasMaxLength(254);
             entity.OwnsOne(x => x.DefaultAddress, address =>
             {
                 address.Property(x => x.Street).HasMaxLength(240);
