@@ -149,6 +149,10 @@ public sealed class AdminProductFormViewModel
     public IFormFile[]? ImageFiles { get; set; }
     public decimal Price { get; set; }
     public int Stock { get; set; }
+    public int StockS { get; set; }
+    public int StockM { get; set; }
+    public int StockL { get; set; }
+    public int StockXL { get; set; }
     public string Sku { get; set; } = string.Empty;
     public int CategoryId { get; set; } = 2;
     public IReadOnlyCollection<CategoryDto> Categories { get; set; } = Array.Empty<CategoryDto>();
@@ -161,6 +165,8 @@ public sealed record AdminOrdersViewModel(IReadOnlyCollection<OrderSummaryDto> O
 public sealed record AdminOrderDetailViewModel(OrderDetailDto Order);
 
 public sealed record AdminCustomersViewModel(IReadOnlyCollection<ProfileViewModel> Customers);
+
+public sealed record AdminReviewsViewModel(IReadOnlyCollection<ReviewDto> Reviews);
 
 public sealed record AdminCouponsViewModel(IReadOnlyCollection<CouponDto> Coupons);
 

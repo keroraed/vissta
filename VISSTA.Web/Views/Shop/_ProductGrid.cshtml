@@ -11,11 +11,7 @@
             <h4>@product.Name</h4>
             <p>@product.Price.ToString("N0") @product.Currency</p>
         </div>
-        <form asp-controller="Cart" asp-action="Add" method="post" data-cart-form>
-            <input type="hidden" name="productId" value="@product.Id" />
-            <input type="hidden" name="quantity" value="1" />
-            <button class="text-button" type="submit">Quick Add</button>
-        </form>
+        <a class="text-button" asp-controller="Shop" asp-action="Detail" asp-route-slug="@product.Slug">Select Size</a>
     </article>
 }
 </div>

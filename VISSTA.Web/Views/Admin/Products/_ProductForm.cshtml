@@ -26,7 +26,24 @@
     <input id="ImageFiles" name="ImageFiles" type="file" multiple accept="image/*" data-image-upload />
     <div class="admin-image-preview" data-image-preview></div>
     <input asp-for="Price" type="number" step="0.01" placeholder="Price" />
-    <input asp-for="Stock" type="number" placeholder="Stock" />
+    <div class="admin-size-stock-grid">
+        <label>
+            <span>S stock</span>
+            <input asp-for="StockS" type="number" min="0" placeholder="0" />
+        </label>
+        <label>
+            <span>M stock</span>
+            <input asp-for="StockM" type="number" min="0" placeholder="0" />
+        </label>
+        <label>
+            <span>L stock</span>
+            <input asp-for="StockL" type="number" min="0" placeholder="0" />
+        </label>
+        <label>
+            <span>XL stock</span>
+            <input asp-for="StockXL" type="number" min="0" placeholder="0" />
+        </label>
+    </div>
     <select asp-for="CategoryId">
         <option value="">Select category</option>
         @foreach (var category in Model.Categories)

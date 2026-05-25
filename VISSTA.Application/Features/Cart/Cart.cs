@@ -7,7 +7,7 @@ using VISSTA.Domain.Entities;
 namespace VISSTA.Application.Features.Cart;
 
 public sealed record GetCartQuery(string? CustomerId, string SessionId) : IRequest<CartDto>;
-public sealed record AddToCartCommand(string? CustomerId, string SessionId, int ProductId, int Quantity) : IRequest<CartDto>;
+public sealed record AddToCartCommand(string? CustomerId, string SessionId, int ProductId, string Size, int Quantity) : IRequest<CartDto>;
 public sealed record RemoveFromCartCommand(string? CustomerId, string SessionId, int CartItemId) : IRequest<CartDto>;
 public sealed record UpdateCartItemCommand(string? CustomerId, string SessionId, int CartItemId, int Quantity) : IRequest<CartDto>;
 public sealed record ClearCartCommand(string? CustomerId, string SessionId) : IRequest<CartDto>;
@@ -18,11 +18,12 @@ public sealed class AddToCartCommandValidator : AbstractValidator<AddToCartComma
     {
         RuleFor(x => x.SessionId).NotEmpty();
         RuleFor(x => x.ProductId).GreaterThan(0);
+        RuleFor(x => x.Size).NotEmpty().Must(size => size.Trim().ToUpperInvariant() is "S" or "M" or "L" or "XL");
         RuleFor(x => x.Quantity).InclusiveBetween(1, 20);
     }
 }
 
-public sealed class CartHandlers(ICartRepository carts, IRepository<Customer> customers, IUnitOfWork unitOfWork) :
+public sealed class CartHandlers(ICartRepository carts, IProductRepository products, IRepository<Customer> customers, IUnitOfWork unitOfWork) :
     IRequestHandler<GetCartQuery, CartDto>,
     IRequestHandler<AddToCartCommand, CartDto>,
     IRequestHandler<RemoveFromCartCommand, CartDto>,
@@ -38,7 +39,22 @@ public sealed class CartHandlers(ICartRepository carts, IRepository<Customer> cu
     public async Task<CartDto> Handle(AddToCartCommand request, CancellationToken cancellationToken)
     {
         var cart = await GetOrCreateCart(request.CustomerId, request.SessionId, cancellationToken);
-        cart.AddItem(request.ProductId, request.Quantity);
+        var product = await products.GetByIdAsync(request.ProductId, cancellationToken);
+        if (product is null || !product.IsActive)
+        {
+            throw new InvalidOperationException("Product is not available.");
+        }
+
+        var requestedSize = Product.NormalizeSize(request.Size);
+        var existingQuantity = cart.CartItems
+            .Where(x => x.ProductId == request.ProductId && x.Size == requestedSize)
+            .Sum(x => x.Quantity);
+        if (existingQuantity + request.Quantity > product.GetStockForSize(requestedSize))
+        {
+            throw new InvalidOperationException("Selected size does not have enough stock.");
+        }
+
+        cart.AddItem(request.ProductId, request.Size, request.Quantity);
         await unitOfWork.SaveChangesAsync(cancellationToken);
         return ToDto(cart);
     }
@@ -107,7 +123,8 @@ public sealed class CartHandlers(ICartRepository carts, IRepository<Customer> cu
                 price,
                 currency,
                 x.Quantity,
-                price * x.Quantity);
+                price * x.Quantity,
+                x.Size);
         }).ToList();
 
         return new CartDto(cart.Id, items, items.Sum(x => x.LineTotal), items.FirstOrDefault()?.Currency ?? "EGP", items.Sum(x => x.Quantity));

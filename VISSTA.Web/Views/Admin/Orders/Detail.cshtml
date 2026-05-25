@@ -23,7 +23,7 @@
                     <img src="@item.ImageUrl" alt="@item.ProductName" />
                     <span>
                         <strong>@item.ProductName</strong>
-                        <small>@item.UnitPrice.ToString("N0") @Model.Order.Currency each</small>
+                        <small>Size @item.Size - @item.UnitPrice.ToString("N0") @Model.Order.Currency each</small>
                     </span>
                     <span>Qty @item.Quantity</span>
                     <strong>@item.LineTotal.ToString("N0") @Model.Order.Currency</strong>

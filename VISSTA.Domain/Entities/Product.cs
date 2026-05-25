@@ -24,11 +24,11 @@ public sealed class Product : Entity, IAggregateRoot
         Slug = slug;
         Description = description;
         Price = price;
-        Stock = stock;
         SKU = sku;
         CategoryId = categoryId;
         IsActive = true;
         IsFeatured = isFeatured;
+        SetSizeStocks(stock, 0, 0, 0);
     }
 
     public int Id { get; private set; }
@@ -37,6 +37,10 @@ public sealed class Product : Entity, IAggregateRoot
     public string Description { get; private set; }
     public Money Price { get; private set; }
     public int Stock { get; private set; }
+    public int StockS { get; private set; }
+    public int StockM { get; private set; }
+    public int StockL { get; private set; }
+    public int StockXL { get; private set; }
     public string SKU { get; private set; }
     public bool IsActive { get; private set; }
     public bool IsFeatured { get; private set; }
@@ -59,28 +63,70 @@ public sealed class Product : Entity, IAggregateRoot
 
     public void UpdateStock(int stock)
     {
-        Stock = stock;
+        SetSizeStocks(stock, 0, 0, 0);
+    }
+
+    public void SetSizeStocks(int stockS, int stockM, int stockL, int stockXL)
+    {
+        if (stockS < 0 || stockM < 0 || stockL < 0 || stockXL < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(stockS));
+        }
+
+        StockS = stockS;
+        StockM = stockM;
+        StockL = stockL;
+        StockXL = stockXL;
+        Stock = stockS + stockM + stockL + stockXL;
         if (Stock <= 0)
         {
             AddDomainEvent(new ProductStockDepletedEvent(Id, SKU));
         }
     }
 
+    public int GetStockForSize(string size) => NormalizeSize(size) switch
+    {
+        "S" => StockS,
+        "M" => StockM,
+        "L" => StockL,
+        "XL" => StockXL,
+        _ => 0
+    };
+
     public void Deactivate()
     {
         IsActive = false;
     }
 
-    public void RecordSale(int quantity)
+    public void RecordSale(int quantity, string size)
     {
         if (quantity <= 0)
         {
             throw new ArgumentOutOfRangeException(nameof(quantity));
         }
 
-        if (Stock < quantity)
+        var normalizedSize = NormalizeSize(size);
+        if (GetStockForSize(normalizedSize) < quantity)
         {
             throw new InvalidOperationException("Insufficient stock.");
+        }
+
+        switch (normalizedSize)
+        {
+            case "S":
+                StockS -= quantity;
+                break;
+            case "M":
+                StockM -= quantity;
+                break;
+            case "L":
+                StockL -= quantity;
+                break;
+            case "XL":
+                StockXL -= quantity;
+                break;
+            default:
+                throw new InvalidOperationException("Invalid size.");
         }
 
         Stock -= quantity;
@@ -90,6 +136,12 @@ public sealed class Product : Entity, IAggregateRoot
         {
             AddDomainEvent(new ProductStockDepletedEvent(Id, SKU));
         }
+    }
+
+    public static string NormalizeSize(string size)
+    {
+        var normalized = size.Trim().ToUpperInvariant();
+        return normalized is "S" or "M" or "L" or "XL" ? normalized : throw new ArgumentOutOfRangeException(nameof(size));
     }
 
     public void ReplaceImages(IEnumerable<string> urls)

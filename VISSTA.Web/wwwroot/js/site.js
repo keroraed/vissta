@@ -76,3 +76,62 @@ document.querySelectorAll('[data-pdp-gallery]').forEach((gallery) => {
 
   applyState();
 });
+
+document.querySelectorAll('[data-review-carousel]').forEach((carousel) => {
+  const section = carousel.closest('.reviews');
+  const previous = section?.querySelector('[data-review-prev]');
+  const next = section?.querySelector('[data-review-next]');
+
+  const scrollByCard = (direction) => {
+    const card = carousel.querySelector('.review-card');
+    const distance = card ? card.getBoundingClientRect().width + 16 : carousel.clientWidth * 0.85;
+    carousel.scrollBy({ left: direction * distance, behavior: 'smooth' });
+  };
+
+  previous?.addEventListener('click', () => scrollByCard(-1));
+  next?.addEventListener('click', () => scrollByCard(1));
+});
+
+document.querySelectorAll('[data-buy-box]').forEach((box) => {
+  const quantity = box.querySelector('[data-buy-quantity]');
+  const note = box.querySelector('[data-size-stock-note]');
+  const minus = box.querySelector('[data-qty-minus]');
+  const plus = box.querySelector('[data-qty-plus]');
+
+  const clampQuantity = () => {
+    const max = Number(quantity?.max || 1);
+    const current = Number(quantity?.value || 1);
+    if (quantity) {
+      quantity.value = String(Math.min(Math.max(current, 1), max));
+    }
+  };
+
+  box.querySelectorAll('[data-size-option]').forEach((option) => {
+    option.addEventListener('change', () => {
+      const stock = Number(option.dataset.stock || 0);
+      box.classList.add('is-size-selected');
+      box.querySelector('[data-quantity-control]')?.setAttribute('aria-hidden', 'false');
+      if (quantity) {
+        quantity.max = String(stock);
+        quantity.value = '1';
+      }
+      if (note) {
+        note.textContent = `${stock} available in size ${option.value}.`;
+      }
+    });
+  });
+
+  minus?.addEventListener('click', () => {
+    if (quantity) {
+      quantity.value = String(Number(quantity.value || 1) - 1);
+      clampQuantity();
+    }
+  });
+
+  plus?.addEventListener('click', () => {
+    if (quantity) {
+      quantity.value = String(Number(quantity.value || 1) + 1);
+      clampQuantity();
+    }
+  });
+});

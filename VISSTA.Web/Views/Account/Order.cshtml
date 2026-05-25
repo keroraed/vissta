@@ -34,7 +34,7 @@
             {
                 <article class="glassmorphism table-row order-detail-row">
                     <img class="order-item-image" src="@item.ImageUrl" alt="@item.ProductName" loading="lazy" />
-                    <span>@item.ProductName</span>
+                    <span>@item.ProductName<br /><small>Size @item.Size</small></span>
                     <span>Qty @item.Quantity</span>
                     <span>@item.UnitPrice.ToString("N0") @Model.Currency</span>
                     <span>@item.LineTotal.ToString("N0") @Model.Currency</span>

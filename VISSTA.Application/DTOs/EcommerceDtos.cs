@@ -2,6 +2,8 @@ namespace VISSTA.Application.DTOs;
 
 public sealed record ProductImageDto(int Id, string Url, bool IsPrimary, int DisplayOrder);
 
+public sealed record ProductSizeStockDto(string Size, int Stock);
+
 public sealed record ProductListDto(
     int Id,
     string Name,
@@ -27,12 +29,13 @@ public sealed record ProductDetailDto(
     string CategoryName,
     bool IsActive,
     bool IsFeatured,
+    IReadOnlyCollection<ProductSizeStockDto> SizeStocks,
     IReadOnlyCollection<ProductImageDto> Images,
     IReadOnlyCollection<ReviewDto> Reviews);
 
 public sealed record CategoryDto(int Id, string Name, string Slug, int? ParentCategoryId);
 
-public sealed record CartItemDto(int Id, int ProductId, string ProductName, string Slug, string ImageUrl, decimal UnitPrice, string Currency, int Quantity, decimal LineTotal);
+public sealed record CartItemDto(int Id, int ProductId, string ProductName, string Slug, string ImageUrl, decimal UnitPrice, string Currency, int Quantity, decimal LineTotal, string Size = "");
 
 public sealed record CartDto(int Id, IReadOnlyCollection<CartItemDto> Items, decimal Subtotal, string Currency, int Count);
 
@@ -67,7 +70,7 @@ public sealed record OrderDetailDto(
     string CustomerPhone = "",
     string Country = "");
 
-public sealed record OrderItemDto(int ProductId, string ProductName, string ImageUrl, int Quantity, decimal UnitPrice, decimal LineTotal);
+public sealed record OrderItemDto(int ProductId, string ProductName, string ImageUrl, int Quantity, decimal UnitPrice, decimal LineTotal, string Size = "");
 
 public sealed record CouponDto(
     int Id,

@@ -41,9 +41,9 @@ public sealed class Order : Entity, IAggregateRoot
     public string? CouponCode { get; private set; }
     public DateTime CreatedAt { get; private set; }
 
-    public void AddItem(int productId, int quantity, Money unitPrice)
+    public void AddItem(int productId, string size, int quantity, Money unitPrice)
     {
-        _orderItems.Add(new OrderItem(productId, quantity, unitPrice));
+        _orderItems.Add(new OrderItem(productId, size, quantity, unitPrice));
         RecalculateTotal();
     }
 

@@ -47,6 +47,10 @@ public sealed class VISSTADbContext(DbContextOptions<VISSTADbContext> options) :
             entity.Property(x => x.SKU).HasMaxLength(64).IsRequired();
             entity.HasIndex(x => x.SKU).IsUnique();
             entity.Property(x => x.Stock).IsRequired();
+            entity.Property(x => x.StockS).IsRequired().HasDefaultValue(0);
+            entity.Property(x => x.StockM).IsRequired().HasDefaultValue(0);
+            entity.Property(x => x.StockL).IsRequired().HasDefaultValue(0);
+            entity.Property(x => x.StockXL).IsRequired().HasDefaultValue(0);
             entity.Property(x => x.IsActive).HasDefaultValue(true);
             entity.OwnsOne(x => x.Price, money =>
             {
@@ -122,6 +126,7 @@ public sealed class VISSTADbContext(DbContextOptions<VISSTADbContext> options) :
         {
             entity.ToTable("OrderItems");
             entity.HasKey(x => x.Id);
+            entity.Property(x => x.Size).HasMaxLength(8).IsRequired().HasDefaultValue("M");
             entity.OwnsOne(x => x.UnitPrice, money =>
             {
                 money.Property(x => x.Amount).HasColumnName("UnitPrice").HasPrecision(18, 2);
@@ -145,6 +150,7 @@ public sealed class VISSTADbContext(DbContextOptions<VISSTADbContext> options) :
         {
             entity.ToTable("CartItems");
             entity.HasKey(x => x.Id);
+            entity.Property(x => x.Size).HasMaxLength(8).IsRequired().HasDefaultValue("M");
             entity.HasOne(x => x.Cart).WithMany(x => x.CartItems).HasForeignKey(x => x.CartId);
             entity.HasOne(x => x.Product).WithMany().HasForeignKey(x => x.ProductId).OnDelete(DeleteBehavior.Restrict);
         });
@@ -219,6 +225,10 @@ public sealed class VISSTADbContext(DbContextOptions<VISSTADbContext> options) :
             x.Slug,
             x.Description,
             x.Stock,
+            StockS = x.Stock,
+            StockM = 0,
+            StockL = 0,
+            StockXL = 0,
             x.SKU,
             x.CategoryId,
             x.IsActive,

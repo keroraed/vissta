@@ -8,11 +8,13 @@ public sealed class OrderItem : Entity
     private OrderItem()
     {
         UnitPrice = Money.Zero();
+        Size = string.Empty;
     }
 
-    public OrderItem(int productId, int quantity, Money unitPrice)
+    public OrderItem(int productId, string size, int quantity, Money unitPrice)
     {
         ProductId = productId;
+        Size = Product.NormalizeSize(size);
         Quantity = quantity;
         UnitPrice = unitPrice;
     }
@@ -22,6 +24,7 @@ public sealed class OrderItem : Entity
     public Order? Order { get; private set; }
     public int ProductId { get; private set; }
     public Product? Product { get; private set; }
+    public string Size { get; private set; }
     public int Quantity { get; private set; }
     public Money UnitPrice { get; private set; }
 }

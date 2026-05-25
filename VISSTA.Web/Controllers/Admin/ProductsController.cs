@@ -53,7 +53,7 @@ public sealed class ProductsController(IMediator mediator, IWebHostEnvironment e
         try
         {
             var imageUrls = await SaveImagesAsync(model.ImageFiles, cancellationToken);
-            await mediator.Send(new CreateProductCommand(model.Name, model.Slug, model.Description, model.Price, model.Stock, model.Sku, model.CategoryId, model.IsFeatured, imageUrls), cancellationToken);
+            await mediator.Send(new CreateProductCommand(model.Name, model.Slug, model.Description, model.Price, model.StockS, model.StockM, model.StockL, model.StockXL, model.Sku, model.CategoryId, model.IsFeatured, imageUrls), cancellationToken);
             return RedirectToAction(nameof(Index));
         }
         catch (ValidationException ex)
@@ -88,6 +88,10 @@ public sealed class ProductsController(IMediator mediator, IWebHostEnvironment e
             ExistingImages = product.Images,
             Price = product.Price,
             Stock = product.Stock,
+            StockS = product.SizeStocks.FirstOrDefault(x => x.Size == "S")?.Stock ?? 0,
+            StockM = product.SizeStocks.FirstOrDefault(x => x.Size == "M")?.Stock ?? 0,
+            StockL = product.SizeStocks.FirstOrDefault(x => x.Size == "L")?.Stock ?? 0,
+            StockXL = product.SizeStocks.FirstOrDefault(x => x.Size == "XL")?.Stock ?? 0,
             Sku = product.Sku,
             CategoryId = product.CategoryId,
             Categories = categories,
@@ -118,7 +122,7 @@ public sealed class ProductsController(IMediator mediator, IWebHostEnvironment e
         {
             var imageUrls = await SaveImagesAsync(model.ImageFiles, cancellationToken);
             await mediator.Send(new UpdateProductCommand(id, model.Name, model.Slug, model.Description, model.Price, model.CategoryId, model.IsActive, model.IsFeatured, imageUrls, model.RemoveImageIds ?? Array.Empty<int>()), cancellationToken);
-            await mediator.Send(new UpdateStockCommand(id, model.Stock), cancellationToken);
+            await mediator.Send(new UpdateStockCommand(id, model.StockS, model.StockM, model.StockL, model.StockXL), cancellationToken);
             return RedirectToAction(nameof(Index));
         }
         catch (ValidationException ex)

@@ -6,11 +6,13 @@ public sealed class CartItem : Entity
 {
     private CartItem()
     {
+        Size = string.Empty;
     }
 
-    public CartItem(int productId, int quantity)
+    public CartItem(int productId, string size, int quantity)
     {
         ProductId = productId;
+        Size = Product.NormalizeSize(size);
         UpdateQuantity(quantity);
     }
 
@@ -19,6 +21,7 @@ public sealed class CartItem : Entity
     public Cart? Cart { get; private set; }
     public int ProductId { get; private set; }
     public Product? Product { get; private set; }
+    public string Size { get; private set; }
     public int Quantity { get; private set; }
 
     public void UpdateQuantity(int quantity)

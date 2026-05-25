@@ -25,12 +25,13 @@ public sealed class Cart : Entity, IAggregateRoot
     public IReadOnlyCollection<CartItem> CartItems => _cartItems.AsReadOnly();
     public DateTime CreatedAt { get; private set; }
 
-    public void AddItem(int productId, int quantity)
+    public void AddItem(int productId, string size, int quantity)
     {
-        var item = _cartItems.FirstOrDefault(x => x.ProductId == productId);
+        var normalizedSize = Product.NormalizeSize(size);
+        var item = _cartItems.FirstOrDefault(x => x.ProductId == productId && x.Size == normalizedSize);
         if (item is null)
         {
-            _cartItems.Add(new CartItem(productId, quantity));
+            _cartItems.Add(new CartItem(productId, normalizedSize, quantity));
             return;
         }
 

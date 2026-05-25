@@ -55,8 +55,8 @@ public sealed class OrderHandlers(
                 continue;
             }
 
-            order.AddItem(item.ProductId, item.Quantity, item.Product.Price);
-            item.Product.RecordSale(item.Quantity);
+            order.AddItem(item.ProductId, item.Size, item.Quantity, item.Product.Price);
+            item.Product.RecordSale(item.Quantity, item.Size);
         }
 
         if (!string.IsNullOrWhiteSpace(request.CouponCode))
@@ -197,7 +197,8 @@ public sealed class OrderHandlers(
                     imageUrl,
                     x.Quantity,
                     x.UnitPrice.Amount,
-                    x.UnitPrice.Amount * x.Quantity);
+                    x.UnitPrice.Amount * x.Quantity,
+                    x.Size);
             }).ToList(),
             order.CustomerId,
             order.Customer == null ? "VISSTA Customer" : order.Customer.FullName,

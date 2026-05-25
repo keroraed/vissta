@@ -22,4 +22,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <Target Name="EFMigrateOnRun" BeforeTargets="Run">
+    <Exec Command="dotnet ef database update --project &quot;$(MSBuildProjectDirectory)\..\VISSTA.Infrastructure&quot; --startup-project &quot;$(MSBuildProjectDirectory)&quot;" />
+  </Target>
+
+  <Target Name="EFMigrateOnPublish" AfterTargets="Publish">
+    <Exec Command="dotnet ef database update --project &quot;$(MSBuildProjectDirectory)\..\VISSTA.Infrastructure&quot; --startup-project &quot;$(MSBuildProjectDirectory)&quot;" />
+  </Target>
+
 </Project>

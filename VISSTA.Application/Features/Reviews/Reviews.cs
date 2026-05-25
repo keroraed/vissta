@@ -10,6 +10,7 @@ public sealed record SubmitReviewCommand(int ProductId, string CustomerId, strin
 public sealed record ApproveReviewCommand(int ReviewId) : IRequest<bool>;
 public sealed record GetProductReviewsQuery(int ProductId) : IRequest<IReadOnlyCollection<ReviewDto>>;
 public sealed record GetRecentReviewsQuery(int Count = 8, bool IncludePending = true) : IRequest<IReadOnlyCollection<ReviewDto>>;
+public sealed record GetReviewListQuery(bool IncludePending = true) : IRequest<IReadOnlyCollection<ReviewDto>>;
 
 public sealed class SubmitReviewCommandValidator : AbstractValidator<SubmitReviewCommand>
 {
@@ -27,7 +28,8 @@ public sealed class ReviewHandlers(IRepository<Review> reviews, IRepository<Cust
     IRequestHandler<SubmitReviewCommand, int>,
     IRequestHandler<ApproveReviewCommand, bool>,
     IRequestHandler<GetProductReviewsQuery, IReadOnlyCollection<ReviewDto>>,
-    IRequestHandler<GetRecentReviewsQuery, IReadOnlyCollection<ReviewDto>>
+    IRequestHandler<GetRecentReviewsQuery, IReadOnlyCollection<ReviewDto>>,
+    IRequestHandler<GetReviewListQuery, IReadOnlyCollection<ReviewDto>>
 {
     public async Task<int> Handle(SubmitReviewCommand request, CancellationToken cancellationToken)
     {
@@ -88,6 +90,32 @@ public sealed class ReviewHandlers(IRepository<Review> reviews, IRepository<Cust
             .OrderBy(x => x.IsApproved)
             .ThenByDescending(x => x.CreatedAt)
             .Take(request.Count)
+            .Select(x => new ReviewDto(
+                x.Id,
+                x.Customer == null ? "VISSTA Customer" : x.Customer.FullName,
+                x.Rating,
+                x.Body,
+                x.CreatedAt,
+                x.ProductId,
+                x.Product == null ? "VISSTA Product" : x.Product.Name,
+                x.Product == null ? string.Empty : x.Product.Slug,
+                x.IsApproved))
+            .ToList();
+
+        return Task.FromResult<IReadOnlyCollection<ReviewDto>>(items);
+    }
+
+    public Task<IReadOnlyCollection<ReviewDto>> Handle(GetReviewListQuery request, CancellationToken cancellationToken)
+    {
+        var query = reviews.QueryReadOnly();
+        if (!request.IncludePending)
+        {
+            query = query.Where(x => x.IsApproved);
+        }
+
+        var items = query
+            .OrderBy(x => x.IsApproved)
+            .ThenByDescending(x => x.CreatedAt)
             .Select(x => new ReviewDto(
                 x.Id,
                 x.Customer == null ? "VISSTA Customer" : x.Customer.FullName,

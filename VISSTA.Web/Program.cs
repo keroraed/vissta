@@ -66,9 +66,6 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-if (app.Configuration.GetValue("Database:InitializeOnStartup", false))
-{
-    await DbInitializer.InitializeAsync(app.Services);
-}
+await DbInitializer.InitializeAsync(app.Services);
 
 app.Run();

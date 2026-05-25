@@ -16,9 +16,9 @@ public sealed class CartController(IMediator mediator, ICurrentUserService curre
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Add(int productId, int quantity, CancellationToken cancellationToken)
+    public async Task<IActionResult> Add(int productId, string size, int quantity, CancellationToken cancellationToken)
     {
-        var cart = await mediator.Send(new AddToCartCommand(currentUser.UserId, currentUser.SessionId, productId, quantity), cancellationToken);
+        var cart = await mediator.Send(new AddToCartCommand(currentUser.UserId, currentUser.SessionId, productId, size, quantity), cancellationToken);
         return Request.Headers.XRequestedWith == "XMLHttpRequest" ? Json(cart) : RedirectToAction(nameof(Index));
     }
 
@@ -40,8 +40,8 @@ public sealed class CartController(IMediator mediator, ICurrentUserService curre
 
     [HttpPost("/api/cart/add")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ApiAdd([FromForm] int productId, [FromForm] int quantity, CancellationToken cancellationToken) =>
-        Json(await mediator.Send(new AddToCartCommand(currentUser.UserId, currentUser.SessionId, productId, quantity), cancellationToken));
+    public async Task<IActionResult> ApiAdd([FromForm] int productId, [FromForm] string size, [FromForm] int quantity, CancellationToken cancellationToken) =>
+        Json(await mediator.Send(new AddToCartCommand(currentUser.UserId, currentUser.SessionId, productId, size, quantity), cancellationToken));
 
     [HttpPost("/api/cart/remove")]
     [ValidateAntiForgeryToken]

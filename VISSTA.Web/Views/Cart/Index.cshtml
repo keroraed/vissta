@@ -29,7 +29,7 @@
                         <div class="cart-line-main">
                             <div>
                                 <a class="cart-line-title" asp-controller="Shop" asp-action="Detail" asp-route-slug="@item.Slug">@item.ProductName</a>
-                                <p>@item.UnitPrice.ToString("N0") @item.Currency</p>
+                                <p>@item.UnitPrice.ToString("N0") @item.Currency - Size @item.Size</p>
                             </div>
                             <form class="cart-quantity-form" asp-controller="Cart" asp-action="Update" method="post" data-cart-form data-auto-cart-form>
                                 <input type="hidden" name="cartItemId" value="@item.Id" />
