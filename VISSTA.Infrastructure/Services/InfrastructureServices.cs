@@ -1,6 +1,8 @@
 using MailKit.Net.Smtp;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
 using MimeKit;
+using MimeKit.Text;
 using VISSTA.Application.Interfaces;
 using VISSTA.Domain.Enums;
 using VISSTA.Domain.ValueObjects;
@@ -8,7 +10,7 @@ using VISSTA.Infrastructure.Settings;
 
 namespace VISSTA.Infrastructure.Services;
 
-public sealed class SmtpEmailService(IOptions<EmailSettings> options) : IEmailService
+public sealed class SmtpEmailService(IOptions<EmailSettings> options, IWebHostEnvironment env) : IEmailService
 {
     private readonly EmailSettings _settings = options.Value;
 
@@ -20,6 +22,45 @@ public sealed class SmtpEmailService(IOptions<EmailSettings> options) : IEmailSe
 
     public Task SendPasswordResetAsync(string toEmail, string resetLink, CancellationToken cancellationToken = default) =>
         SendAsync(toEmail, "Reset your VISSTA password", $"Reset your password: {resetLink}", cancellationToken);
+
+    public async Task SendPasswordResetOtpAsync(string toEmail, string otp)
+    {
+        // Build individual gold-box digit cells
+        var digitCells = string.Concat(otp.Select(d =>
+            $"<td style=\"padding:0 3px;\">" +
+            $"<div class=\"em-digit-box\" style=\"width:36px;height:46px;line-height:46px;" +
+            $"text-align:center;font-size:1.25rem;font-weight:700;" +
+            $"font-family:'Helvetica',Arial,sans-serif;color:#071426;" +
+            $"background:#D4AF73;border-radius:2px;display:block;\">" +
+            $"{d}</div></td>"));
+
+        // Load template from wwwroot/email-templates/reset-otp.html
+        var templatePath = Path.Combine(env.WebRootPath, "email-templates", "reset-otp.html");
+        var html = await File.ReadAllTextAsync(templatePath);
+
+        html = html
+            .Replace("{{OTP_DIGIT_CELLS}}", digitCells)
+            .Replace("{{EXPIRY_MINUTES}}", "10")
+            .Replace("{{YEAR}}", DateTime.UtcNow.Year.ToString());
+
+        var message = new MimeMessage();
+        message.From.Add(new MailboxAddress(_settings.FromName, _settings.FromEmail));
+        message.To.Add(MailboxAddress.Parse(toEmail));
+        message.Subject = "Your VISSTA Reset Code";
+
+        var bodyBuilder = new BodyBuilder { HtmlBody = html };
+        message.Body = bodyBuilder.ToMessageBody();
+
+        using var client = new SmtpClient();
+        await client.ConnectAsync(_settings.Host, _settings.Port, _settings.UseSsl);
+        if (!string.IsNullOrWhiteSpace(_settings.UserName))
+        {
+            await client.AuthenticateAsync(_settings.UserName, _settings.Password);
+        }
+
+        await client.SendAsync(message);
+        await client.DisconnectAsync(true);
+    }
 
     private async Task SendAsync(string toEmail, string subject, string body, CancellationToken cancellationToken)
     {
@@ -40,6 +81,7 @@ public sealed class SmtpEmailService(IOptions<EmailSettings> options) : IEmailSe
         await client.DisconnectAsync(true, cancellationToken);
     }
 }
+
 
 public sealed class MockPaymentService(IOptions<PaymentSettings> options) : IPaymentService
 {

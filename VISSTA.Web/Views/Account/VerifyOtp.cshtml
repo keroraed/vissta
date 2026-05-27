@@ -1,0 +1,121 @@
+@model VerifyOtpViewModel
+@{
+    ViewData["Title"] = "Enter Your Code — VISSTA";
+    ViewData["Description"] = "Enter the 6-digit verification code sent to your email.";
+}
+
+<main class="simple-page">
+    <div class="shell">
+        <div class="auth-card glassmorphism">
+            <p class="auth-eyebrow">Verification</p>
+            <h1 class="auth-heading">Enter your code</h1>
+            <p class="auth-subtext">
+                Enter the 6-digit code sent to <strong style="color:var(--cream);">@Html.Raw(ViewBag.MaskedEmail ?? Model.Email)</strong>
+            </p>
+
+            <form id="otpForm"
+                  asp-controller="Account" asp-action="VerifyOtp" method="post"
+                  novalidate>
+                @Html.AntiForgeryToken()
+                <input asp-for="Email" type="hidden" />
+
+                <!-- OTP Input -->
+                <div class="field-group" style="margin-bottom:20px;">
+                    <input asp-for="Otp"
+                           id="otpInput"
+                           type="text"
+                           inputmode="numeric"
+                           maxlength="6"
+                           class="otp-input"
+                           autocomplete="one-time-code"
+                           placeholder="——————"
+                           spellcheck="false" />
+                    <span asp-validation-for="Otp" class="field-error"></span>
+                </div>
+
+                <!-- Error message area -->
+                <div id="otpError" class="form-summary" style="display:none;"></div>
+                <div asp-validation-summary="ModelOnly" class="form-summary"></div>
+
+                <!-- Countdown timer -->
+                <div id="otpCountdown" class="otp-countdown">
+                    Code expires in <span id="countdownTimer">10:00</span>
+                </div>
+
+                <div id="expiredMessage" style="display:none;text-align:center;margin-top:14px;">
+                    <span style="color:#e05252;font-size:0.78rem;">
+                        Code expired —
+                        <a asp-controller="Account" asp-action="ForgotPassword"
+                           style="color:#e05252;border-bottom:1px solid #e05252;">Request a new one</a>
+                    </span>
+                </div>
+
+                <button id="verifyBtn"
+                        type="submit"
+                        class="button button-primary"
+                        style="width:100%;margin-top:20px;">
+                    Verify Code
+                </button>
+            </form>
+
+            <p style="text-align:center;margin-top:20px;">
+                <a asp-controller="Account" asp-action="ForgotPasswordConfirmation" class="auth-link">← Back</a>
+            </p>
+        </div>
+    </div>
+</main>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            const otpInput  = document.getElementById('otpInput');
+            const verifyBtn = document.getElementById('verifyBtn');
+            const countEl   = document.getElementById('countdownTimer');
+            const countdown = document.getElementById('otpCountdown');
+            const expired   = document.getElementById('expiredMessage');
+            const form      = document.getElementById('otpForm');
+
+            // ── Digit-only restriction ────────────────────────────────────
+            otpInput.addEventListener('input', function () {
+                this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6);
+                this.classList.remove('is-error');
+                // Auto-submit when 6 digits entered
+                if (this.value.length === 6) {
+                    form.submit();
+                }
+            });
+
+            otpInput.addEventListener('keydown', function (e) {
+                if (!/[0-9]|Backspace|Delete|ArrowLeft|ArrowRight|Tab/.test(e.key)) {
+                    e.preventDefault();
+                }
+            });
+
+            // ── Countdown timer (10 minutes) ──────────────────────────────
+            var totalSeconds = 10 * 60;
+
+            var timer = setInterval(function () {
+                totalSeconds--;
+                if (totalSeconds <= 0) {
+                    clearInterval(timer);
+                    countEl.textContent = '00:00';
+                    countdown.classList.add('is-expiring');
+                    countdown.style.display = 'none';
+                    expired.style.display = 'block';
+                    otpInput.disabled = true;
+                    verifyBtn.disabled = true;
+                    return;
+                }
+
+                var mins = Math.floor(totalSeconds / 60);
+                var secs = totalSeconds % 60;
+                countEl.textContent = String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+
+                if (totalSeconds <= 60) {
+                    countdown.classList.add('is-expiring');
+                }
+            }, 1000);
+        }());
+    </script>
+}

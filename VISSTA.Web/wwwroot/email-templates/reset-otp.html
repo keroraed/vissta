@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light only">
+  <meta name="supported-color-schemes" content="light">
+  <title>Reset Your VISSTA Password</title>
+  <style type="text/css">
+    @media only screen and (max-width: 600px) {
+      .em-body-td { padding: 32px 24px !important; }
+      .em-header-td { padding: 32px 24px 24px !important; }
+      .em-footer-td { padding: 16px 24px 24px !important; }
+      .em-outer-table { width: 100% !important; }
+    }
+    
+    /* Force light rendering — prevent Apple Mail dark mode inversion */
+    @media (prefers-color-scheme: dark) {
+      .em-force-bg   { background-color: #071426 !important; }
+      .em-force-body { background-color: #040b15 !important; }
+      .em-force-card { background-color: #071426 !important;
+                       border-color: rgba(212,175,115,0.18) !important; }
+      .em-force-text-cream { color: #F5F1EA !important; }
+      .em-force-text-gold  { color: #D4AF73 !important; }
+      .em-force-text-muted { color: rgba(245,241,234,0.62) !important; }
+      .em-force-text-dim   { color: rgba(245,241,234,0.3) !important; }
+      .em-digit-box { color: #071426 !important;
+                      background-color: #D4AF73 !important; }
+    }
+    
+    [data-ogsc] .em-force-bg   { background-color: #071426 !important; }
+    [data-ogsc] .em-force-body { background-color: #040b15 !important; }
+    [data-ogsc] .em-force-card { background-color: #071426 !important; }
+    [data-ogsc] .em-force-text-cream { color: #F5F1EA !important; }
+    [data-ogsc] .em-force-text-gold  { color: #D4AF73 !important; }
+    [data-ogsc] .em-force-text-muted { color: rgba(245,241,234,0.62) !important; }
+    [data-ogsc] .em-digit-box { color: #071426 !important;
+                                 background-color: #D4AF73 !important; }
+  </style>
+</head>
+<body class="em-force-body" style="margin:0;padding:0;background:#040b15;font-family:'Helvetica',Arial,sans-serif;">
+  <table class="em-force-body" width="100%" cellpadding="0" cellspacing="0" style="background:#040b15;padding:32px 16px;">
+    <tr><td align="center" class="em-force-body">
+      <table class="em-force-card em-outer-table" width="560" cellpadding="0" cellspacing="0"
+             style="max-width:560px;background:#071426;
+                    border:1px solid rgba(212,175,115,0.18);border-radius:4px;
+                    overflow:hidden;">
+
+        <!-- Gold top bar -->
+        <tr><td height="3"
+                style="background:linear-gradient(90deg,transparent,#D4AF73,transparent);
+                       font-size:0;line-height:0;">&nbsp;</td></tr>
+
+        <!-- Header -->
+        <tr><td class="em-header-td em-force-bg" style="padding:44px 48px 32px;text-align:center;
+                        border-bottom:1px solid rgba(212,175,115,0.1);">
+          <div class="em-force-text-gold" style="font-family:Georgia,serif;color:#D4AF73;font-size:1.5rem;
+                      letter-spacing:0.28em;text-transform:uppercase;">VISSTA</div>
+          <div class="em-force-text-dim" style="color:rgba(245,241,234,0.3);font-size:0.58rem;
+                      letter-spacing:0.35em;text-transform:uppercase;margin-top:5px;">
+            Quiet Luxury</div>
+        </td></tr>
+
+        <!-- Body -->
+        <tr><td class="em-body-td em-force-bg" style="padding:44px 48px;">
+
+
+          <!-- Eyebrow -->
+          <p class="em-force-text-gold" style="color:#D4AF73;font-size:0.6rem;letter-spacing:0.28em;
+                    text-transform:uppercase;text-align:center;
+                    margin:0 0 14px;font-weight:700;">Account Security</p>
+
+          <!-- Heading -->
+          <h1 class="em-force-text-cream" style="font-family:Georgia,serif;color:#F5F1EA;font-size:1.65rem;
+                     font-weight:400;text-align:center;margin:0 0 20px;
+                     line-height:1.3;letter-spacing:0.02em;">
+            Reset Your Password</h1>
+
+          <!-- Body text -->
+          <p class="em-force-text-muted" style="color:rgba(245,241,234,0.62);font-size:0.88rem;line-height:1.85;
+                    text-align:center;margin:0 0 36px;font-weight:300;">
+            Use the code below to reset your VISSTA password.<br>
+            This code expires in {{EXPIRY_MINUTES}} minutes.</p>
+
+          <!-- OTP digits -->
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tr><td align="center" style="padding-bottom:32px;">
+              <table cellpadding="0" cellspacing="0" role="presentation"
+                     style="margin:0 auto;">
+                <tr>{{OTP_DIGIT_CELLS}}</tr>
+              </table>
+            </td></tr>
+          </table>
+
+          <!-- Expiry pill -->
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tr><td align="center" style="padding-bottom:28px;">
+              <span style="display:inline-flex;align-items:center;gap:6px;
+                           background:rgba(212,175,115,0.06);
+                           border:1px solid rgba(212,175,115,0.18);
+                           border-radius:2px;padding:8px 16px;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                     stroke="#D4AF73" stroke-width="1.6"
+                     stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="12 6 12 12 16 14"/>
+                </svg>
+                <span class="em-force-text-muted" style="color:rgba(245,241,234,0.5);font-size:0.65rem;
+                             letter-spacing:0.16em;text-transform:uppercase;">
+                  Expires in {{EXPIRY_MINUTES}} minutes</span>
+              </span>
+            </td></tr>
+          </table>
+
+          <!-- Divider -->
+          <div style="height:1px;background:rgba(212,175,115,0.1);
+                      margin-bottom:28px;"></div>
+
+          <!-- Disclaimer -->
+          <p class="em-force-text-dim" style="color:rgba(245,241,234,0.3);font-size:0.72rem;text-align:center;
+                    line-height:1.75;font-weight:300;margin:0;">
+            If you didn't request a password reset, you can safely ignore this email.<br>
+            Your password will remain unchanged.</p>
+
+        </td></tr>
+
+        <!-- Footer -->
+        <tr><td class="em-footer-td em-force-bg" style="padding:20px 48px 30px;
+                        border-top:1px solid rgba(212,175,115,0.08);">
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+              <td class="em-force-text-gold" style="color:rgba(212,175,115,0.35);font-size:0.6rem;
+                          letter-spacing:0.22em;text-transform:uppercase;">
+                &copy; {{YEAR}} VISSTA</td>
+              <td align="right" class="em-force-text-dim"
+                  style="color:rgba(245,241,234,0.28);font-size:0.62rem;
+                         letter-spacing:0.12em;text-transform:uppercase;">
+                Privacy &nbsp;&middot;&nbsp; Help &nbsp;&middot;&nbsp; Unsubscribe</td>
+            </tr>
+          </table>
+        </td></tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>

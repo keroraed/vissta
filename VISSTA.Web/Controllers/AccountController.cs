@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using VISSTA.Application.Features.Auth.Commands.RequestPasswordReset;
+using VISSTA.Application.Features.Auth.Commands.ResetPasswordOtp;
+using VISSTA.Application.Features.Auth.Commands.VerifyOtp;
 using VISSTA.Application.Features.Orders;
 using VISSTA.Application.Interfaces;
 using VISSTA.Domain.Entities;
@@ -205,6 +208,170 @@ public sealed class AccountController(
 
     public IActionResult AccessDenied() => View();
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // OTP-BASED FORGOT PASSWORD FLOW
+    // ─────────────────────────────────────────────────────────────────────────
+
+    // STEP 1 — Show email form
+    [HttpGet]
+    public IActionResult ForgotPassword() => View(new ForgotPasswordViewModel());
+
+    // STEP 1 — Submit email → dispatch RequestPasswordResetCommand
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel vm)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(vm);
+        }
+
+        try
+        {
+            await mediator.Send(new RequestPasswordResetCommand(vm.Email));
+            TempData["ResetEmail"] = vm.Email;
+            return RedirectToAction(nameof(ForgotPasswordConfirmation));
+        }
+        catch (FluentValidation.ValidationException ex)
+        {
+            foreach (var error in ex.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.ErrorMessage);
+            }
+            return View(vm);
+        }
+    }
+
+    // STEP 1 — Confirmation: "email sent" message
+    [HttpGet]
+    public IActionResult ForgotPasswordConfirmation()
+    {
+        var email = TempData["ResetEmail"] as string;
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            return RedirectToAction(nameof(ForgotPassword));
+        }
+
+        // Keep email available for the "Enter Code" button
+        TempData.Keep("ResetEmail");
+
+        return View(new ForgotPasswordConfirmationViewModel { Email = email, MaskedEmail = MaskEmail(email) });
+    }
+
+    // STEP 2 — Show OTP entry form
+    [HttpGet]
+    public IActionResult VerifyOtp(string email)
+    {
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            email = (TempData.Peek("ResetEmail") as string) ?? string.Empty;
+        }
+
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            return RedirectToAction(nameof(ForgotPassword));
+        }
+
+        TempData.Keep("ResetEmail");
+        return View(new VerifyOtpViewModel { Email = email });
+    }
+
+    // STEP 2 — Submit OTP
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> VerifyOtp(VerifyOtpViewModel vm)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(vm);
+        }
+
+        try
+        {
+            var result = await mediator.Send(new VerifyOtpCommand(vm.Email, vm.Otp));
+            if (!result.Success)
+            {
+                ModelState.AddModelError(string.Empty, result.ErrorMessage ?? "Invalid code.");
+                return View(vm);
+            }
+
+            TempData["OtpId"] = result.OtpId.ToString();
+            TempData["ResetEmail"] = vm.Email;
+            return RedirectToAction(nameof(ResetPassword), new { email = vm.Email, otpId = result.OtpId });
+        }
+        catch (FluentValidation.ValidationException ex)
+        {
+            foreach (var error in ex.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.ErrorMessage);
+            }
+            return View(vm);
+        }
+    }
+
+    // STEP 3 — Show new password form
+    [HttpGet]
+    public IActionResult ResetPassword(string email, Guid otpId)
+    {
+        if (string.IsNullOrWhiteSpace(email) || otpId == Guid.Empty)
+        {
+            var otpIdStr = TempData.Peek("OtpId") as string;
+            var emailStr = TempData.Peek("ResetEmail") as string;
+
+            if (string.IsNullOrWhiteSpace(otpIdStr) || string.IsNullOrWhiteSpace(emailStr)
+                || !Guid.TryParse(otpIdStr, out otpId))
+            {
+                return RedirectToAction(nameof(ForgotPassword));
+            }
+            email = emailStr ?? string.Empty;
+        }
+
+        TempData.Keep("OtpId");
+        TempData.Keep("ResetEmail");
+
+        return View(new ResetPasswordViewModel { OtpId = otpId, Email = email });
+    }
+
+    // STEP 3 — Submit new password
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ResetPassword(ResetPasswordViewModel vm)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(vm);
+        }
+
+        try
+        {
+            var result = await mediator.Send(new ResetPasswordOtpCommand(
+                vm.OtpId, vm.Email, vm.NewPassword, vm.ConfirmPassword));
+
+            if (!result.Success)
+            {
+                ModelState.AddModelError(string.Empty, result.ErrorMessage ?? "An error occurred.");
+                return View(vm);
+            }
+
+            TempData["SuccessMessage"] = "Password updated successfully.";
+            return RedirectToAction(nameof(ResetPasswordSuccess));
+        }
+        catch (FluentValidation.ValidationException ex)
+        {
+            foreach (var error in ex.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.ErrorMessage);
+            }
+            return View(vm);
+        }
+    }
+
+    // SUCCESS PAGE
+    [HttpGet]
+    public IActionResult ResetPasswordSuccess() => View();
+
+    // ─── Private Helpers ──────────────────────────────────────────────────────
+
     private static ProfileViewModel BuildProfileViewModel(ApplicationUser user, Customer? customer)
     {
         var address = customer?.DefaultAddress;
@@ -219,5 +386,24 @@ public sealed class AccountController(
             PostalCode = address?.PostalCode ?? string.Empty,
             Country = address?.Country ?? "Egypt"
         };
+    }
+
+    /// <summary>Masks the middle portion of an email: "l****a@gmail.com"</summary>
+    private static string MaskEmail(string email)
+    {
+        var atIndex = email.IndexOf('@');
+        if (atIndex <= 1) return email;
+
+        var local = email[..atIndex];
+        var domain = email[atIndex..];
+
+        if (local.Length <= 2)
+        {
+            return $"{local[0]}*{domain}";
+        }
+
+        var visible = Math.Max(1, local.Length / 4);
+        var masked = local[..1] + new string('*', local.Length - visible - 1) + local[^1..];
+        return masked + domain;
     }
 }

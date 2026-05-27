@@ -20,10 +20,13 @@ public sealed class VISSTADbContext(DbContextOptions<VISSTADbContext> options) :
     public DbSet<NewsletterSubscription> NewsletterSubscriptions => Set<NewsletterSubscription>();
     public DbSet<WishlistItem> WishlistItems => Set<WishlistItem>();
     public DbSet<AppSetting> AppSettings => Set<AppSetting>();
+    public DbSet<PasswordResetOtp> PasswordResetOtps => Set<PasswordResetOtp>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+
+        builder.ApplyConfiguration(new PasswordResetOtpConfiguration());
 
         builder.Entity<Category>(entity =>
         {

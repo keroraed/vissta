@@ -33,7 +33,13 @@
                 </div>
                 <span asp-validation-for="Password" class="field-error"></span>
             </label>
-            <label class="check"><input asp-for="RememberMe" type="checkbox" /> <span>Remember me</span></label>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px;margin-bottom:10px;">
+                <label class="check" style="margin-top:0;"><input asp-for="RememberMe" type="checkbox" /> <span>Remember me</span></label>
+                <a asp-controller="Account" asp-action="ForgotPassword"
+                   style="color:var(--gold);font-size:.72rem;letter-spacing:.08em;border-bottom:1px solid rgba(212,175,115,.35);">
+                    Forgot password?
+                </a>
+            </div>
             <input asp-for="ReturnUrl" type="hidden" />
             <button class="button button-primary auth-submit" type="submit">Login</button>
         </form>

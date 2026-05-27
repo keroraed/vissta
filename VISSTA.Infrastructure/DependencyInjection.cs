@@ -1,9 +1,11 @@
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using VISSTA.Application.Interfaces;
 using VISSTA.Domain.Entities;
+using VISSTA.Infrastructure.Handlers;
 using VISSTA.Infrastructure.Identity;
 using VISSTA.Infrastructure.Persistence;
 using VISSTA.Infrastructure.Repositories;
@@ -47,7 +49,12 @@ public static class DependencyInjection
         services.AddScoped<IEmailService, SmtpEmailService>();
         services.AddScoped<IPaymentService, MockPaymentService>();
         services.AddScoped<IFileStorageService, LocalFileStorageService>();
+        services.AddScoped<IPasswordResetOtpRepository, PasswordResetOtpRepository>();
         services.AddSingleton<ICurrencyFormatter, CurrencyFormatter>();
+
+        // Register MediatR handlers from this assembly (e.g. ResetPasswordOtpCommandHandler
+        // which needs ApplicationUser and cannot live in the Application layer)
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(ResetPasswordOtpCommandHandler).Assembly));
 
         return services;
     }

@@ -534,3 +534,148 @@ body.is-cart-open { overflow: hidden; }
   .about-stat-image { height: 260px; min-height: 0; }
   .about-promise-inner .button { width: 100%; padding-inline: 18px; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   OTP PASSWORD RESET — Auth inputs & components
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Override auth-card width for the OTP flow pages */
+.simple-page .auth-card {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 48px;
+  border-radius: 4px;
+}
+
+/* Shared auth form inputs */
+.vissta-input {
+  width: 100%;
+  border: 1px solid rgba(212,175,115,0.2);
+  background: rgba(10,29,55,0.6);
+  color: var(--cream);
+  padding: 14px 16px;
+  border-radius: 4px;
+  outline: none;
+  transition: border-color .3s ease, box-shadow .3s ease;
+  font-family: var(--font-body);
+}
+.vissta-input:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(212,175,115,0.12);
+}
+
+/* Override the field-error color to match spec */
+.field-error {
+  display: block;
+  color: #e05252;
+  font-size: .7rem;
+  margin-top: 6px;
+  letter-spacing: .06em;
+}
+
+/* Auth typography */
+.auth-label {
+  color: var(--gold);
+  font-size: .6rem;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 8px;
+}
+.auth-eyebrow {
+  color: var(--gold);
+  font-size: .6rem;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin: 0 0 14px;
+}
+.auth-heading {
+  font-family: var(--font-display);
+  color: var(--cream);
+  font-size: 1.9rem;
+  font-weight: 400;
+  margin: 0 0 12px;
+  line-height: 1.2;
+}
+.auth-subtext {
+  color: rgba(245,241,234,.55);
+  font-size: .86rem;
+  font-weight: 300;
+  line-height: 1.75;
+  margin: 0 0 32px;
+}
+.auth-link {
+  color: var(--gold);
+  font-size: .72rem;
+  letter-spacing: .1em;
+  border-bottom: 1px solid rgba(212,175,115,.35);
+  transition: border-color .25s ease;
+}
+.auth-link:hover { border-color: var(--gold); }
+
+/* OTP single-input styled as large digit display */
+.otp-input {
+  width: 100%;
+  text-align: center;
+  font-size: 2rem;
+  font-family: 'Helvetica', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.5em;
+  padding: 18px 24px;
+  border: 1px solid rgba(212,175,115,0.3);
+  border-radius: 4px;
+  background: rgba(10,29,55,0.6);
+  color: var(--cream);
+  outline: none;
+  transition: border-color .3s ease;
+  caret-color: var(--gold);
+}
+.otp-input:focus { border-color: var(--gold); }
+.otp-input.is-error { border-color: #e05252; }
+
+/* Password strength bar */
+.strength-bar {
+  display: flex;
+  gap: 4px;
+  margin-top: 8px;
+}
+.strength-bar span {
+  flex: 1;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(255,255,255,.1);
+  transition: background .3s ease;
+}
+
+/* OTP countdown timer */
+.otp-countdown {
+  color: rgba(245,241,234,.45);
+  font-size: .72rem;
+  text-align: center;
+  margin-top: 14px;
+  letter-spacing: .1em;
+}
+.otp-countdown.is-expiring { color: #e05252; }
+
+/* Success checkmark animation */
+@keyframes checkIn {
+  from { transform: scale(0); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+.success-ring {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 1px solid rgba(212,175,115,.35);
+  background: rgba(212,175,115,.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 28px;
+  animation: checkIn .5s cubic-bezier(.2,.9,.24,1.18) both;
+}
+
+/* Field group spacing helper */
+.field-group { display: grid; gap: 0; }

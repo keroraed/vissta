@@ -38,6 +38,7 @@ public interface IEmailService
     Task SendOrderConfirmationAsync(string toEmail, int orderId, CancellationToken cancellationToken = default);
     Task SendShippingUpdateAsync(string toEmail, int orderId, OrderStatus status, CancellationToken cancellationToken = default);
     Task SendPasswordResetAsync(string toEmail, string resetLink, CancellationToken cancellationToken = default);
+    Task SendPasswordResetOtpAsync(string toEmail, string otp);
 }
 
 public interface IPaymentService

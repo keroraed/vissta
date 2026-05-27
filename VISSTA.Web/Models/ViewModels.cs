@@ -219,3 +219,39 @@ public sealed class AdminCouponFormViewModel
 }
 
 public sealed record NotificationViewModel(string? Message, string Type = "info");
+
+// ─── OTP Password Reset ViewModels ───────────────────────────────────────────
+
+public sealed class ForgotPasswordViewModel
+{
+    [Required, EmailAddress, MaxLength(256)]
+    public string Email { get; set; } = string.Empty;
+}
+
+public sealed class ForgotPasswordConfirmationViewModel
+{
+    public string Email { get; set; } = string.Empty;
+    public string MaskedEmail { get; set; } = string.Empty;
+}
+
+public sealed class VerifyOtpViewModel
+{
+    public string Email { get; set; } = string.Empty;   // hidden field
+
+    [Required, StringLength(6, MinimumLength = 6), RegularExpression("^[0-9]{6}$", ErrorMessage = "Enter exactly 6 digits.")]
+    public string Otp { get; set; } = string.Empty;
+}
+
+public sealed class ResetPasswordViewModel
+{
+    public Guid OtpId { get; set; }   // hidden field
+    public string Email { get; set; } = string.Empty;   // hidden field
+
+    [Required, MinLength(8), DataType(DataType.Password)]
+    [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W).+$", 
+        ErrorMessage = "Password must contain uppercase, lowercase, a number, and a special character.")]
+    public string NewPassword { get; set; } = string.Empty;
+
+    [Required, DataType(DataType.Password), Compare(nameof(NewPassword), ErrorMessage = "Passwords do not match.")]
+    public string ConfirmPassword { get; set; } = string.Empty;
+}
