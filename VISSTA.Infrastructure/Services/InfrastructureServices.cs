@@ -1,8 +1,10 @@
 using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using MimeKit.Text;
+using VISSTA.Application.DTOs;
 using VISSTA.Application.Interfaces;
 using VISSTA.Domain.Enums;
 using VISSTA.Domain.ValueObjects;
@@ -10,12 +12,38 @@ using VISSTA.Infrastructure.Settings;
 
 namespace VISSTA.Infrastructure.Services;
 
-public sealed class SmtpEmailService(IOptions<EmailSettings> options, IWebHostEnvironment env) : IEmailService
+public sealed class SmtpEmailService(IOptions<EmailSettings> options, IWebHostEnvironment env, ILogger<SmtpEmailService> logger) : IEmailService
 {
     private readonly EmailSettings _settings = options.Value;
 
-    public Task SendOrderConfirmationAsync(string toEmail, int orderId, CancellationToken cancellationToken = default) =>
-        SendAsync(toEmail, $"VISSTA order #{orderId} confirmed", $"Your order #{orderId} has been confirmed.", cancellationToken);
+    public async Task SendOrderConfirmationAsync(OrderConfirmationEmailDto dto)
+    {
+        var templatePath = Path.Combine(env.WebRootPath, "email-templates", "order-confirmation.html");
+        var html = await File.ReadAllTextAsync(templatePath);
+
+        // Build order line rows
+        var linesHtml = string.Concat(dto.Lines.Select(line => BuildOrderLineRow(line, dto.Currency)));
+
+        // Format shipping display
+        var shippingDisplay = dto.ShippingCost == 0 ? "Free" : $"{dto.Currency} {dto.ShippingCost:N0}";
+
+        html = html
+            .Replace("{{CUSTOMER_FIRST_NAME}}", dto.CustomerFirstName)
+            .Replace("{{ORDER_NUMBER}}", dto.OrderNumber)
+            .Replace("{{ORDER_DATE}}", dto.OrderDate.ToString("dd MMMM yyyy"))
+            .Replace("{{PAYMENT_SUMMARY}}", dto.PaymentSummary)
+            .Replace("{{ESTIMATED_DELIVERY}}", dto.EstimatedDelivery)
+            .Replace("{{ORDER_LINES_HTML}}", linesHtml)
+            .Replace("{{SUBTOTAL}}", dto.Subtotal.ToString("N0"))
+            .Replace("{{SHIPPING}}", shippingDisplay)
+            .Replace("{{ORDER_TOTAL}}", dto.Total.ToString("N0"))
+            .Replace("{{CURRENCY}}", dto.Currency)
+            .Replace("{{SHIPPING_ADDRESS}}", dto.ShippingAddress)
+            .Replace("{{ORDER_TRACKING_URL}}", dto.OrderTrackingUrl)
+            .Replace("{{YEAR}}", DateTime.UtcNow.Year.ToString());
+
+        await SendHtmlAsync(dto.ToEmail, $"VISSTA — Order {dto.OrderNumber} Confirmed", html);
+    }
 
     public Task SendShippingUpdateAsync(string toEmail, int orderId, OrderStatus status, CancellationToken cancellationToken = default) =>
         SendAsync(toEmail, $"VISSTA order #{orderId} update", $"Your order is now {status}.", cancellationToken);
@@ -43,10 +71,70 @@ public sealed class SmtpEmailService(IOptions<EmailSettings> options, IWebHostEn
             .Replace("{{EXPIRY_MINUTES}}", "10")
             .Replace("{{YEAR}}", DateTime.UtcNow.Year.ToString());
 
+        await SendHtmlAsync(toEmail, "Your VISSTA Reset Code", html);
+    }
+
+    public async Task SendNewsletterWelcomeAsync(string toEmail, string unsubscribeToken)
+    {
+        var templatePath = Path.Combine(env.WebRootPath, "email-templates", "newsletter-welcome.html");
+        var html = await File.ReadAllTextAsync(templatePath);
+
+        html = html
+            .Replace("{{YEAR}}", DateTime.UtcNow.Year.ToString())
+            .Replace("{{EMAIL}}", toEmail)
+            .Replace("{{UNSUBSCRIBE_TOKEN}}", unsubscribeToken ?? "");
+
+        await SendHtmlAsync(toEmail, "Welcome to VISSTA — The Edit", html);
+    }
+
+    private static string BuildOrderLineRow(OrderLineDto line, string currency)
+    {
+        return
+            "<tr>" +
+            "<td style=\"padding:14px 18px;border-bottom:1px solid rgba(212,175,115,0.07);\">" +
+            "<table cellpadding='0' cellspacing='0' role='presentation' width='100%'><tr>" +
+
+            // Product icon cell
+            "<td width='44' valign='middle' style='padding-right:14px;'>" +
+            "<table cellpadding='0' cellspacing='0' role='presentation'><tr>" +
+            "<td width='44' height='56' align='center' valign='middle' " +
+            "style='width:44px;height:56px;background:rgba(212,175,115,0.08);" +
+            "border:1px solid rgba(212,175,115,0.12);border-radius:2px;'>" +
+            "<svg width='18' height='18' viewBox='0 0 24 24' fill='none' " +
+            "stroke='rgba(212,175,115,0.4)' stroke-width='1.6' " +
+            "stroke-linecap='round' stroke-linejoin='round' " +
+            "style='display:inline-block;vertical-align:middle;'>" +
+            "<path d='M20.38 18H3.62a1 1 0 0 1-.74-1.67L12 7' stroke='rgba(212,175,115,0.4)'/>" +
+            "<path d='M12 7V3' stroke='rgba(212,175,115,0.4)'/>" +
+            "<circle cx='12' cy='2.5' r='0.5' fill='rgba(212,175,115,0.4)' stroke='none'/>" +
+            "</svg>" +
+            "</td></tr></table></td>" +
+
+            // Name + variant cell
+            "<td valign='middle'>" +
+            $"<div style='color:#F5F1EA;font-size:0.8rem;letter-spacing:0.06em;" +
+            $"text-transform:uppercase;font-family:Helvetica,Arial,sans-serif;" +
+            $"font-weight:500;margin-bottom:4px;'>{line.ProductName}</div>" +
+            $"<div style='color:rgba(245,241,234,0.38);font-size:0.68rem;" +
+            $"letter-spacing:0.1em;font-family:Helvetica,Arial,sans-serif;'>" +
+            $"{line.Variant} — Qty {line.Quantity}</div>" +
+            "</td>" +
+
+            // Price cell
+            $"<td valign='middle' align='right' " +
+            $"style='color:#D4AF73;font-size:0.85rem;" +
+            $"font-family:Helvetica,Arial,sans-serif;white-space:nowrap;'>" +
+            $"{currency} {(line.UnitPrice * line.Quantity):N0}</td>" +
+
+            "</tr></table></td></tr>";
+    }
+
+    private async Task SendHtmlAsync(string toEmail, string subject, string html)
+    {
         var message = new MimeMessage();
         message.From.Add(new MailboxAddress(_settings.FromName, _settings.FromEmail));
         message.To.Add(MailboxAddress.Parse(toEmail));
-        message.Subject = "Your VISSTA Reset Code";
+        message.Subject = subject;
 
         var bodyBuilder = new BodyBuilder { HtmlBody = html };
         message.Body = bodyBuilder.ToMessageBody();

@@ -50,6 +50,7 @@ public static class DependencyInjection
         services.AddScoped<IPaymentService, MockPaymentService>();
         services.AddScoped<IFileStorageService, LocalFileStorageService>();
         services.AddScoped<IPasswordResetOtpRepository, PasswordResetOtpRepository>();
+        services.AddScoped<INewsletterRepository, NewsletterRepository>();
         services.AddSingleton<ICurrencyFormatter, CurrencyFormatter>();
 
         // Register MediatR handlers from this assembly (e.g. ResetPasswordOtpCommandHandler

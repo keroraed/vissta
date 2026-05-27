@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light only">
+  <meta name="supported-color-schemes" content="light">
+  <title>Order Confirmed — VISSTA</title>
+  <style type="text/css">
+    @media only screen and (max-width: 600px) {
+      .em-body-td { padding: 32px 24px !important; }
+      .em-header-td { padding: 32px 24px 24px !important; }
+      .em-footer-td { padding: 16px 24px 24px !important; }
+      .em-outer-table { width: 100% !important; }
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .em-force-bg        { background-color: #071426 !important; }
+      .em-force-body      { background-color: #040b15 !important; }
+      .em-force-card      { background-color: #071426 !important;
+                            border-color: rgba(212,175,115,0.18) !important; }
+      .em-force-text-cream { color: #F5F1EA !important; }
+      .em-force-text-gold  { color: #D4AF73 !important; }
+      .em-force-text-muted { color: rgba(245,241,234,0.62) !important; }
+      .em-force-text-dim   { color: rgba(245,241,234,0.3) !important; }
+      .em-meta-cell        { background: rgba(10,29,55,0.6) !important; }
+      .em-totals-cell      { background: #071426 !important; }
+      .em-grand-total      { background: rgba(212,175,115,0.05) !important; }
+      .em-shipping-block   { background: rgba(212,175,115,0.04) !important; }
+    }
+
+    [data-ogsc] .em-force-bg        { background-color: #071426 !important; }
+    [data-ogsc] .em-force-body      { background-color: #040b15 !important; }
+    [data-ogsc] .em-force-card      { background-color: #071426 !important; }
+    [data-ogsc] .em-force-text-cream { color: #F5F1EA !important; }
+    [data-ogsc] .em-force-text-gold  { color: #D4AF73 !important; }
+    [data-ogsc] .em-force-text-muted { color: rgba(245,241,234,0.62) !important; }
+    [data-ogsc] .em-force-text-dim   { color: rgba(245,241,234,0.3) !important; }
+    [data-ogsc] .em-meta-cell        { background: rgba(10,29,55,0.6) !important; }
+    [data-ogsc] .em-totals-cell      { background: #071426 !important; }
+    [data-ogsc] .em-grand-total      { background: rgba(212,175,115,0.05) !important; }
+    [data-ogsc] .em-shipping-block   { background: rgba(212,175,115,0.04) !important; }
+  </style>
+</head>
+<body class="em-force-body" style="margin:0;padding:0;background:#040b15;font-family:'Helvetica',Arial,sans-serif;">
+  <table class="em-force-body" width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background:#040b15;padding:32px 16px;">
+    <tr><td align="center" class="em-force-body">
+      <table class="em-force-card em-outer-table" width="560" cellpadding="0" cellspacing="0" role="presentation"
+             style="max-width:560px;background:#071426;
+                    border:1px solid rgba(212,175,115,0.18);border-radius:4px;
+                    overflow:hidden;">
+
+        <!-- Gold top bar -->
+        <tr><td height="3"
+                style="background:linear-gradient(90deg,transparent,#D4AF73,transparent);
+                       font-size:0;line-height:0;">&nbsp;</td></tr>
+
+        <!-- Header -->
+        <tr><td class="em-header-td em-force-bg" style="padding:44px 48px 32px;text-align:center;
+                        border-bottom:1px solid rgba(212,175,115,0.1);">
+          <div class="em-force-text-gold" style="font-family:Georgia,serif;color:#D4AF73;font-size:1.5rem;
+                      letter-spacing:0.28em;text-transform:uppercase;">VISSTA</div>
+          <div class="em-force-text-dim" style="color:rgba(245,241,234,0.3);font-size:0.58rem;
+                      letter-spacing:0.35em;text-transform:uppercase;margin-top:5px;">
+            Quiet Luxury</div>
+        </td></tr>
+
+        <!-- Body -->
+        <tr><td class="em-body-td em-force-bg" style="padding:40px 48px 32px;">
+
+          <!-- Confirmation badge -->
+          <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+            <tr><td style="padding-bottom:32px;">
+              <table cellpadding="0" cellspacing="0" role="presentation" width="100%"
+                     style="background:rgba(212,175,115,0.07);border:1px solid rgba(212,175,115,0.22);
+                            border-radius:2px;">
+                <tr>
+                  <td style="padding:12px 20px;">
+                    <table cellpadding="0" cellspacing="0" role="presentation"><tr>
+                      <td valign="middle" style="padding-right:10px;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                             stroke="#D4AF73" stroke-width="1.6"
+                             stroke-linecap="round" stroke-linejoin="round">
+                          <circle cx="12" cy="12" r="10" stroke="#D4AF73"/>
+                          <polyline points="9 12 11.5 14.5 16 9" stroke="#D4AF73"/>
+                        </svg>
+                      </td>
+                      <td valign="middle">
+                        <span class="em-force-text-muted" style="color:rgba(245,241,234,0.7);font-size:0.65rem;letter-spacing:0.2em;
+                                    text-transform:uppercase;font-family:'Helvetica',Arial,sans-serif;font-weight:700;">Order Confirmed</span>
+                      </td>
+                    </tr></table>
+                  </td>
+                </tr>
+              </table>
+            </td></tr>
+          </table>
+
+          <!-- Greeting -->
+          <h1 class="em-force-text-cream" style="font-family:Georgia,serif;color:#F5F1EA;font-size:1.65rem;
+                     font-weight:400;margin:0 0 12px;line-height:1.3;">Thank you, {{CUSTOMER_FIRST_NAME}}.</h1>
+
+          <!-- Subtext -->
+          <p class="em-force-text-muted" style="color:rgba(245,241,234,0.55);font-size:0.85rem;line-height:1.85;
+                    margin:0 0 32px;font-family:'Helvetica',Arial,sans-serif;font-weight:300;">
+            Your order has been received and is being prepared with the utmost care.<br>
+            We'll notify you once it ships.</p>
+
+          <!-- 2×2 metadata grid -->
+          <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
+                 style="border:1px solid rgba(212,175,115,0.1);border-radius:2px;
+                        overflow:hidden;margin-bottom:28px;">
+            <!-- Row 1 -->
+            <tr>
+              <td class="em-meta-cell em-force-bg" width="50%" valign="top"
+                  style="background:rgba(10,29,55,0.6);padding:16px 20px;
+                         border-right:1px solid rgba(212,175,115,0.1);
+                         border-bottom:1px solid rgba(212,175,115,0.1);">
+                <div class="em-force-text-dim" style="color:rgba(245,241,234,0.35);font-size:0.58rem;letter-spacing:0.2em;
+                            text-transform:uppercase;margin-bottom:5px;font-family:'Helvetica',Arial,sans-serif;">Order Number</div>
+                <div class="em-force-text-cream" style="color:#F5F1EA;font-size:0.85rem;letter-spacing:0.05em;
+                            font-family:'Helvetica',Arial,sans-serif;font-weight:500;">{{ORDER_NUMBER}}</div>
+              </td>
+              <td class="em-meta-cell em-force-bg" width="50%" valign="top"
+                  style="background:rgba(10,29,55,0.6);padding:16px 20px;
+                         border-bottom:1px solid rgba(212,175,115,0.1);">
+                <div class="em-force-text-dim" style="color:rgba(245,241,234,0.35);font-size:0.58rem;letter-spacing:0.2em;
+                            text-transform:uppercase;margin-bottom:5px;font-family:'Helvetica',Arial,sans-serif;">Order Date</div>
+                <div class="em-force-text-cream" style="color:#F5F1EA;font-size:0.85rem;letter-spacing:0.05em;
+                            font-family:'Helvetica',Arial,sans-serif;font-weight:500;">{{ORDER_DATE}}</div>
+              </td>
+            </tr>
+            <!-- Row 2 -->
+            <tr>
+              <td class="em-meta-cell em-force-bg" width="50%" valign="top"
+                  style="background:rgba(10,29,55,0.6);padding:16px 20px;
+                         border-right:1px solid rgba(212,175,115,0.1);">
+                <div class="em-force-text-dim" style="color:rgba(245,241,234,0.35);font-size:0.58rem;letter-spacing:0.2em;
+                            text-transform:uppercase;margin-bottom:5px;font-family:'Helvetica',Arial,sans-serif;">Payment</div>
+                <div class="em-force-text-cream" style="color:#F5F1EA;font-size:0.85rem;letter-spacing:0.05em;
+                            font-family:'Helvetica',Arial,sans-serif;font-weight:500;">{{PAYMENT_SUMMARY}}</div>
+              </td>
+              <td class="em-meta-cell em-force-bg" width="50%" valign="top"
+                  style="background:rgba(10,29,55,0.6);padding:16px 20px;">
+                <div class="em-force-text-dim" style="color:rgba(245,241,234,0.35);font-size:0.58rem;letter-spacing:0.2em;
+                            text-transform:uppercase;margin-bottom:5px;font-family:'Helvetica',Arial,sans-serif;">Estimated Delivery</div>
+                <div class="em-force-text-cream" style="color:#F5F1EA;font-size:0.85rem;letter-spacing:0.05em;
+                            font-family:'Helvetica',Arial,sans-serif;font-weight:500;">{{ESTIMATED_DELIVERY}}</div>
+              </td>
+            </tr>
+          </table>
+
+          <!-- Section label: Order Summary -->
+          <div class="em-force-text-gold" style="color:#D4AF73;font-size:0.58rem;letter-spacing:0.25em;
+                      text-transform:uppercase;margin-bottom:14px;font-family:'Helvetica',Arial,sans-serif;font-weight:700;">Order Summary</div>
+
+          <!-- Order lines -->
+          <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
+                 style="border:1px solid rgba(212,175,115,0.1);border-radius:2px;
+                        overflow:hidden;margin-bottom:4px;">
+            {{ORDER_LINES_HTML}}
+          </table>
+
+          <!-- Totals -->
+          <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
+                 style="border:1px solid rgba(212,175,115,0.1);border-radius:2px;
+                        margin-bottom:28px;">
+            <!-- Subtotal -->
+            <tr>
+              <td class="em-totals-cell em-force-bg" style="padding:12px 18px;border-bottom:1px solid rgba(212,175,115,0.07);">
+                <span class="em-force-text-muted" style="color:rgba(245,241,234,0.45);font-size:0.72rem;letter-spacing:0.12em;
+                            text-transform:uppercase;font-family:'Helvetica',Arial,sans-serif;">Subtotal</span>
+              </td>
+              <td class="em-totals-cell em-force-bg" align="right" style="padding:12px 18px;border-bottom:1px solid rgba(212,175,115,0.07);">
+                <span class="em-force-text-muted" style="color:rgba(245,241,234,0.7);font-size:0.78rem;
+                            font-family:'Helvetica',Arial,sans-serif;">{{CURRENCY}} {{SUBTOTAL}}</span>
+              </td>
+            </tr>
+            <!-- Shipping -->
+            <tr>
+              <td class="em-totals-cell em-force-bg" style="padding:12px 18px;border-bottom:1px solid rgba(212,175,115,0.07);">
+                <span class="em-force-text-muted" style="color:rgba(245,241,234,0.45);font-size:0.72rem;letter-spacing:0.12em;
+                            text-transform:uppercase;font-family:'Helvetica',Arial,sans-serif;">Shipping</span>
+              </td>
+              <td class="em-totals-cell em-force-bg" align="right" style="padding:12px 18px;border-bottom:1px solid rgba(212,175,115,0.07);">
+                <span class="em-force-text-muted" style="color:rgba(245,241,234,0.7);font-size:0.78rem;
+                            font-family:'Helvetica',Arial,sans-serif;">{{SHIPPING}}</span>
+              </td>
+            </tr>
+            <!-- Grand total -->
+            <tr>
+              <td class="em-grand-total" style="padding:12px 18px;background:rgba(212,175,115,0.05);">
+                <span class="em-force-text-gold" style="color:#D4AF73;font-size:0.68rem;letter-spacing:0.12em;
+                            text-transform:uppercase;font-family:'Helvetica',Arial,sans-serif;font-weight:700;">Total</span>
+              </td>
+              <td class="em-grand-total" align="right" style="padding:12px 18px;background:rgba(212,175,115,0.05);">
+                <span class="em-force-text-gold" style="color:#D4AF73;font-size:0.95rem;
+                            font-family:'Helvetica',Arial,sans-serif;font-weight:700;">{{CURRENCY}} {{ORDER_TOTAL}}</span>
+              </td>
+            </tr>
+          </table>
+
+          <!-- Shipping address -->
+          <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
+                 class="em-shipping-block"
+                 style="background:rgba(212,175,115,0.04);border:1px solid rgba(212,175,115,0.1);
+                        border-radius:2px;margin-bottom:28px;">
+            <tr>
+              <td style="padding:18px 20px;">
+                <table cellpadding="0" cellspacing="0" role="presentation"><tr>
+                  <td valign="top" style="padding-right:14px;padding-top:1px;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                         stroke="rgba(212,175,115,0.5)" stroke-width="1.6"
+                         stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke="rgba(212,175,115,0.5)"/>
+                      <circle cx="12" cy="10" r="3" stroke="rgba(212,175,115,0.5)"/>
+                    </svg>
+                  </td>
+                  <td valign="top">
+                    <div class="em-force-text-muted" style="color:rgba(245,241,234,0.7);font-size:0.72rem;letter-spacing:0.14em;
+                                text-transform:uppercase;font-family:'Helvetica',Arial,sans-serif;font-weight:700;margin-bottom:4px;">Shipping to</div>
+                    <div class="em-force-text-dim" style="color:rgba(245,241,234,0.38);font-size:0.72rem;
+                                font-family:'Helvetica',Arial,sans-serif;">{{SHIPPING_ADDRESS}}</div>
+                  </td>
+                </tr></table>
+              </td>
+            </tr>
+          </table>
+
+          <!-- CTA button -->
+          <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom:28px;">
+            <tr><td align="center">
+              <a href="{{ORDER_TRACKING_URL}}" target="_blank"
+                 style="display:inline-block;border:1px solid rgba(212,175,115,0.35);
+                        background:rgba(212,175,115,0.08);color:#D4AF73;padding:14px 40px;
+                        font-size:0.6rem;font-family:'Helvetica',Arial,sans-serif;font-weight:700;
+                        letter-spacing:0.2em;text-transform:uppercase;border-radius:2px;
+                        text-decoration:none;">Track Your Order</a>
+            </td></tr>
+          </table>
+
+        </td></tr>
+
+        <!-- Footer -->
+        <tr><td class="em-footer-td em-force-bg" style="padding:20px 48px 30px;
+                        border-top:1px solid rgba(212,175,115,0.08);">
+          <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+            <tr>
+              <td class="em-force-text-gold" style="color:rgba(212,175,115,0.35);font-size:0.6rem;
+                          letter-spacing:0.22em;text-transform:uppercase;">
+                &copy; {{YEAR}} VISSTA</td>
+              <td align="right" class="em-force-text-dim"
+                  style="color:rgba(245,241,234,0.28);font-size:0.62rem;
+                         letter-spacing:0.12em;text-transform:uppercase;">
+                Returns &nbsp;&middot;&nbsp; Help &nbsp;&middot;&nbsp; Unsubscribe</td>
+            </tr>
+          </table>
+        </td></tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>

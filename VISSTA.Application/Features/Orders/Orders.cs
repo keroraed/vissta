@@ -1,5 +1,7 @@
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using VISSTA.Application.DTOs;
 using VISSTA.Application.Interfaces;
 using VISSTA.Domain.Entities;
@@ -44,7 +46,10 @@ public sealed class OrderHandlers(
     IRepository<Customer> customers,
     IRepository<Coupon> coupons,
     IPaymentService payments,
-    IUnitOfWork unitOfWork) :
+    IUnitOfWork unitOfWork,
+    IEmailService emailService,
+    IHttpContextAccessor httpContextAccessor,
+    ILogger<OrderHandlers> logger) :
     IRequestHandler<PlaceOrderCommand, int>,
     IRequestHandler<CancelOrderCommand, bool>,
     IRequestHandler<UpdateOrderStatusCommand, bool>,
@@ -119,6 +124,57 @@ public sealed class OrderHandlers(
         cart.Clear();
         await unitOfWork.SaveChangesAsync(cancellationToken);
         order.MarkPlaced();
+
+        // Send order confirmation email (failure must never roll back the order)
+        try
+        {
+            var orderCustomer = customers.Query().FirstOrDefault(x => x.Id == request.CustomerId);
+            var customerName = orderCustomer?.FullName ?? request.CustomerName ?? "Customer";
+            var firstName = customerName.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "Customer";
+            var customerEmail = orderCustomer?.Email ?? request.CustomerEmail ?? string.Empty;
+
+            if (!string.IsNullOrWhiteSpace(customerEmail))
+            {
+                var addr = order.ShippingAddress;
+                var shippingAddress = $"{addr.Street}, {addr.City}, {addr.Governorate} {addr.PostalCode}";
+
+                var httpContext = httpContextAccessor.HttpContext;
+                var trackingUrl = httpContext is not null
+                    ? $"{httpContext.Request.Scheme}://{httpContext.Request.Host}/Account/Orders/{order.Id}"
+                    : $"/Account/Orders/{order.Id}";
+
+                var shippingCost = order.TotalAmount.Amount >= 500 ? 0m : 50m;
+
+                var emailDto = new OrderConfirmationEmailDto(
+                    ToEmail: customerEmail,
+                    CustomerFirstName: firstName,
+                    OrderNumber: $"#VST-{order.Id:D5}",
+                    OrderDate: order.CreatedAt,
+                    PaymentSummary: "Card Payment",
+                    EstimatedDelivery: "3–5 Business Days",
+                    Lines: order.OrderItems.Select(oi => new OrderLineDto(
+                        ProductName: oi.Product?.Name ?? "VISSTA Product",
+                        Variant: $"Size {oi.Size}",
+                        Quantity: oi.Quantity,
+                        UnitPrice: oi.UnitPrice.Amount,
+                        Currency: oi.UnitPrice.Currency
+                    )).ToList(),
+                    Subtotal: order.SubtotalAmount.Amount,
+                    ShippingCost: shippingCost,
+                    Total: order.TotalAmount.Amount + shippingCost,
+                    Currency: order.TotalAmount.Currency,
+                    ShippingAddress: shippingAddress,
+                    OrderTrackingUrl: trackingUrl
+                );
+
+                await emailService.SendOrderConfirmationAsync(emailDto);
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to send order confirmation email for Order {OrderId}", order.Id);
+        }
+
         return order.Id;
     }
 

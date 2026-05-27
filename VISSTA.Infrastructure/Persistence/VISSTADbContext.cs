@@ -17,7 +17,7 @@ public sealed class VISSTADbContext(DbContextOptions<VISSTADbContext> options) :
     public DbSet<CartItem> CartItems => Set<CartItem>();
     public DbSet<Review> Reviews => Set<Review>();
     public DbSet<Coupon> Coupons => Set<Coupon>();
-    public DbSet<NewsletterSubscription> NewsletterSubscriptions => Set<NewsletterSubscription>();
+    public DbSet<NewsletterSubscriber> NewsletterSubscribers => Set<NewsletterSubscriber>();
     public DbSet<WishlistItem> WishlistItems => Set<WishlistItem>();
     public DbSet<AppSetting> AppSettings => Set<AppSetting>();
     public DbSet<PasswordResetOtp> PasswordResetOtps => Set<PasswordResetOtp>();
@@ -27,6 +27,7 @@ public sealed class VISSTADbContext(DbContextOptions<VISSTADbContext> options) :
         base.OnModelCreating(builder);
 
         builder.ApplyConfiguration(new PasswordResetOtpConfiguration());
+        builder.ApplyConfiguration(new NewsletterSubscriberConfiguration());
 
         builder.Entity<Category>(entity =>
         {
@@ -181,13 +182,7 @@ public sealed class VISSTADbContext(DbContextOptions<VISSTADbContext> options) :
             entity.Property(x => x.IsActive).HasDefaultValue(true);
         });
 
-        builder.Entity<NewsletterSubscription>(entity =>
-        {
-            entity.ToTable("NewsletterSubscriptions");
-            entity.HasKey(x => x.Id);
-            entity.Property(x => x.Email).HasMaxLength(254).IsRequired();
-            entity.HasIndex(x => x.Email).IsUnique();
-        });
+
 
         builder.Entity<WishlistItem>(entity =>
         {

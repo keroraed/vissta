@@ -100,9 +100,57 @@
             <h2 class="section-title reveal">Join the Club</h2>
             <p class="section-copy reveal">Early access. New drops. Exclusive offers.</p>
             <form class="newsletter-form reveal" data-newsletter-form>
-                <input type="email" name="email" placeholder="Enter your email" required />
-                <button class="button button-primary" type="submit">Subscribe</button>
+                @Html.AntiForgeryToken()
+                <input type="email" name="email" id="newsletter-email" placeholder="Enter your email" required />
+                <button class="button button-primary" type="submit" id="newsletter-btn">Subscribe</button>
             </form>
+            <div id="newsletter-msg" style="display:none;"></div>
         </div>
     </section>
 </main>
+
+<script>
+    document.getElementById('newsletter-btn')
+        .addEventListener('click', async function(e) {
+            e.preventDefault();
+            var email = document.getElementById('newsletter-email').value;
+            var token = document.querySelector('[name=__RequestVerificationToken]').value;
+            var btn = this;
+
+            btn.disabled = true;
+            btn.textContent = 'Subscribing\u2026';
+
+            try {
+                var res = await fetch('/Newsletter/Subscribe', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'RequestVerificationToken': token
+                    },
+                    body: new URLSearchParams({ email: email, __RequestVerificationToken: token })
+                });
+                var data = await res.json();
+
+                var msg = document.getElementById('newsletter-msg');
+                msg.textContent = data.message;
+                msg.style.display = 'block';
+                msg.style.color = data.success ? 'var(--gold)' : '#e05252';
+                msg.style.fontSize = '0.75rem';
+                msg.style.letterSpacing = '0.1em';
+                msg.style.marginTop = '12px';
+                msg.style.textAlign = 'center';
+
+                if (data.success) {
+                    document.getElementById('newsletter-email').value = '';
+                }
+            } catch(err) {
+                var msg = document.getElementById('newsletter-msg');
+                msg.textContent = 'Something went wrong. Please try again.';
+                msg.style.display = 'block';
+                msg.style.color = '#e05252';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Subscribe';
+            }
+        });
+</script>

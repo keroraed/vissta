@@ -1,0 +1,62 @@
+@model VISSTA.Application.Features.Newsletter.UnsubscribeResult
+
+@{
+    ViewData["Title"] = Model.Success ? "Unsubscribed — VISSTA" : "Link Not Found — VISSTA";
+    ViewData["Description"] = Model.Success
+        ? "You have been unsubscribed from VISSTA emails."
+        : "This unsubscribe link is invalid or has already been used.";
+}
+
+<main class="simple-page">
+    <div class="shell">
+        <div class="auth-card glassmorphism" style="text-align:center;">
+
+            @if (Model.Success)
+            {
+                <!-- Gold checkmark ring -->
+                <div class="success-ring" style="margin-bottom:28px;">
+                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none"
+                         stroke="#D4AF73" stroke-width="1.6"
+                         stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                </div>
+
+                <p class="auth-eyebrow">Success</p>
+                <h1 class="auth-heading">You've been unsubscribed</h1>
+                <p class="auth-subtext">
+                    You won't receive any further emails from VISSTA.<br>
+                    We're sorry to see you go.
+                </p>
+            }
+            else
+            {
+                <!-- Error icon ring -->
+                <div style="width:64px;height:64px;border-radius:50%;
+                            border:1px solid rgba(224,82,82,0.3);
+                            background:rgba(224,82,82,0.06);
+                            display:flex;align-items:center;justify-content:center;
+                            margin:0 auto 28px;">
+                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none"
+                         stroke="#e05252" stroke-width="1.6"
+                         stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18" stroke="#e05252"/>
+                        <line x1="6" y1="6" x2="18" y2="18" stroke="#e05252"/>
+                    </svg>
+                </div>
+
+                <p class="auth-eyebrow" style="color:rgba(224,82,82,0.7);">Error</p>
+                <h1 class="auth-heading">Link not found</h1>
+                <p class="auth-subtext">
+                    This unsubscribe link is invalid or has already been used.
+                </p>
+            }
+
+            <a href="/"
+               class="button button-primary"
+               style="display:block;width:100%;text-align:center;margin-top:24px;">
+                &larr; Back to VISSTA
+            </a>
+        </div>
+    </div>
+</main>

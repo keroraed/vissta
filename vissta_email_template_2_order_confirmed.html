@@ -1,0 +1,136 @@
+
+<style>
+  .em-wrap { font-family: 'Georgia', serif; background: #040b15; padding: 2rem 1rem; }
+  .em-card { max-width: 560px; margin: 0 auto; background: #071426; border: 1px solid rgba(212,175,115,0.18); border-radius: 4px; overflow: hidden; }
+  .em-top-bar { height: 3px; background: linear-gradient(90deg, transparent, #D4AF73, transparent); }
+  .em-header { padding: 44px 48px 32px; text-align: center; border-bottom: 1px solid rgba(212,175,115,0.1); }
+  .em-logo { font-family: 'Georgia', serif; color: #D4AF73; font-size: 1.5rem; letter-spacing: 0.28em; text-transform: uppercase; }
+  .em-logo-sub { color: rgba(245,241,234,0.3); font-size: 0.58rem; letter-spacing: 0.35em; text-transform: uppercase; margin-top: 5px; }
+  .em-body { padding: 40px 48px 32px; }
+  .em-confirm-badge { display: flex; align-items: center; gap: 10px; background: rgba(212,175,115,0.07); border: 1px solid rgba(212,175,115,0.22); border-radius: 2px; padding: 12px 20px; margin-bottom: 32px; }
+  .em-confirm-badge i { font-size: 18px; color: #D4AF73; }
+  .em-confirm-badge span { color: rgba(245,241,234,0.7); font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; font-family: 'Helvetica', sans-serif; font-weight: 700; }
+  .em-heading { font-family: 'Georgia', serif; color: #F5F1EA; font-size: 1.65rem; font-weight: 400; margin: 0 0 12px; line-height: 1.3; }
+  .em-text { color: rgba(245,241,234,0.55); font-size: 0.85rem; line-height: 1.85; margin: 0 0 32px; font-family: 'Helvetica', sans-serif; font-weight: 300; }
+  .em-order-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: rgba(212,175,115,0.1); border: 1px solid rgba(212,175,115,0.1); border-radius: 2px; overflow: hidden; margin-bottom: 28px; }
+  .em-meta-cell { background: rgba(10,29,55,0.6); padding: 16px 20px; }
+  .em-meta-label { color: rgba(245,241,234,0.35); font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 5px; font-family: 'Helvetica', sans-serif; }
+  .em-meta-value { color: #F5F1EA; font-size: 0.85rem; letter-spacing: 0.05em; font-family: 'Helvetica', sans-serif; font-weight: 500; }
+  .em-section-label { color: #D4AF73; font-size: 0.58rem; letter-spacing: 0.25em; text-transform: uppercase; margin-bottom: 14px; font-family: 'Helvetica', sans-serif; font-weight: 700; }
+  .em-items { border: 1px solid rgba(212,175,115,0.1); border-radius: 2px; overflow: hidden; margin-bottom: 4px; }
+  .em-item { display: grid; grid-template-columns: 44px 1fr auto; gap: 14px; align-items: center; padding: 14px 18px; border-bottom: 1px solid rgba(212,175,115,0.07); }
+  .em-item:last-child { border-bottom: none; }
+  .em-item-img { width: 44px; height: 56px; background: rgba(212,175,115,0.08); border: 1px solid rgba(212,175,115,0.12); border-radius: 2px; display: flex; align-items: center; justify-content: center; }
+  .em-item-img i { font-size: 16px; color: rgba(212,175,115,0.35); }
+  .em-item-name { color: #F5F1EA; font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 4px; font-family: 'Helvetica', sans-serif; font-weight: 500; }
+  .em-item-detail { color: rgba(245,241,234,0.38); font-size: 0.68rem; letter-spacing: 0.1em; font-family: 'Helvetica', sans-serif; }
+  .em-item-price { color: #D4AF73; font-size: 0.85rem; font-family: 'Helvetica', sans-serif; white-space: nowrap; }
+  .em-totals { border: 1px solid rgba(212,175,115,0.1); border-radius: 2px; margin-bottom: 28px; }
+  .em-total-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; border-bottom: 1px solid rgba(212,175,115,0.07); }
+  .em-total-row:last-child { border-bottom: none; background: rgba(212,175,115,0.05); }
+  .em-total-label { color: rgba(245,241,234,0.45); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; font-family: 'Helvetica', sans-serif; }
+  .em-total-value { color: rgba(245,241,234,0.7); font-size: 0.78rem; font-family: 'Helvetica', sans-serif; }
+  .em-total-row.grand .em-total-label { color: #D4AF73; font-weight: 700; font-size: 0.68rem; }
+  .em-total-row.grand .em-total-value { color: #D4AF73; font-size: 0.95rem; font-weight: 700; }
+  .em-divider { height: 1px; background: rgba(212,175,115,0.08); margin: 0 0 24px; }
+  .em-shipping { background: rgba(212,175,115,0.04); border: 1px solid rgba(212,175,115,0.1); border-radius: 2px; padding: 18px 20px; margin-bottom: 28px; display: flex; gap: 14px; align-items: flex-start; }
+  .em-shipping i { font-size: 18px; color: rgba(212,175,115,0.5); margin-top: 1px; }
+  .em-shipping-text strong { display: block; color: rgba(245,241,234,0.7); font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; font-family: 'Helvetica', sans-serif; font-weight: 700; margin-bottom: 4px; }
+  .em-shipping-text span { color: rgba(245,241,234,0.38); font-size: 0.72rem; font-family: 'Helvetica', sans-serif; }
+  .em-btn-wrap { text-align: center; margin-bottom: 28px; }
+  .em-btn { display: inline-block; border: 1px solid rgba(212,175,115,0.35); background: rgba(212,175,115,0.08); color: #D4AF73; padding: 14px 40px; font-size: 0.6rem; font-family: 'Helvetica', sans-serif; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; border-radius: 2px; cursor: pointer; }
+  .em-footer { padding: 20px 48px 32px; border-top: 1px solid rgba(212,175,115,0.08); display: flex; align-items: center; justify-content: space-between; }
+  .em-footer-brand { color: rgba(212,175,115,0.35); font-size: 0.6rem; letter-spacing: 0.22em; text-transform: uppercase; font-family: 'Helvetica', sans-serif; }
+  .em-footer-links { display: flex; gap: 18px; }
+  .em-footer-links span { color: rgba(245,241,234,0.28); font-size: 0.62rem; letter-spacing: 0.12em; font-family: 'Helvetica', sans-serif; text-transform: uppercase; cursor: pointer; }
+</style>
+<div class="em-wrap">
+  <h2 class="sr-only">VISSTA Order Confirmation Email Template</h2>
+  <div class="em-card">
+    <div class="em-top-bar"></div>
+    <div class="em-header">
+      <div class="em-logo">VISSTA</div>
+      <div class="em-logo-sub">Quiet Luxury</div>
+    </div>
+    <div class="em-body">
+      <div class="em-confirm-badge">
+        <i class="ti ti-circle-check" aria-hidden="true"></i>
+        <span>Order Confirmed</span>
+      </div>
+      <h1 class="em-heading">Thank you,<br>Layla.</h1>
+      <p class="em-text">
+        Your order has been received and is being prepared with the utmost care.<br>
+        We'll notify you once it ships.
+      </p>
+      <div class="em-order-meta">
+        <div class="em-meta-cell">
+          <div class="em-meta-label">Order number</div>
+          <div class="em-meta-value">#VST-20847</div>
+        </div>
+        <div class="em-meta-cell">
+          <div class="em-meta-label">Order date</div>
+          <div class="em-meta-value">27 May 2025</div>
+        </div>
+        <div class="em-meta-cell">
+          <div class="em-meta-label">Payment</div>
+          <div class="em-meta-value">Visa •••• 4231</div>
+        </div>
+        <div class="em-meta-cell">
+          <div class="em-meta-label">Estimated delivery</div>
+          <div class="em-meta-value">3–5 Business Days</div>
+        </div>
+      </div>
+      <div class="em-section-label">Order Summary</div>
+      <div class="em-items">
+        <div class="em-item">
+          <div class="em-item-img"><i class="ti ti-hanger" aria-hidden="true"></i></div>
+          <div>
+            <div class="em-item-name">Silk Crepe Blouse</div>
+            <div class="em-item-detail">Ivory — Size M — Qty 1</div>
+          </div>
+          <div class="em-item-price">EGP 3,200</div>
+        </div>
+        <div class="em-item">
+          <div class="em-item-img"><i class="ti ti-hanger" aria-hidden="true"></i></div>
+          <div>
+            <div class="em-item-name">Tailored Wool Trousers</div>
+            <div class="em-item-detail">Navy — Size 38 — Qty 1</div>
+          </div>
+          <div class="em-item-price">EGP 5,800</div>
+        </div>
+      </div>
+      <div class="em-totals">
+        <div class="em-total-row">
+          <span class="em-total-label">Subtotal</span>
+          <span class="em-total-value">EGP 9,000</span>
+        </div>
+        <div class="em-total-row">
+          <span class="em-total-label">Shipping</span>
+          <span class="em-total-value">Free</span>
+        </div>
+        <div class="em-total-row grand">
+          <span class="em-total-label">Total</span>
+          <span class="em-total-value">EGP 9,000</span>
+        </div>
+      </div>
+      <div class="em-shipping">
+        <i class="ti ti-map-pin" aria-hidden="true"></i>
+        <div class="em-shipping-text">
+          <strong>Shipping to</strong>
+          <span>42 Al Corniche St, Apt 7 — Cairo, Egypt, 11511</span>
+        </div>
+      </div>
+      <div class="em-btn-wrap">
+        <div class="em-btn">Track Your Order</div>
+      </div>
+    </div>
+    <div class="em-footer">
+      <div class="em-footer-brand">© 2025 VISSTA</div>
+      <div class="em-footer-links">
+        <span>Returns</span>
+        <span>Help</span>
+        <span>Unsubscribe</span>
+      </div>
+    </div>
+  </div>
+</div>

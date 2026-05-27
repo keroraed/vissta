@@ -1,3 +1,4 @@
+using VISSTA.Application.DTOs;
 using VISSTA.Domain.Entities;
 using VISSTA.Domain.Enums;
 using VISSTA.Domain.ValueObjects;
@@ -35,10 +36,11 @@ public interface IUnitOfWork
 
 public interface IEmailService
 {
-    Task SendOrderConfirmationAsync(string toEmail, int orderId, CancellationToken cancellationToken = default);
+    Task SendOrderConfirmationAsync(OrderConfirmationEmailDto dto);
     Task SendShippingUpdateAsync(string toEmail, int orderId, OrderStatus status, CancellationToken cancellationToken = default);
     Task SendPasswordResetAsync(string toEmail, string resetLink, CancellationToken cancellationToken = default);
     Task SendPasswordResetOtpAsync(string toEmail, string otp);
+    Task SendNewsletterWelcomeAsync(string toEmail, string unsubscribeToken);
 }
 
 public interface IPaymentService
