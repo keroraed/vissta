@@ -13,11 +13,14 @@ public sealed record OrderConfirmationEmailDto(
     decimal Total,
     string Currency,
     string ShippingAddress,
-    string OrderTrackingUrl);
+    string OrderTrackingUrl,
+    decimal DiscountAmount = 0,
+    string? CouponCode = null);
 
 public sealed record OrderLineDto(
     string ProductName,
     string Variant,
     int Quantity,
     decimal UnitPrice,
-    string Currency);
+    string Currency,
+    string ImageUrl);

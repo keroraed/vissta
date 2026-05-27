@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using VISSTA.Application.DTOs;
 using VISSTA.Domain.Enums;
 
@@ -21,16 +22,18 @@ public sealed record CartViewModel(CartDto Cart);
 
 public sealed class CheckoutViewModel
 {
+    [BindNever]
     public CartDto Cart { get; set; } = new(0, [], 0, "EGP", 0);
     [MaxLength(180)]
-    public string GuestName { get; set; } = string.Empty;
+    public string? GuestName { get; set; }
 
     [EmailAddress]
-    public string GuestEmail { get; set; } = string.Empty;
+    public string? GuestEmail { get; set; }
 
     [Phone, MaxLength(32)]
-    public string GuestPhone { get; set; } = string.Empty;
+    public string? GuestPhone { get; set; }
     public ShippingAddressInput ShippingAddress { get; set; } = new();
+    [BindNever]
     public ShippingAddressInput? SavedAddress { get; set; }
     public bool UseSavedAddress { get; set; }
     public string? CouponCode { get; set; }
@@ -40,11 +43,11 @@ public sealed class CheckoutViewModel
 
 public sealed class ShippingAddressInput
 {
-    public string Street { get; set; } = string.Empty;
-    public string City { get; set; } = string.Empty;
-    public string Governorate { get; set; } = string.Empty;
-    public string PostalCode { get; set; } = string.Empty;
-    public string Country { get; set; } = "Egypt";
+    public string? Street { get; set; }
+    public string? City { get; set; }
+    public string? Governorate { get; set; }
+    public string? PostalCode { get; set; }
+    public string? Country { get; set; } = "Egypt";
     public bool IsComplete => !string.IsNullOrWhiteSpace(Street)
         && !string.IsNullOrWhiteSpace(City)
         && !string.IsNullOrWhiteSpace(Governorate)

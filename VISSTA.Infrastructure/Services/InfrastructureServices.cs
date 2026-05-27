@@ -27,6 +27,24 @@ public sealed class SmtpEmailService(IOptions<EmailSettings> options, IWebHostEn
         // Format shipping display
         var shippingDisplay = dto.ShippingCost == 0 ? "Free" : $"{dto.Currency} {dto.ShippingCost:N0}";
 
+        // Format discount display
+        var discountRowHtml = "";
+        if (dto.DiscountAmount > 0)
+        {
+            var couponLabel = !string.IsNullOrWhiteSpace(dto.CouponCode) ? $" ({dto.CouponCode})" : "";
+            discountRowHtml =
+                "<tr>" +
+                "<td class=\"em-totals-cell em-force-bg\" style=\"padding:12px 18px;border-bottom:1px solid rgba(212,175,115,0.07);\">" +
+                $"<span class=\"em-force-text-muted\" style=\"color:rgba(245,241,234,0.45);font-size:0.72rem;letter-spacing:0.12em;" +
+                $"text-transform:uppercase;font-family:'Helvetica',Arial,sans-serif;\">Discount{couponLabel}</span>" +
+                "</td>" +
+                "<td class=\"em-totals-cell em-force-bg\" align=\"right\" style=\"padding:12px 18px;border-bottom:1px solid rgba(212,175,115,0.07);\">" +
+                $"<span class=\"em-force-text-muted\" style=\"color:rgba(245,241,234,0.7);font-size:0.78rem;" +
+                $"font-family:'Helvetica',Arial,sans-serif;\">-{dto.Currency} {dto.DiscountAmount:N0}</span>" +
+                "</td>" +
+                "</tr>";
+        }
+
         html = html
             .Replace("{{CUSTOMER_FIRST_NAME}}", dto.CustomerFirstName)
             .Replace("{{ORDER_NUMBER}}", dto.OrderNumber)
@@ -36,6 +54,7 @@ public sealed class SmtpEmailService(IOptions<EmailSettings> options, IWebHostEn
             .Replace("{{ORDER_LINES_HTML}}", linesHtml)
             .Replace("{{SUBTOTAL}}", dto.Subtotal.ToString("N0"))
             .Replace("{{SHIPPING}}", shippingDisplay)
+            .Replace("{{DISCOUNT_ROW}}", discountRowHtml)
             .Replace("{{ORDER_TOTAL}}", dto.Total.ToString("N0"))
             .Replace("{{CURRENCY}}", dto.Currency)
             .Replace("{{SHIPPING_ADDRESS}}", dto.ShippingAddress)
@@ -94,20 +113,14 @@ public sealed class SmtpEmailService(IOptions<EmailSettings> options, IWebHostEn
             "<td style=\"padding:14px 18px;border-bottom:1px solid rgba(212,175,115,0.07);\">" +
             "<table cellpadding='0' cellspacing='0' role='presentation' width='100%'><tr>" +
 
-            // Product icon cell
+            // Product image cell
             "<td width='44' valign='middle' style='padding-right:14px;'>" +
             "<table cellpadding='0' cellspacing='0' role='presentation'><tr>" +
             "<td width='44' height='56' align='center' valign='middle' " +
             "style='width:44px;height:56px;background:rgba(212,175,115,0.08);" +
-            "border:1px solid rgba(212,175,115,0.12);border-radius:2px;'>" +
-            "<svg width='18' height='18' viewBox='0 0 24 24' fill='none' " +
-            "stroke='rgba(212,175,115,0.4)' stroke-width='1.6' " +
-            "stroke-linecap='round' stroke-linejoin='round' " +
-            "style='display:inline-block;vertical-align:middle;'>" +
-            "<path d='M20.38 18H3.62a1 1 0 0 1-.74-1.67L12 7' stroke='rgba(212,175,115,0.4)'/>" +
-            "<path d='M12 7V3' stroke='rgba(212,175,115,0.4)'/>" +
-            "<circle cx='12' cy='2.5' r='0.5' fill='rgba(212,175,115,0.4)' stroke='none'/>" +
-            "</svg>" +
+            "border:1px solid rgba(212,175,115,0.12);border-radius:2px;overflow:hidden;'>" +
+            $"<img src='{line.ImageUrl}' width='44' height='56' alt='Product' " +
+            "style='display:block;width:44px;height:56px;border:none;object-fit:cover;' />" +
             "</td></tr></table></td>" +
 
             // Name + variant cell

@@ -57,13 +57,17 @@ public sealed class CheckoutController(
 
         if (!ModelState.IsValid)
         {
+            var errors = string.Join("; ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
+            Console.WriteLine($"[CheckoutController] ModelState is invalid: {errors}");
+            TempData["Message"] = $"Validation failed: {errors}";
             var cartModel = await mediator.Send(new GetCartQuery(currentUser.UserId, currentUser.SessionId), cancellationToken);
-            return View(await BuildCheckoutModelAsync(cartModel, model, cancellationToken));
+            return View("Index", await BuildCheckoutModelAsync(cartModel, model, cancellationToken));
         }
 
         var cart = await mediator.Send(new GetCartQuery(currentUser.UserId, currentUser.SessionId), cancellationToken);
         if (cart.Count == 0)
         {
+            Console.WriteLine("[CheckoutController] Cart is empty.");
             TempData["Message"] = "Your cart is empty.";
             return RedirectToAction("Index", "Cart");
         }
@@ -74,8 +78,10 @@ public sealed class CheckoutController(
 
         if (shippingAddress is null || !IsComplete(shippingAddress))
         {
+            Console.WriteLine("[CheckoutController] Incomplete shipping address.");
+            TempData["Message"] = "Incomplete shipping address. Please select or enter a complete address.";
             ModelState.AddModelError(string.Empty, "Choose your saved address or enter a complete shipping address.");
-            return View(await BuildCheckoutModelAsync(cart, model, cancellationToken));
+            return View("Index", await BuildCheckoutModelAsync(cart, model, cancellationToken));
         }
 
         int orderId;
@@ -92,13 +98,33 @@ public sealed class CheckoutController(
                 model.PaymentToken,
                 model.CouponCode,
                 currentUser.IsAuthenticated ? null : model.GuestName,
-                currentUser.IsAuthenticated ? null : model.GuestEmail,
+                currentUser.IsAuthenticated ? (User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? User.Identity?.Name) : model.GuestEmail,
                 currentUser.IsAuthenticated ? null : model.GuestPhone), cancellationToken);
+        }
+        catch (FluentValidation.ValidationException ex)
+        {
+            var errors = string.Join(", ", ex.Errors.Select(e => e.ErrorMessage));
+            Console.WriteLine($"[CheckoutController] FluentValidation exception: {errors}");
+            TempData["Message"] = $"Validation failed: {errors}";
+            foreach (var error in ex.Errors)
+            {
+                ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+            }
+            return View("Index", await BuildCheckoutModelAsync(cart, model, cancellationToken));
         }
         catch (InvalidOperationException ex)
         {
+            Console.WriteLine($"[CheckoutController] InvalidOperationException: {ex.Message}");
+            TempData["Message"] = $"Order failed: {ex.Message}";
             ModelState.AddModelError(string.Empty, ex.Message);
-            return View(await BuildCheckoutModelAsync(cart, model, cancellationToken));
+            return View("Index", await BuildCheckoutModelAsync(cart, model, cancellationToken));
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[CheckoutController] Unexpected exception: {ex.Message}\n{ex.StackTrace}");
+            TempData["Message"] = $"Unexpected error: {ex.Message}";
+            ModelState.AddModelError(string.Empty, ex.Message);
+            return View("Index", await BuildCheckoutModelAsync(cart, model, cancellationToken));
         }
 
         return RedirectToAction(nameof(Success), new { id = orderId });
@@ -212,7 +238,12 @@ public sealed class CheckoutController(
     };
 
     private static Address ToAddress(ShippingAddressInput input) =>
-        new(input.Street, input.City, input.Governorate, input.PostalCode, input.Country);
+        new(
+            input.Street ?? string.Empty,
+            input.City ?? string.Empty,
+            input.Governorate ?? string.Empty,
+            input.PostalCode ?? string.Empty,
+            input.Country ?? "Egypt");
 
     private static bool IsComplete(Address address) =>
         !string.IsNullOrWhiteSpace(address.Street)
