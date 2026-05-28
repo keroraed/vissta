@@ -1,15 +1,68 @@
 @model AdminCategoryFormViewModel
-<form method="post" class="admin-form glassmorphism">
+<form method="post" class="admin-form glassmorphism" enctype="multipart/form-data">
     @Html.AntiForgeryToken()
     <div asp-validation-summary="ModelOnly" class="form-summary"></div>
-    <input asp-for="Name" placeholder="Name" />
-    <input asp-for="Slug" placeholder="Slug (auto if blank)" />
-    <select asp-for="ParentCategoryId">
-        <option value="">No parent</option>
-        @foreach (var category in Model.Categories)
+    
+    <label class="field">
+        <span>Category Name</span>
+        <input asp-for="Name" placeholder="Name" required />
+    </label>
+    
+    <label class="field">
+        <span>Slug</span>
+        <input asp-for="Slug" placeholder="Slug (auto if blank)" />
+    </label>
+    
+    <label class="field">
+        <span>Parent Category</span>
+        <select asp-for="ParentCategoryId">
+            <option value="">No parent</option>
+            @foreach (var category in Model.Categories)
+            {
+                <option value="@category.Id" selected="@(Model.ParentCategoryId == category.Id)">@category.Name</option>
+            }
+        </select>
+    </label>
+
+    <label class="field">
+        <span>Category Image</span>
+        @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
         {
-            <option value="@category.Id" selected="@(Model.ParentCategoryId == category.Id)">@category.Name</option>
+            <div class="existing-image-preview" style="margin-bottom: 12px; display: flex; align-items: center; gap: 14px;">
+                <img src="@Model.ImageUrl" alt="Category Image" style="width: 80px; height: 80px; object-fit: cover; border-radius: 4px; border: 1px solid rgba(212,175,115,0.2);" />
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.85rem; color: rgba(245,241,234,0.75);">
+                    <input type="checkbox" asp-for="RemoveImage" />
+                    <span>Remove current image</span>
+                </label>
+            </div>
         }
-    </select>
-    <button class="button button-primary" type="submit">Save</button>
+        <input type="file" asp-for="ImageFile" accept="image/*" style="border: 1px dashed rgba(212,175,115,0.25); padding: 10px; border-radius: 4px; background: rgba(10,29,55,0.4);" />
+    </label>
+
+    <div style="margin-top: 10px;">
+        <button class="button button-primary" type="submit">Save</button>
+    </div>
 </form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const nameInput = document.getElementById('Name');
+        const slugInput = document.getElementById('Slug');
+        if (nameInput && slugInput) {
+            nameInput.addEventListener('input', function () {
+                const currentSlug = slugInput.value;
+                const slugified = nameInput.value
+                    .toLowerCase()
+                    .replace(/[^a-z0-9\s-]/g, '')
+                    .trim()
+                    .replace(/\s+/g, '-')
+                    .replace(/-+/g, '-');
+                
+                if (!currentSlug || currentSlug === slugInput.dataset.autoSlug) {
+                    slugInput.value = slugified;
+                    slugInput.dataset.autoSlug = slugified;
+                }
+            });
+        }
+    });
+</script>

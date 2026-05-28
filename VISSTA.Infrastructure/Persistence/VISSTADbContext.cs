@@ -35,6 +35,7 @@ public sealed class VISSTADbContext(DbContextOptions<VISSTADbContext> options) :
             entity.HasKey(x => x.Id);
             entity.Property(x => x.Name).HasMaxLength(120).IsRequired();
             entity.Property(x => x.Slug).HasMaxLength(140).IsRequired();
+            entity.Property(x => x.ImageUrl).HasMaxLength(500);
             entity.HasIndex(x => x.Slug).IsUnique();
             entity.HasOne(x => x.ParentCategory).WithMany(x => x.Children).HasForeignKey(x => x.ParentCategoryId).OnDelete(DeleteBehavior.Restrict);
             entity.Metadata.FindNavigation(nameof(Category.Children))?.SetPropertyAccessMode(PropertyAccessMode.Field);
@@ -207,18 +208,21 @@ public sealed class VISSTADbContext(DbContextOptions<VISSTADbContext> options) :
     private static void SeedCatalog(ModelBuilder builder)
     {
         builder.Entity<Category>().HasData(
-            new { Id = 1, Name = "Women's", Slug = "women", ParentCategoryId = (int?)null },
-            new { Id = 2, Name = "Men's", Slug = "men", ParentCategoryId = (int?)null },
-            new { Id = 3, Name = "Accessories", Slug = "accessories", ParentCategoryId = (int?)null });
+            new { Id = 1, Name = "Women's", Slug = "women", ParentCategoryId = (int?)null, ImageUrl = (string?)null },
+            new { Id = 2, Name = "Men's", Slug = "men", ParentCategoryId = (int?)null, ImageUrl = (string?)null },
+            new { Id = 3, Name = "Accessories", Slug = "accessories", ParentCategoryId = (int?)null, ImageUrl = (string?)null },
+            new { Id = 4, Name = "T-shirt", Slug = "t-shirt", ParentCategoryId = (int?)2, ImageUrl = (string?)null },
+            new { Id = 5, Name = "Shirts", Slug = "shirts", ParentCategoryId = (int?)2, ImageUrl = (string?)null },
+            new { Id = 6, Name = "Bottoms", Slug = "bottoms", ParentCategoryId = (int?)2, ImageUrl = (string?)null });
 
         var products = new[]
         {
-            new { Id = 1, Name = "Textured Knit Polo", Slug = "textured-knit-polo", Description = "A breathable cream knit polo with understated structure.", Stock = 34, SKU = "VIS-MEN-POLO-001", CategoryId = 2, IsActive = true, IsFeatured = true, UnitsSold = 46, PriceAmount = 750m, Currency = "EGP" },
-            new { Id = 2, Name = "Ribbed Grey Polo", Slug = "ribbed-grey-polo", Description = "A soft ribbed knit in a refined graphite tone.", Stock = 28, SKU = "VIS-MEN-POLO-002", CategoryId = 2, IsActive = true, IsFeatured = true, UnitsSold = 39, PriceAmount = 700m, Currency = "EGP" },
-            new { Id = 3, Name = "Modern Knit Polo", Slug = "modern-knit-polo", Description = "Clean lines, open collar, and an easy old-money drape.", Stock = 41, SKU = "VIS-MEN-POLO-003", CategoryId = 2, IsActive = true, IsFeatured = true, UnitsSold = 44, PriceAmount = 700m, Currency = "EGP" },
-            new { Id = 4, Name = "Contrast Knit Tee", Slug = "contrast-knit-tee", Description = "A dark elevated tee with quiet contrast texture.", Stock = 22, SKU = "VIS-MEN-TEE-001", CategoryId = 2, IsActive = true, IsFeatured = false, UnitsSold = 23, PriceAmount = 650m, Currency = "EGP" },
-            new { Id = 5, Name = "Ivory Resort Shirt", Slug = "ivory-resort-shirt", Description = "A relaxed summer shirt for sharp, unforced dressing.", Stock = 18, SKU = "VIS-MEN-SHIRT-001", CategoryId = 2, IsActive = true, IsFeatured = false, UnitsSold = 18, PriceAmount = 880m, Currency = "EGP" },
-            new { Id = 6, Name = "Navy Tailored Trouser", Slug = "navy-tailored-trouser", Description = "A minimal trouser cut for movement and polish.", Stock = 16, SKU = "VIS-MEN-PANT-001", CategoryId = 2, IsActive = true, IsFeatured = false, UnitsSold = 14, PriceAmount = 1050m, Currency = "EGP" },
+            new { Id = 1, Name = "Textured Knit Polo", Slug = "textured-knit-polo", Description = "A breathable cream knit polo with understated structure.", Stock = 34, SKU = "VIS-MEN-POLO-001", CategoryId = 4, IsActive = true, IsFeatured = true, UnitsSold = 46, PriceAmount = 750m, Currency = "EGP" },
+            new { Id = 2, Name = "Ribbed Grey Polo", Slug = "ribbed-grey-polo", Description = "A soft ribbed knit in a refined graphite tone.", Stock = 28, SKU = "VIS-MEN-POLO-002", CategoryId = 4, IsActive = true, IsFeatured = true, UnitsSold = 39, PriceAmount = 700m, Currency = "EGP" },
+            new { Id = 3, Name = "Modern Knit Polo", Slug = "modern-knit-polo", Description = "Clean lines, open collar, and an easy old-money drape.", Stock = 41, SKU = "VIS-MEN-POLO-003", CategoryId = 4, IsActive = true, IsFeatured = true, UnitsSold = 44, PriceAmount = 700m, Currency = "EGP" },
+            new { Id = 4, Name = "Contrast Knit Tee", Slug = "contrast-knit-tee", Description = "A dark elevated tee with quiet contrast texture.", Stock = 22, SKU = "VIS-MEN-TEE-001", CategoryId = 4, IsActive = true, IsFeatured = false, UnitsSold = 23, PriceAmount = 650m, Currency = "EGP" },
+            new { Id = 5, Name = "Ivory Resort Shirt", Slug = "ivory-resort-shirt", Description = "A relaxed summer shirt for sharp, unforced dressing.", Stock = 18, SKU = "VIS-MEN-SHIRT-001", CategoryId = 5, IsActive = true, IsFeatured = false, UnitsSold = 18, PriceAmount = 880m, Currency = "EGP" },
+            new { Id = 6, Name = "Navy Tailored Trouser", Slug = "navy-tailored-trouser", Description = "A minimal trouser cut for movement and polish.", Stock = 16, SKU = "VIS-MEN-PANT-001", CategoryId = 6, IsActive = true, IsFeatured = false, UnitsSold = 14, PriceAmount = 1050m, Currency = "EGP" },
             new { Id = 7, Name = "Pearl Knit Top", Slug = "pearl-knit-top", Description = "Soft pearl-toned knitwear with a sculpted neckline.", Stock = 30, SKU = "VIS-WOM-TOP-001", CategoryId = 1, IsActive = true, IsFeatured = false, UnitsSold = 32, PriceAmount = 720m, Currency = "EGP" },
             new { Id = 8, Name = "Champagne Linen Shirt", Slug = "champagne-linen-shirt", Description = "Light linen with a softened golden hue.", Stock = 24, SKU = "VIS-WOM-SHIRT-001", CategoryId = 1, IsActive = true, IsFeatured = false, UnitsSold = 27, PriceAmount = 890m, Currency = "EGP" },
             new { Id = 9, Name = "Cream Column Skirt", Slug = "cream-column-skirt", Description = "A clean column silhouette for quiet evening dressing.", Stock = 14, SKU = "VIS-WOM-SKIRT-001", CategoryId = 1, IsActive = true, IsFeatured = false, UnitsSold = 12, PriceAmount = 980m, Currency = "EGP" },

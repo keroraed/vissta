@@ -197,6 +197,9 @@ public sealed class AdminCategoryFormViewModel
     public string Name { get; set; } = string.Empty;
     public string Slug { get; set; } = string.Empty;
     public int? ParentCategoryId { get; set; }
+    public string? ImageUrl { get; set; }
+    public IFormFile? ImageFile { get; set; }
+    public bool RemoveImage { get; set; }
     public IReadOnlyCollection<CategoryDto> Categories { get; set; } = Array.Empty<CategoryDto>();
 }
 

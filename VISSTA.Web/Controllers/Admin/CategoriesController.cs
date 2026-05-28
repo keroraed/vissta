@@ -1,9 +1,14 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using VISSTA.Application.Features.Categories;
 using VISSTA.Web.Models;
 
@@ -11,7 +16,7 @@ namespace VISSTA.Web.Controllers.Admin;
 
 [Authorize(Policy = "AdminOnly")]
 [Route("admin/categories")]
-public sealed class CategoriesController(IMediator mediator) : Controller
+public sealed class CategoriesController(IMediator mediator, IWebHostEnvironment environment) : Controller
 {
     [HttpGet("")]
     public async Task<IActionResult> Index(CancellationToken cancellationToken)
@@ -44,7 +49,8 @@ public sealed class CategoriesController(IMediator mediator) : Controller
 
         try
         {
-            await mediator.Send(new CreateCategoryCommand(model.Name, model.Slug, model.ParentCategoryId), cancellationToken);
+            var imageUrl = await SaveCategoryImageAsync(model.ImageFile, cancellationToken);
+            await mediator.Send(new CreateCategoryCommand(model.Name, model.Slug, model.ParentCategoryId, imageUrl), cancellationToken);
             return RedirectToAction(nameof(Index));
         }
         catch (ValidationException ex)
@@ -75,6 +81,7 @@ public sealed class CategoriesController(IMediator mediator) : Controller
             Name = category.Name,
             Slug = category.Slug,
             ParentCategoryId = category.ParentCategoryId,
+            ImageUrl = category.ImageUrl,
             Categories = categories.Where(c => c.Id != category.Id).ToList()
         });
     }
@@ -96,13 +103,34 @@ public sealed class CategoriesController(IMediator mediator) : Controller
 
         if (!ModelState.IsValid)
         {
+            var existing = await mediator.Send(new GetCategoryByIdQuery(id), cancellationToken);
+            if (existing is not null)
+            {
+                model.ImageUrl = existing.ImageUrl;
+            }
             model.Categories = model.Categories.Where(c => c.Id != id).ToList();
             return View("~/Views/Admin/Categories/Edit.cshtml", model);
         }
 
         try
         {
-            var updated = await mediator.Send(new UpdateCategoryCommand(id, model.Name, model.Slug, model.ParentCategoryId), cancellationToken);
+            var existing = await mediator.Send(new GetCategoryByIdQuery(id), cancellationToken);
+            if (existing is null)
+            {
+                return NotFound();
+            }
+
+            var imageUrl = existing.ImageUrl;
+            if (model.RemoveImage)
+            {
+                imageUrl = null;
+            }
+            if (model.ImageFile is not null)
+            {
+                imageUrl = await SaveCategoryImageAsync(model.ImageFile, cancellationToken);
+            }
+
+            var updated = await mediator.Send(new UpdateCategoryCommand(id, model.Name, model.Slug, model.ParentCategoryId, imageUrl), cancellationToken);
             if (!updated)
             {
                 return NotFound();
@@ -118,6 +146,11 @@ public sealed class CategoriesController(IMediator mediator) : Controller
             ModelState.AddModelError(string.Empty, "A category with the same slug already exists.");
         }
 
+        var fallback = await mediator.Send(new GetCategoryByIdQuery(id), cancellationToken);
+        if (fallback is not null)
+        {
+            model.ImageUrl = fallback.ImageUrl;
+        }
         model.Categories = model.Categories.Where(c => c.Id != id).ToList();
         return View("~/Views/Admin/Categories/Edit.cshtml", model);
     }
@@ -133,6 +166,25 @@ public sealed class CategoriesController(IMediator mediator) : Controller
         }
 
         return RedirectToAction(nameof(Index));
+    }
+
+    private async Task<string?> SaveCategoryImageAsync(IFormFile? file, CancellationToken cancellationToken)
+    {
+        if (file is null || file.Length == 0)
+        {
+            return null;
+        }
+
+        var uploadsRoot = Path.Combine(environment.WebRootPath, "uploads");
+        Directory.CreateDirectory(uploadsRoot);
+
+        var extension = Path.GetExtension(file.FileName);
+        var fileName = $"cat-{Guid.NewGuid():N}{extension}";
+        var filePath = Path.Combine(uploadsRoot, fileName);
+        await using var stream = new FileStream(filePath, FileMode.Create);
+        await file.CopyToAsync(stream, cancellationToken);
+
+        return $"/uploads/{fileName}";
     }
 
     private static string Slugify(string value)
