@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,323 +9,356 @@
   <title>Welcome to VISSTA — The Edit</title>
   <style type="text/css">
     @media only screen and (max-width: 600px) {
-      .em-body-td { padding: 32px 24px !important; }
-      .em-header-td { padding: 28px 24px 20px !important; }
-      .em-hero-td { padding: 40px 24px 36px !important; }
-      .em-footer-td { padding: 16px 24px 24px !important; }
-      .em-outer-table { width: 100% !important; }
-      .em-product-td { display: block !important; width: 100% !important; padding-right: 0 !important; padding-bottom: 14px !important; }
+      .em-body-td {
+        padding: 32px 24px !important;
+      }
+
+      .em-header-td {
+        padding: 28px 24px 20px !important;
+      }
+
+      .em-hero-td {
+        padding: 40px 24px 36px !important;
+      }
+
+      .em-footer-td {
+        padding: 16px 24px 24px !important;
+      }
+
+      .em-outer-table {
+        width: 100% !important;
+      }
+
+      .em-product-td {
+        display: block !important;
+        width: 100% !important;
+        padding-right: 0 !important;
+        padding-bottom: 14px !important;
+      }
     }
 
     @media (prefers-color-scheme: dark) {
-      .em-force-bg         { background-color: #071426 !important; }
-      .em-force-body       { background-color: #040b15 !important; }
-      .em-force-card       { background-color: #071426 !important;
-                             border-color: rgba(212,175,115,0.18) !important; }
-      .em-force-text-cream { color: #F5F1EA !important; }
-      .em-force-text-gold  { color: #D4AF73 !important; }
-      .em-force-text-muted { color: rgba(245,241,234,0.62) !important; }
-      .em-force-text-dim   { color: rgba(245,241,234,0.3) !important; }
-      .em-hero-band        { background: rgba(212,175,115,0.05) !important; }
-      .em-cta-band         { background: rgba(212,175,115,0.06) !important; }
-      .em-product-card     { background: #071426 !important; border-color: rgba(212,175,115,0.1) !important; }
-      .em-product-img      { background: rgba(212,175,115,0.07) !important; }
-      .em-social-btn       { background: rgba(212,175,115,0.05) !important; }
+      .em-force-bg {
+        background-color: #071426 !important;
+      }
+
+      .em-force-body {
+        background-color: #040b15 !important;
+      }
+
+      .em-force-card {
+        background-color: #071426 !important;
+        border-color: rgba(212, 175, 115, 0.18) !important;
+      }
+
+      .em-force-text-cream {
+        color: #F5F1EA !important;
+      }
+
+      .em-force-text-gold {
+        color: #D4AF73 !important;
+      }
+
+      .em-force-text-muted {
+        color: rgba(245, 241, 234, 0.62) !important;
+      }
+
+      .em-force-text-dim {
+        color: rgba(245, 241, 234, 0.3) !important;
+      }
+
+      .em-hero-band {
+        background: rgba(212, 175, 115, 0.05) !important;
+      }
+
+      .em-cta-band {
+        background: rgba(212, 175, 115, 0.06) !important;
+      }
+
+      .em-product-card {
+        background: #071426 !important;
+        border-color: rgba(212, 175, 115, 0.1) !important;
+      }
+
+      .em-product-img {
+        background: rgba(212, 175, 115, 0.07) !important;
+      }
+
+      .em-social-btn {
+        background: rgba(212, 175, 115, 0.05) !important;
+      }
     }
 
-    [data-ogsc] .em-force-bg         { background-color: #071426 !important; }
-    [data-ogsc] .em-force-body       { background-color: #040b15 !important; }
-    [data-ogsc] .em-force-card       { background-color: #071426 !important; }
-    [data-ogsc] .em-force-text-cream { color: #F5F1EA !important; }
-    [data-ogsc] .em-force-text-gold  { color: #D4AF73 !important; }
-    [data-ogsc] .em-force-text-muted { color: rgba(245,241,234,0.62) !important; }
-    [data-ogsc] .em-force-text-dim   { color: rgba(245,241,234,0.3) !important; }
-    [data-ogsc] .em-hero-band        { background: rgba(212,175,115,0.05) !important; }
-    [data-ogsc] .em-cta-band         { background: rgba(212,175,115,0.06) !important; }
-    [data-ogsc] .em-product-card     { background: #071426 !important; }
-    [data-ogsc] .em-product-img      { background: rgba(212,175,115,0.07) !important; }
-    [data-ogsc] .em-social-btn       { background: rgba(212,175,115,0.05) !important; }
+    [data-ogsc] .em-force-bg {
+      background-color: #071426 !important;
+    }
+
+    [data-ogsc] .em-force-body {
+      background-color: #040b15 !important;
+    }
+
+    [data-ogsc] .em-force-card {
+      background-color: #071426 !important;
+    }
+
+    [data-ogsc] .em-force-text-cream {
+      color: #F5F1EA !important;
+    }
+
+    [data-ogsc] .em-force-text-gold {
+      color: #D4AF73 !important;
+    }
+
+    [data-ogsc] .em-force-text-muted {
+      color: rgba(245, 241, 234, 0.62) !important;
+    }
+
+    [data-ogsc] .em-force-text-dim {
+      color: rgba(245, 241, 234, 0.3) !important;
+    }
+
+    [data-ogsc] .em-hero-band {
+      background: rgba(212, 175, 115, 0.05) !important;
+    }
+
+    [data-ogsc] .em-cta-band {
+      background: rgba(212, 175, 115, 0.06) !important;
+    }
+
+    [data-ogsc] .em-product-card {
+      background: #071426 !important;
+    }
+
+    [data-ogsc] .em-product-img {
+      background: rgba(212, 175, 115, 0.07) !important;
+    }
+
+    [data-ogsc] .em-social-btn {
+      background: rgba(212, 175, 115, 0.05) !important;
+    }
   </style>
 </head>
+
 <body class="em-force-body" style="margin:0;padding:0;background:#040b15;font-family:'Helvetica',Arial,sans-serif;">
-  <table class="em-force-body" width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background:#040b15;padding:32px 16px;">
-    <tr><td align="center" class="em-force-body">
-      <table class="em-force-card em-outer-table" width="560" cellpadding="0" cellspacing="0" role="presentation"
-             style="max-width:560px;background:#071426;
+  <table class="em-force-body" width="100%" cellpadding="0" cellspacing="0" role="presentation"
+    style="background:#040b15;padding:32px 16px;">
+    <tr>
+      <td align="center" class="em-force-body">
+        <table class="em-force-card em-outer-table" width="560" cellpadding="0" cellspacing="0" role="presentation"
+          style="max-width:560px;background:#071426;
                     border:1px solid rgba(212,175,115,0.18);border-radius:4px;
                     overflow:hidden;">
 
-        <!-- Gold top bar -->
-        <tr><td height="3"
-                style="background:linear-gradient(90deg,transparent,#D4AF73,transparent);
-                       font-size:0;line-height:0;">&nbsp;</td></tr>
+          <!-- Gold top bar -->
+          <tr>
+            <td height="3" style="background:linear-gradient(90deg,transparent,#D4AF73,transparent);
+                       font-size:0;line-height:0;">&nbsp;</td>
+          </tr>
 
-        <!-- Header -->
-        <tr><td class="em-header-td em-force-bg" style="padding:36px 48px 28px;
+          <!-- Header -->
+          <tr>
+            <td class="em-header-td em-force-bg" style="padding:36px 48px 28px;
                         border-bottom:1px solid rgba(212,175,115,0.1);">
-          <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
-            <tr>
-              <td class="em-force-text-gold" valign="middle"
-                  style="font-family:Georgia,serif;color:#D4AF73;font-size:1.4rem;
+              <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                <tr>
+                  <td class="em-force-text-gold" valign="middle" style="font-family:Georgia,serif;color:#D4AF73;font-size:1.4rem;
                          letter-spacing:0.28em;text-transform:uppercase;">VISSTA</td>
-              <td align="right" valign="middle" class="em-force-text-dim"
-                  style="color:rgba(212,175,115,0.4);font-size:0.58rem;letter-spacing:0.22em;
+                  <td align="right" valign="middle" class="em-force-text-dim" style="color:rgba(212,175,115,0.4);font-size:0.58rem;letter-spacing:0.22em;
                          text-transform:uppercase;font-family:'Helvetica',Arial,sans-serif;
                          text-align:right;line-height:1.6;">The Edit<br>Welcome Issue</td>
-            </tr>
-          </table>
-        </td></tr>
+                </tr>
+              </table>
+            </td>
+          </tr>
 
-        <!-- Hero band -->
-        <tr><td class="em-hero-td em-hero-band" style="background:rgba(212,175,115,0.05);
+          <!-- Hero band -->
+          <tr>
+            <td class="em-hero-td em-hero-band" style="background:rgba(212,175,115,0.05);
                         border-bottom:1px solid rgba(212,175,115,0.1);padding:52px 48px 44px;">
 
-          <!-- Season tag pill -->
-          <div style="display:inline-block;border:1px solid rgba(212,175,115,0.3);
+              <!-- Season tag pill -->
+              <div style="display:inline-block;border:1px solid rgba(212,175,115,0.3);
                       color:#D4AF73;font-size:0.58rem;letter-spacing:0.26em;
                       text-transform:uppercase;padding:5px 14px;border-radius:1px;
-                      margin-bottom:22px;font-family:'Helvetica',Arial,sans-serif;font-weight:700;">WELCOME TO VISSTA</div>
+                      margin-bottom:22px;font-family:'Helvetica',Arial,sans-serif;font-weight:700;">WELCOME TO VISSTA
+              </div>
 
-          <!-- Hero heading -->
-          <h1 class="em-force-text-cream" style="font-family:Georgia,serif;color:#F5F1EA;font-size:2.1rem;
+              <!-- Hero heading -->
+              <h1 class="em-force-text-cream" style="font-family:Georgia,serif;color:#F5F1EA;font-size:2.1rem;
                      font-weight:400;line-height:1.22;margin:0 0 18px;letter-spacing:0.01em;">
-            Dressed for<br><em class="em-force-text-gold" style="color:#D4AF73;font-style:italic;">the quiet ones.</em></h1>
+                Dressed for<br><em class="em-force-text-gold" style="color:#D4AF73;font-style:italic;">the quiet
+                  ones.</em></h1>
 
-          <!-- Subtext -->
-          <p class="em-force-text-muted" style="color:rgba(245,241,234,0.5);font-size:0.85rem;line-height:1.85;
+              <!-- Subtext -->
+              <p class="em-force-text-muted" style="color:rgba(245,241,234,0.5);font-size:0.85rem;line-height:1.85;
                     margin:0;font-family:'Helvetica',Arial,sans-serif;font-weight:300;max-width:400px;">
-            This season, we return to restraint. Fluid silhouettes, considered
-            fabrics, and a palette drawn from first light on water.</p>
-        </td></tr>
+                This season, we return to restraint. Fluid silhouettes, considered
+                fabrics, and a palette drawn from first light on water.</p>
+            </td>
+          </tr>
 
-        <!-- Body -->
-        <tr><td class="em-body-td em-force-bg" style="padding:36px 48px;">
+          <!-- Body -->
+          <tr>
+            <td class="em-body-td em-force-bg" style="padding:36px 48px;">
 
-          <!-- Diamond section rule -->
-          <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom:28px;">
-            <tr>
-              <td style="height:1px;background:rgba(212,175,115,0.1);font-size:0;line-height:0;">&nbsp;</td>
-              <td width="30" align="center" style="padding:0 8px;background:#071426;">
-                <span class="em-force-text-dim" style="color:rgba(212,175,115,0.35);font-size:0.5rem;">&#9670;</span>
-              </td>
-              <td style="height:1px;background:rgba(212,175,115,0.1);font-size:0;line-height:0;">&nbsp;</td>
-            </tr>
-          </table>
+              <!-- Diamond section rule -->
+              <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom:28px;">
+                <tr>
+                  <td style="height:1px;background:rgba(212,175,115,0.1);font-size:0;line-height:0;">&nbsp;</td>
+                  <td width="30" align="center" style="padding:0 8px;background:#071426;">
+                    <span class="em-force-text-dim"
+                      style="color:rgba(212,175,115,0.35);font-size:0.5rem;">&#9670;</span>
+                  </td>
+                  <td style="height:1px;background:rgba(212,175,115,0.1);font-size:0;line-height:0;">&nbsp;</td>
+                </tr>
+              </table>
 
-          <!-- New This Week label -->
-          <div class="em-force-text-gold" style="color:#D4AF73;font-size:0.58rem;letter-spacing:0.26em;
+              <!-- New This Week label -->
+              <div class="em-force-text-gold"
+                style="color:#D4AF73;font-size:0.58rem;letter-spacing:0.26em;
                       text-transform:uppercase;margin-bottom:18px;font-family:'Helvetica',Arial,sans-serif;font-weight:700;">New This Week</div>
 
-          <!-- 2-column product card grid -->
-          <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom:28px;">
-            <tr>
-              <!-- Card 1 -->
-              <td class="em-product-td" width="50%" valign="top" style="padding-right:7px;">
-                <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
-                       class="em-product-card"
-                       style="border:1px solid rgba(212,175,115,0.1);border-radius:2px;overflow:hidden;">
-                  <!-- Image area -->
-                  <tr><td class="em-product-img" align="center" valign="middle"
-                          style="height:110px;background:rgba(212,175,115,0.07);
-                                 border-bottom:1px solid rgba(212,175,115,0.08);">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
-                         stroke="rgba(212,175,115,0.2)" stroke-width="1.6"
-                         stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M20.38 18H3.62a1 1 0 0 1-.74-1.67L12 7" stroke="rgba(212,175,115,0.2)"/>
-                      <path d="M12 7V3" stroke="rgba(212,175,115,0.2)"/>
-                      <circle cx="12" cy="2.5" r="0.5" fill="rgba(212,175,115,0.2)" stroke="none"/>
-                    </svg>
-                  </td></tr>
-                  <!-- Info area -->
-                  <tr><td style="padding:14px 16px;">
-                    <div class="em-force-text-gold" style="color:rgba(212,175,115,0.5);font-size:0.58rem;letter-spacing:0.2em;
-                                text-transform:uppercase;margin-bottom:5px;font-family:'Helvetica',Arial,sans-serif;">Women's</div>
-                    <div class="em-force-text-cream" style="color:#F5F1EA;font-size:0.8rem;letter-spacing:0.06em;
-                                text-transform:uppercase;margin-bottom:4px;font-family:'Helvetica',Arial,sans-serif;font-weight:500;">Linen Wrap Dress</div>
-                    <div class="em-force-text-gold" style="color:#D4AF73;font-size:0.75rem;font-family:'Helvetica',Arial,sans-serif;">EGP 4,500</div>
-                  </td></tr>
-                </table>
-              </td>
-
-              <!-- Card 2 -->
-              <td class="em-product-td" width="50%" valign="top" style="padding-left:7px;">
-                <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
-                       class="em-product-card"
-                       style="border:1px solid rgba(212,175,115,0.1);border-radius:2px;overflow:hidden;">
-                  <!-- Image area -->
-                  <tr><td class="em-product-img" align="center" valign="middle"
-                          style="height:110px;background:rgba(212,175,115,0.07);
-                                 border-bottom:1px solid rgba(212,175,115,0.08);">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
-                         stroke="rgba(212,175,115,0.2)" stroke-width="1.6"
-                         stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M20.38 18H3.62a1 1 0 0 1-.74-1.67L12 7" stroke="rgba(212,175,115,0.2)"/>
-                      <path d="M12 7V3" stroke="rgba(212,175,115,0.2)"/>
-                      <circle cx="12" cy="2.5" r="0.5" fill="rgba(212,175,115,0.2)" stroke="none"/>
-                    </svg>
-                  </td></tr>
-                  <!-- Info area -->
-                  <tr><td style="padding:14px 16px;">
-                    <div class="em-force-text-gold" style="color:rgba(212,175,115,0.5);font-size:0.58rem;letter-spacing:0.2em;
-                                text-transform:uppercase;margin-bottom:5px;font-family:'Helvetica',Arial,sans-serif;">Men's</div>
-                    <div class="em-force-text-cream" style="color:#F5F1EA;font-size:0.8rem;letter-spacing:0.06em;
-                                text-transform:uppercase;margin-bottom:4px;font-family:'Helvetica',Arial,sans-serif;font-weight:500;">Merino Knit Polo</div>
-                    <div class="em-force-text-gold" style="color:#D4AF73;font-size:0.75rem;font-family:'Helvetica',Arial,sans-serif;">EGP 3,100</div>
-                  </td></tr>
-                </table>
-              </td>
-            </tr>
-          </table>
-
-          <!-- Diamond section rule -->
-          <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom:28px;">
-            <tr>
-              <td style="height:1px;background:rgba(212,175,115,0.1);font-size:0;line-height:0;">&nbsp;</td>
-              <td width="30" align="center" style="padding:0 8px;background:#071426;">
-                <span class="em-force-text-dim" style="color:rgba(212,175,115,0.35);font-size:0.5rem;">&#9670;</span>
-              </td>
-              <td style="height:1px;background:rgba(212,175,115,0.1);font-size:0;line-height:0;">&nbsp;</td>
-            </tr>
-          </table>
-
-          <!-- Pull quote -->
-          <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom:28px;">
-            <tr><td style="border-left:2px solid rgba(212,175,115,0.3);padding:14px 0 14px 22px;">
-              <p class="em-force-text-cream" style="font-family:Georgia,serif;color:rgba(245,241,234,0.7);font-size:1.05rem;
-                        font-weight:400;font-style:italic;line-height:1.7;margin:0 0 8px;">
-                &ldquo;Elegance is not about being noticed &mdash; it is about being remembered.&rdquo;</p>
-              <div class="em-force-text-gold" style="color:rgba(212,175,115,0.45);font-size:0.6rem;letter-spacing:0.2em;
-                          text-transform:uppercase;font-family:'Helvetica',Arial,sans-serif;">&mdash; Giorgio Armani</div>
-            </td></tr>
-          </table>
-
-          <!-- Diamond section rule -->
-          <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom:28px;">
-            <tr>
-              <td style="height:1px;background:rgba(212,175,115,0.1);font-size:0;line-height:0;">&nbsp;</td>
-              <td width="30" align="center" style="padding:0 8px;background:#071426;">
-                <span class="em-force-text-dim" style="color:rgba(212,175,115,0.35);font-size:0.5rem;">&#9670;</span>
-              </td>
-              <td style="height:1px;background:rgba(212,175,115,0.1);font-size:0;line-height:0;">&nbsp;</td>
-            </tr>
-          </table>
-
-          <!-- CTA band -->
-          <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
-                 class="em-cta-band"
-                 style="background:rgba(212,175,115,0.06);border:1px solid rgba(212,175,115,0.14);
-                        border-radius:2px;margin-bottom:28px;">
-            <tr><td style="padding:28px 32px;text-align:center;">
-              <h2 class="em-force-text-cream" style="font-family:Georgia,serif;color:#F5F1EA;font-size:1.15rem;
-                         margin:0 0 10px;font-weight:400;">The Full SS25 Collection</h2>
-              <p class="em-force-text-muted" style="color:rgba(245,241,234,0.45);font-size:0.78rem;line-height:1.75;
-                        margin:0 0 20px;font-family:'Helvetica',Arial,sans-serif;font-weight:300;">
-                Sixty-four pieces. Each made to be worn for years, not seasons.</p>
-              <table cellpadding="0" cellspacing="0" role="presentation" style="margin:0 auto;">
-                <tr><td align="center">
-                  <a href="https://vissta.com/shop" target="_blank"
-                     style="display:inline-block;background:#D4AF73;color:#071426;padding:13px 36px;
-                            font-size:0.6rem;font-family:'Helvetica',Arial,sans-serif;font-weight:700;
-                            letter-spacing:0.2em;text-transform:uppercase;border-radius:2px;
-                            text-decoration:none;">Shop the Collection</a>
-                </td></tr>
-              </table>
-            </td></tr>
-          </table>
-
-          <!-- Social icons row -->
-          <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
-            <tr><td align="center" style="padding-bottom:0;">
-              <table cellpadding="0" cellspacing="0" role="presentation">
+              <!-- 2-column product card grid -->
+              <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom:28px;">
                 <tr>
-                  <!-- Instagram -->
-                  <td style="padding:0 6px;">
-                    <a href="#" style="text-decoration:none;">
-                      <table cellpadding="0" cellspacing="0" role="presentation">
-                        <tr><td class="em-social-btn" width="36" height="36" align="center" valign="middle"
-                                style="width:36px;height:36px;border:1px solid rgba(212,175,115,0.2);
-                                       border-radius:50%;background:rgba(212,175,115,0.05);">
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                               stroke="rgba(212,175,115,0.5)" stroke-width="1.6"
-                               stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5" stroke="rgba(212,175,115,0.5)"/>
-                            <circle cx="12" cy="12" r="5" stroke="rgba(212,175,115,0.5)"/>
-                            <circle cx="17.5" cy="6.5" r="0.5" fill="rgba(212,175,115,0.5)" stroke="none"/>
+                  <!-- Card 1 -->
+                  <td class="em-product-td" width="50%" valign="top" style="padding-right:7px;">
+                    <table width="100%" cellpadding="0" cellspacing="0" role="presentation" class="em-product-card"
+                      style="border:1px solid rgba(212,175,115,0.1);border-radius:2px;overflow:hidden;">
+                      <!-- Image area -->
+                      <tr>
+                        <td class="em-product-img" align="center" valign="middle" style="height:110px;background:rgba(212,175,115,0.07);
+                                 border-bottom:1px solid rgba(212,175,115,0.08);">
+                          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(212,175,115,0.2)"
+                            stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20.38 18H3.62a1 1 0 0 1-.74-1.67L12 7" stroke="rgba(212,175,115,0.2)" />
+                            <path d="M12 7V3" stroke="rgba(212,175,115,0.2)" />
+                            <circle cx="12" cy="2.5" r="0.5" fill="rgba(212,175,115,0.2)" stroke="none" />
                           </svg>
-                        </td></tr>
-                      </table>
-                    </a>
+                        </td>
+                      </tr>
+                      <!-- Info area -->
+                      <tr>
+                        <td style="padding:14px 16px;">
+                          <div class="em-force-text-gold" style="color:rgba(212,175,115,0.5);font-size:0.58rem;letter-spacing:0.2em;
+                                text-transform:uppercase;margin-bottom:5px;font-family:'Helvetica',Arial,sans-serif;">
+                            Women's</div>
+                          <div class="em-force-text-cream"
+                            style="color:#F5F1EA;font-size:0.8rem;letter-spacing:0.06em;
+                                text-transform:uppercase;margin-bottom:4px;font-family:'Helvetica',Arial,sans-serif;font-weight:500;">Linen Wrap Dress
+                          </div>
+                          <div class="em-force-text-gold"
+                            style="color:#D4AF73;font-size:0.75rem;font-family:'Helvetica',Arial,sans-serif;">EGP 4,500
+                          </div>
+                        </td>
+                      </tr>
+                    </table>
                   </td>
-                  <!-- TikTok -->
-                  <td style="padding:0 6px;">
-                    <a href="#" style="text-decoration:none;">
-                      <table cellpadding="0" cellspacing="0" role="presentation">
-                        <tr><td class="em-social-btn" width="36" height="36" align="center" valign="middle"
-                                style="width:36px;height:36px;border:1px solid rgba(212,175,115,0.2);
-                                       border-radius:50%;background:rgba(212,175,115,0.05);">
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                               stroke="rgba(212,175,115,0.5)" stroke-width="1.6"
-                               stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" stroke="rgba(212,175,115,0.5)"/>
+
+                  <!-- Card 2 -->
+                  <td class="em-product-td" width="50%" valign="top" style="padding-left:7px;">
+                    <table width="100%" cellpadding="0" cellspacing="0" role="presentation" class="em-product-card"
+                      style="border:1px solid rgba(212,175,115,0.1);border-radius:2px;overflow:hidden;">
+                      <!-- Image area -->
+                      <tr>
+                        <td class="em-product-img" align="center" valign="middle" style="height:110px;background:rgba(212,175,115,0.07);
+                                 border-bottom:1px solid rgba(212,175,115,0.08);">
+                          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(212,175,115,0.2)"
+                            stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20.38 18H3.62a1 1 0 0 1-.74-1.67L12 7" stroke="rgba(212,175,115,0.2)" />
+                            <path d="M12 7V3" stroke="rgba(212,175,115,0.2)" />
+                            <circle cx="12" cy="2.5" r="0.5" fill="rgba(212,175,115,0.2)" stroke="none" />
                           </svg>
-                        </td></tr>
-                      </table>
-                    </a>
-                  </td>
-                  <!-- Pinterest -->
-                  <td style="padding:0 6px;">
-                    <a href="#" style="text-decoration:none;">
-                      <table cellpadding="0" cellspacing="0" role="presentation">
-                        <tr><td class="em-social-btn" width="36" height="36" align="center" valign="middle"
-                                style="width:36px;height:36px;border:1px solid rgba(212,175,115,0.2);
-                                       border-radius:50%;background:rgba(212,175,115,0.05);">
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                               stroke="rgba(212,175,115,0.5)" stroke-width="1.6"
-                               stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M8 12a4 4 0 0 1 8 0c0 6-3 8-3 8" stroke="rgba(212,175,115,0.5)"/>
-                            <path d="M12 12l-2 8" stroke="rgba(212,175,115,0.5)"/>
-                            <circle cx="12" cy="12" r="10" stroke="rgba(212,175,115,0.5)"/>
-                          </svg>
-                        </td></tr>
-                      </table>
-                    </a>
+                        </td>
+                      </tr>
+                      <!-- Info area -->
+                      <tr>
+                        <td style="padding:14px 16px;">
+                          <div class="em-force-text-gold" style="color:rgba(212,175,115,0.5);font-size:0.58rem;letter-spacing:0.2em;
+                                text-transform:uppercase;margin-bottom:5px;font-family:'Helvetica',Arial,sans-serif;">
+                            Men's</div>
+                          <div class="em-force-text-cream"
+                            style="color:#F5F1EA;font-size:0.8rem;letter-spacing:0.06em;
+                                text-transform:uppercase;margin-bottom:4px;font-family:'Helvetica',Arial,sans-serif;font-weight:500;">Merino Knit Polo
+                          </div>
+                          <div class="em-force-text-gold"
+                            style="color:#D4AF73;font-size:0.75rem;font-family:'Helvetica',Arial,sans-serif;">EGP 3,100
+                          </div>
+                        </td>
+                      </tr>
+                    </table>
                   </td>
                 </tr>
               </table>
-            </td></tr>
-          </table>
 
-        </td></tr>
+              <!-- Diamond section rule -->
+              <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom:28px;">
+                <tr>
+                  <td style="height:1px;background:rgba(212,175,115,0.1);font-size:0;line-height:0;">&nbsp;</td>
+                  <td width="30" align="center" style="padding:0 8px;background:#071426;">
+                    <span class="em-force-text-dim"
+                      style="color:rgba(212,175,115,0.35);font-size:0.5rem;">&#9670;</span>
+                  </td>
+                  <td style="height:1px;background:rgba(212,175,115,0.1);font-size:0;line-height:0;">&nbsp;</td>
+                </tr>
+              </table>
 
-        <!-- Footer -->
-        <tr><td class="em-footer-td em-force-bg" style="padding:20px 48px 30px;
-                        border-top:1px solid rgba(212,175,115,0.08);">
-          <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
-            <tr>
-              <td class="em-force-text-gold" style="color:rgba(212,175,115,0.35);font-size:0.6rem;
-                          letter-spacing:0.22em;text-transform:uppercase;">
-                &copy; {{YEAR}} VISSTA</td>
-              <td align="right" class="em-force-text-dim"
-                  style="color:rgba(245,241,234,0.28);font-size:0.62rem;
-                         letter-spacing:0.12em;text-transform:uppercase;">
-                Shop &nbsp;&middot;&nbsp; About &nbsp;&middot;&nbsp; Help</td>
-            </tr>
-          </table>
-          <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-top:14px;">
-            <tr>
-              <td align="center" class="em-force-text-dim"
-                  style="color:rgba(245,241,234,0.2);font-size:0.62rem;
-                         font-family:'Helvetica',Arial,sans-serif;letter-spacing:0.08em;">
-                You're receiving this because you subscribed at vissta.com &mdash;
-                <a href="/Newsletter/Unsubscribe?token={{UNSUBSCRIBE_TOKEN}}"
-                   style="color:rgba(245,241,234,0.2);text-decoration:underline;">Unsubscribe</a>
-              </td>
-            </tr>
-          </table>
-        </td></tr>
+              <!-- Pull quote -->
+              <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom:28px;">
+                <tr>
+                  <td style="border-left:2px solid rgba(212,175,115,0.3);padding:14px 0 14px 22px;">
+                    <p class="em-force-text-cream" style="font-family:Georgia,serif;color:rgba(245,241,234,0.7);font-size:1.05rem;
+                        font-weight:400;font-style:italic;line-height:1.7;margin:0 0 8px;">
+                      &ldquo;Elegance is not about being noticed &mdash; it is about being remembered.&rdquo;</p>
+                    <div class="em-force-text-gold" style="color:rgba(212,175,115,0.45);font-size:0.6rem;letter-spacing:0.2em;
+                          text-transform:uppercase;font-family:'Helvetica',Arial,sans-serif;">&mdash; Giorgio Armani
+                    </div>
+                  </td>
+                </tr>
+              </table>
 
-      </table>
-    </td></tr>
+              <!-- Diamond section rule -->
+              <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom:28px;">
+                <tr>
+                  <td style="height:1px;background:rgba(212,175,115,0.1);font-size:0;line-height:0;">&nbsp;</td>
+                  <td width="30" align="center" style="padding:0 8px;background:#071426;">
+                    <span class="em-force-text-dim"
+                      style="color:rgba(212,175,115,0.35);font-size:0.5rem;">&#9670;</span>
+                  </td>
+                  <td style="height:1px;background:rgba(212,175,115,0.1);font-size:0;line-height:0;">&nbsp;</td>
+                </tr>
+              </table>
+
+              <!-- CTA band -->
+              <table width="100%" cellpadding="0" cellspacing="0" role="presentation" class="em-cta-band" style="background:rgba(212,175,115,0.06);border:1px solid rgba(212,175,115,0.14);
+                        border-radius:2px;margin-bottom:28px;">
+                <tr>
+                  <td style="padding:28px 32px;text-align:center;">
+                    <h2 class="em-force-text-cream" style="font-family:Georgia,serif;color:#F5F1EA;font-size:1.15rem;
+                         margin:0 0 10px;font-weight:400;">The Full SS25 Collection</h2>
+                    <p class="em-force-text-muted" style="color:rgba(245,241,234,0.45);font-size:0.78rem;line-height:1.75;
+                        margin:0 0 20px;font-family:'Helvetica',Arial,sans-serif;font-weight:300;">
+                      Sixty-four pieces. Each made to be worn for years, not seasons.</p>
+                    <table cellpadding="0" cellspacing="0" role="presentation" style="margin:0 auto;">
+                      <tr>
+                        <td align="center">
+                          <a href="https://vissta.com/shop" target="_blank" style="display:inline-block;background:#D4AF73;color:#071426;padding:13px 36px;
+                            font-size:0.6rem;font-family:'Helvetica',Arial,sans-serif;font-weight:700;
+                            letter-spacing:0.2em;text-transform:uppercase;border-radius:2px;
+                            text-decoration:none;">Shop the Collection</a>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
   </table>
 </body>
+
 </html>

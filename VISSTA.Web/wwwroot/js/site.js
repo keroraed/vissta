@@ -298,3 +298,77 @@ if (checkoutForm) {
     scheduleValidation();
   }
 }
+
+/* ─── COLLECTION MEGA-DROPDOWN ──────────────────────────────────── */
+(function () {
+  const wrap = document.querySelector('[data-collection-nav]');
+  const toggle = document.querySelector('[data-collection-toggle]');
+  const panel = document.querySelector('[data-collection-panel]');
+
+  if (!wrap || !toggle || !panel) return;
+
+  const open = () => {
+    wrap.classList.add('is-open');
+    toggle.setAttribute('aria-expanded', 'true');
+    panel.removeAttribute('aria-hidden');
+  };
+
+  const close = () => {
+    wrap.classList.remove('is-open');
+    toggle.setAttribute('aria-expanded', 'false');
+    panel.setAttribute('aria-hidden', 'true');
+  };
+
+  toggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    wrap.classList.contains('is-open') ? close() : open();
+  });
+
+  // Close when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!wrap.contains(e.target)) close();
+  });
+
+  // Close on Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { close(); toggle.focus(); }
+  });
+
+  // Keep open while hovering (desktop UX polish)
+  wrap.addEventListener('mouseenter', open);
+  wrap.addEventListener('mouseleave', close);
+})();
+
+/* ─── MOBILE COLLECTION TOGGLE ─────────────────────────────────── */
+(function () {
+  const group = document.querySelector('[data-mobile-collection]');
+  const toggle = document.querySelector('[data-mobile-collection-toggle]');
+  if (!group || !toggle) return;
+
+  toggle.addEventListener('click', () => {
+    if (group.classList.contains('is-open')) {
+      // Already open → navigate to /collection
+      window.location.href = '/collection';
+    } else {
+      // Closed → expand
+      group.classList.add('is-open');
+    }
+  });
+
+  // Collapse when mobile menu closes
+  const mobileMenu = document.querySelector('[data-mobile-menu]');
+  const mobileClose = document.querySelector('[data-mobile-close]');
+  const mobileOpen = document.querySelector('[data-mobile-open]');
+
+  if (mobileClose) {
+    mobileClose.addEventListener('click', () => {
+      group.classList.remove('is-open');
+    });
+  }
+  if (mobileOpen) {
+    mobileOpen.addEventListener('click', () => {
+      // Reset to closed every time menu opens
+      group.classList.remove('is-open');
+    });
+  }
+})();

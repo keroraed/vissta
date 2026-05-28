@@ -18,6 +18,12 @@ public sealed record ShopViewModel(
 
 public sealed record ProductDetailViewModel(ProductDetailDto Product, IReadOnlyCollection<ProductListDto> RelatedProducts);
 
+public sealed record CollectionViewModel(
+    IReadOnlyCollection<CategoryDto> AllCategories,
+    CategoryDto? ActiveCategory,
+    IReadOnlyCollection<ProductListDto> Products);
+
+
 public sealed record CartViewModel(CartDto Cart);
 
 public sealed class CheckoutViewModel

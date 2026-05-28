@@ -1,0 +1,185 @@
+@model CollectionViewModel
+@{
+    var parentCats = Model.AllCategories.Where(c => c.ParentCategoryId == null).OrderBy(c => c.Name).ToList();
+    var allChildren = Model.AllCategories.Where(c => c.ParentCategoryId != null).OrderBy(c => c.Name).ToList();
+    var pageTitle = Model.ActiveCategory?.Name ?? "Collection";
+    var pageDesc = Model.ActiveCategory is null
+        ? "Browse the full VISSTA collection — quiet luxury essentials crafted with purpose."
+        : $"Explore {Model.ActiveCategory.Name} — quiet luxury essentials from VISSTA.";
+}
+<main class="collection-page">
+
+    @* ═══ HERO BAND ═══ *@
+    <header class="collection-hero">
+        <div class="shell collection-hero-inner">
+            @{
+                string heroEyebrow;
+                if (Model.ActiveCategory is null)
+                {
+                    heroEyebrow = "VISSTA";
+                }
+                else if (Model.ActiveCategory.ParentCategoryId is null)
+                {
+                    heroEyebrow = "VISSTA";
+                }
+                else
+                {
+                    heroEyebrow = Model.AllCategories
+                        .FirstOrDefault(c => c.Id == Model.ActiveCategory.ParentCategoryId)?.Name?.ToUpperInvariant()
+                        ?? "VISSTA";
+                }
+            }
+            <p class="eyebrow">@heroEyebrow</p>
+            <h1 class="display" style="margin-bottom:16px">@pageTitle</h1>
+            <p class="lead" style="margin-left:auto;margin-right:auto;margin-bottom:0;font-size:1rem">@pageDesc</p>
+        </div>
+        <div class="collection-hero-gradient"></div>
+    </header>
+
+    @* ═══ CATEGORY TABS ═══ *@
+    @{
+        var activeParent = Model.ActiveCategory?.ParentCategoryId is null
+            ? Model.ActiveCategory
+            : Model.AllCategories.FirstOrDefault(c => c.Id == Model.ActiveCategory.ParentCategoryId);
+        var activeChildren = activeParent is not null
+            ? Model.AllCategories.Where(c => c.ParentCategoryId == activeParent.Id).OrderBy(c => c.Name).ToList()
+            : new List<VISSTA.Application.DTOs.CategoryDto>();
+    }
+    <nav class="shell collection-tabs-bar" aria-label="Browse categories">
+        @* Row 1: All + Parent categories *@
+        <div class="collection-tabs-row">
+            <a class="collection-tab @(Model.ActiveCategory is null ? "is-active" : "")"
+               href="/collection">All</a>
+            @foreach (var cat in parentCats)
+            {
+                var isParentActive = activeParent?.Id == cat.Id;
+                <a class="collection-tab @(isParentActive ? "is-active" : "")"
+                   asp-controller="Collection" asp-action="Index" asp-route-slug="@cat.Slug">@cat.Name</a>
+            }
+        </div>
+        @* Row 2: Children of the active parent (only shown when a parent or child is selected) *@
+        @if (activeChildren.Count > 0)
+        {
+            <div class="collection-tabs-row collection-tabs-children-row">
+                <a class="collection-tab collection-tab-sm @(Model.ActiveCategory?.Id == activeParent?.Id ? "is-active" : "")"
+                   asp-controller="Collection" asp-action="Index" asp-route-slug="@activeParent!.Slug">
+                    All @activeParent.Name
+                </a>
+                @foreach (var child in activeChildren)
+                {
+                    <a class="collection-tab collection-tab-sm @(Model.ActiveCategory?.Id == child.Id ? "is-active" : "")"
+                       asp-controller="Collection" asp-action="Index" asp-route-slug="@child.Slug">@child.Name</a>
+                }
+            </div>
+        }
+    </nav>
+
+
+    @* ═══ CATEGORY CARDS (shown on root /collection) ═══ *@
+    @if (Model.ActiveCategory is null)
+    {
+        <section class="shell collection-grid-section">
+            <div class="collection-card-grid">
+                @foreach (var cat in parentCats)
+                {
+                    var catChildren = Model.AllCategories.Where(c => c.ParentCategoryId == cat.Id).OrderBy(c => c.Name).ToList();
+                    <a class="collection-card glassmorphism" asp-controller="Collection" asp-action="Index" asp-route-slug="@cat.Slug">
+                        <div class="collection-card-image">
+                            @if (!string.IsNullOrWhiteSpace(cat.ImageUrl))
+                            {
+                                <img src="@cat.ImageUrl" alt="@cat.Name collection" loading="lazy" />
+                            }
+                            else
+                            {
+                                <div class="collection-card-placeholder">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                                </div>
+                            }
+                            <div class="collection-card-overlay"></div>
+                        </div>
+                        <div class="collection-card-body">
+                            <h2 class="collection-card-name">@cat.Name</h2>
+                            @if (catChildren.Count > 0)
+                            {
+                                <ul class="collection-card-subs">
+                                    @foreach (var child in catChildren.Take(4))
+                                    {
+                                        <li>@child.Name</li>
+                                    }
+                                </ul>
+                            }
+                            <span class="collection-card-cta">Explore →</span>
+                        </div>
+                    </a>
+                }
+            </div>
+        </section>
+
+        @if (allChildren.Count > 0)
+        {
+            <section class="shell collection-sub-section">
+                <h2 class="collection-sub-heading">Browse by Subcategory</h2>
+                <div class="collection-sub-grid">
+                    @foreach (var sub in allChildren)
+                    {
+                        var parentName = Model.AllCategories.FirstOrDefault(c => c.Id == sub.ParentCategoryId)?.Name;
+                        <a class="collection-sub-chip glassmorphism" asp-controller="Collection" asp-action="Index" asp-route-slug="@sub.Slug">
+                            @if (parentName is not null)
+                            {
+                                <span class="collection-sub-parent">@parentName</span>
+                            }
+                            <span class="collection-sub-name">@sub.Name</span>
+                        </a>
+                    }
+                </div>
+            </section>
+        }
+    }
+
+
+    @* ═══ PRODUCT GRID ═══ *@
+    @if (Model.Products.Count > 0)
+    {
+        <section class="shell collection-products-section">
+            @if (Model.ActiveCategory is not null)
+            {
+                <div class="collection-products-header">
+                    <p class="collection-products-count">@Model.Products.Count product@(Model.Products.Count == 1 ? "" : "s") found</p>
+                    <a class="filter-clear" asp-controller="Collection" asp-action="Index">Clear filter</a>
+                </div>
+            }
+            <div class="catalog-grid">
+                @foreach (var p in Model.Products)
+                {
+                    var primaryImage = p.ImageUrl;
+                    <article class="product-card">
+                        <a class="product-image" asp-controller="Shop" asp-action="Detail" asp-route-slug="@p.Slug">
+                            @if (!string.IsNullOrWhiteSpace(primaryImage))
+                            {
+                                <img src="@primaryImage" alt="@p.Name" loading="lazy" />
+                            }
+                            <span>View product</span>
+                        </a>
+                        <a asp-controller="Shop" asp-action="Detail" asp-route-slug="@p.Slug">
+                            <h4>@p.Name</h4>
+                        </a>
+                        <p class="price">@p.Currency @p.Price.ToString("N0")</p>
+                        <form>
+                            <a class="button text-button" asp-controller="Shop" asp-action="Detail" asp-route-slug="@p.Slug">Shop Now</a>
+                        </form>
+                    </article>
+                }
+            </div>
+        </section>
+    }
+    else if (Model.ActiveCategory is not null)
+    {
+        <section class="shell collection-products-section">
+            <div class="empty-state glassmorphism">
+                <p style="color:rgba(245,241,234,.68)">No products found in <strong style="color:var(--gold)">@Model.ActiveCategory.Name</strong> yet.</p>
+                <a class="button button-secondary" asp-controller="Collection" asp-action="Index">Browse All Collections</a>
+            </div>
+        </section>
+    }
+
+</main>

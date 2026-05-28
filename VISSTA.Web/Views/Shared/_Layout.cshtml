@@ -1,11 +1,15 @@
 @using MediatR
 @using VISSTA.Application.Features.Cart
+@using VISSTA.Application.Features.Categories
 @using VISSTA.Application.Interfaces
 @using VISSTA.Web.Models
 @inject IMediator Mediator
 @inject ICurrentUserService CurrentUser
 @{
     var layoutCart = await Mediator.Send(new GetCartQuery(CurrentUser.UserId, CurrentUser.SessionId));
+    var navCategories = await Mediator.Send(new GetCategoryListQuery());
+    var navParentCats = navCategories.Where(c => c.ParentCategoryId == null).OrderBy(c => c.Name).ToList();
+    var navChildCats = navCategories.Where(c => c.ParentCategoryId != null).ToList();
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -30,7 +34,40 @@
 
             <div class="nav-links">
                 <a asp-controller="Home" asp-action="Index">HOME</a>
-                <a asp-controller="Shop" asp-action="Index">COLLECTIONS</a>
+                <a asp-controller="Shop" asp-action="Index">SHOP</a>
+                <div class="nav-collection-wrap" data-collection-nav>
+                    <button class="nav-collection-trigger" type="button" data-collection-toggle aria-expanded="false" aria-haspopup="true">
+                        COLLECTION
+                        <svg class="nav-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                    </button>
+                    <div class="nav-collection-panel glassmorphism" data-collection-panel aria-hidden="true">
+                        <div class="nav-collection-inner">
+                            @foreach (var parent in navParentCats)
+                            {
+                                var children = navChildCats.Where(c => c.ParentCategoryId == parent.Id).OrderBy(c => c.Name).ToList();
+                                <div class="nav-col-group">
+                                    <a class="nav-col-heading" asp-controller="Collection" asp-action="Index" asp-route-slug="@parent.Slug">
+                                        @if (!string.IsNullOrWhiteSpace(parent.ImageUrl))
+                                        {
+                                            <span class="nav-col-thumb" style="background-image:url('@parent.ImageUrl')"></span>
+                                        }
+                                        @parent.Name
+                                    </a>
+                                    @if (children.Count > 0)
+                                    {
+                                        <ul class="nav-col-list">
+                                            @foreach (var child in children)
+                                            {
+                                                <li><a asp-controller="Collection" asp-action="Index" asp-route-slug="@child.Slug">@child.Name</a></li>
+                                            }
+                                        </ul>
+                                    }
+                                </div>
+                            }
+
+                        </div>
+                    </div>
+                </div>
                 <a asp-controller="Home" asp-action="About">ABOUT</a>
             </div>
 
@@ -72,7 +109,31 @@
         <div class="mobile-menu" data-mobile-menu aria-hidden="true">
             <button class="mobile-close" type="button" data-mobile-close aria-label="Close menu">×</button>
             <a asp-controller="Home" asp-action="Index">HOME</a>
-            <a asp-controller="Shop" asp-action="Index">COLLECTIONS</a>
+            <a asp-controller="Shop" asp-action="Index">SHOP</a>
+
+            <div class="mobile-collection-group" data-mobile-collection>
+                <span class="mobile-collection-label" data-mobile-collection-toggle>COLLECTION</span>
+                <div class="mobile-cat-sections-wrap">
+                @foreach (var parent in navParentCats)
+                {
+                    var mobileChildren = navChildCats.Where(c => c.ParentCategoryId == parent.Id).OrderBy(c => c.Name).ToList();
+                    <div class="mobile-cat-section">
+                        <a class="mobile-cat-parent" asp-controller="Collection" asp-action="Index" asp-route-slug="@parent.Slug">@parent.Name</a>
+                        @if (mobileChildren.Count > 0)
+                        {
+                            <div class="mobile-cat-children">
+                                @foreach (var child in mobileChildren)
+                                {
+                                    <a class="mobile-cat-child-link" asp-controller="Collection" asp-action="Index" asp-route-slug="@child.Slug">@child.Name</a>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+                </div>
+            </div>
+
+
             <a asp-controller="Home" asp-action="About">ABOUT</a>
             @if (User.Identity?.IsAuthenticated == true)
             {
@@ -88,6 +149,7 @@
                 <a asp-controller="Account" asp-action="Login">LOGIN</a>
             }
         </div>
+
 
         <div class="search-panel" data-search-panel>
             <input type="search" data-search-input placeholder="Search VISSTA" autocomplete="off" />
