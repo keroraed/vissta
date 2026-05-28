@@ -6,7 +6,7 @@ using VISSTA.Domain.Enums;
 
 namespace VISSTA.Web.Models;
 
-public sealed record HomeViewModel(IReadOnlyCollection<ProductListDto> FeaturedProducts, IReadOnlyCollection<ProductListDto> NewCollectionProducts);
+public sealed record HomeViewModel(IReadOnlyCollection<ProductListDto> FeaturedProducts, IReadOnlyCollection<ProductListDto> NewCollectionProducts, IReadOnlyCollection<CategoryDto> Categories);
 
 public sealed record ShopViewModel(
     IReadOnlyCollection<ProductListDto> Products,

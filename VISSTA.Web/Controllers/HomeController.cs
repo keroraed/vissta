@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using VISSTA.Application.Features.Categories;
 using VISSTA.Application.Features.Products;
 using VISSTA.Web.Models;
 
@@ -11,7 +12,8 @@ public sealed class HomeController(IMediator mediator) : Controller
     {
         var featured = await mediator.Send(new GetFeaturedProductsQuery(3), cancellationToken);
         var collection = await mediator.Send(new GetProductListQuery(null, null, null, "newest", null, false), cancellationToken);
-        return View(new HomeViewModel(featured, collection.Take(4).ToList()));
+        var categories = await mediator.Send(new GetCategoryListQuery(), cancellationToken);
+        return View(new HomeViewModel(featured, collection.Take(4).ToList(), categories));
     }
 
     [HttpGet("/About")]

@@ -26,13 +26,16 @@
 
     <section class="featured-grid">
         <div class="shell image-grid">
-            @foreach (var product in Model.FeaturedProducts)
+            @foreach (var cat in Model.Categories.Where(c => c.ParentCategoryId == null).OrderBy(c => c.Name).Take(3))
             {
-                <a class="feature-tile reveal" asp-controller="Shop" asp-action="Detail" asp-route-slug="@product.Slug">
-                    <img src="@product.ImageUrl" alt="@product.Name" loading="lazy" />
-                    <span>@product.Name</span>
+                <a class="feature-tile reveal" asp-controller="Collection" asp-action="Index" asp-route-slug="@cat.Slug">
+                    <img src="@(string.IsNullOrWhiteSpace(cat.ImageUrl) ? "/assets/hero-model.webp" : cat.ImageUrl)" alt="@cat.Name" loading="lazy" />
+                    <span>@cat.Name</span>
                 </a>
             }
+        </div>
+        <div class="reveal" style="display:flex; justify-content:center; margin-top:40px">
+            <a class="button button-secondary" href="/collection">View All Collections</a>
         </div>
     </section>
 

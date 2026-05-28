@@ -66,7 +66,7 @@ public sealed class ProductHandlers(IProductRepository products, IUnitOfWork uni
 
         if (request.CategoryId is not null)
         {
-            query = query.Where(x => x.CategoryId == request.CategoryId);
+            query = query.Where(x => x.CategoryId == request.CategoryId || (x.Category != null && x.Category.ParentCategoryId == request.CategoryId));
         }
 
         if (request.MinPrice is not null)
