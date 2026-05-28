@@ -158,12 +158,26 @@
                             {
                                 <img src="@primaryImage" alt="@p.Name" loading="lazy" />
                             }
-                            <span>View product</span>
+                            <span class="product-image-cta">View product</span>
+                            @if (p.DiscountValue is > 0)
+                            {
+                                <span class="discount-badge">@(p.DiscountType == "Fixed" ? $"-{p.DiscountValue.Value:N0} EGP" : $"-{(int)p.DiscountValue.Value}%")</span>
+                            }
                         </a>
                         <a asp-controller="Shop" asp-action="Detail" asp-route-slug="@p.Slug">
                             <h4>@p.Name</h4>
                         </a>
-                        <p class="price">@p.Currency @p.Price.ToString("N0")</p>
+                        @if (p.DiscountValue is > 0)
+                        {
+                            <div class="price-group">
+                                <span class="price-original">@p.Currency @p.Price.ToString("N0")</span>
+                                <span class="price-sale">@p.Currency @p.EffectivePrice.ToString("N0")</span>
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="price">@p.Currency @p.Price.ToString("N0")</p>
+                        }
                         <form>
                             <a class="button text-button" asp-controller="Shop" asp-action="Detail" asp-route-slug="@p.Slug">Shop Now</a>
                         </form>

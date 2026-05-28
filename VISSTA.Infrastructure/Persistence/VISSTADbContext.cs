@@ -58,6 +58,10 @@ public sealed class VISSTADbContext(DbContextOptions<VISSTADbContext> options) :
             entity.Property(x => x.StockL).IsRequired().HasDefaultValue(0);
             entity.Property(x => x.StockXL).IsRequired().HasDefaultValue(0);
             entity.Property(x => x.IsActive).HasDefaultValue(true);
+            entity.Property(x => x.IsFeatured).HasDefaultValue(false);
+            entity.Property(x => x.ShowOnHomePage).HasDefaultValue(false);
+            entity.Property(x => x.DiscountType).HasMaxLength(20);
+            entity.Property(x => x.DiscountValue).HasColumnType("decimal(18,2)");
             entity.OwnsOne(x => x.Price, money =>
             {
                 money.Property(x => x.Amount).HasColumnName("PriceAmount").HasPrecision(18, 2);

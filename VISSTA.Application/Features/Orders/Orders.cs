@@ -93,7 +93,8 @@ public sealed class OrderHandlers(
                 continue;
             }
 
-            order.AddItem(item.ProductId, item.Size, item.Quantity, item.Product.Price);
+            var itemPrice = new Money(item.Product.EffectivePrice, item.Product.Price.Currency);
+            order.AddItem(item.ProductId, item.Size, item.Quantity, itemPrice);
             item.Product.RecordSale(item.Quantity, item.Size);
         }
 

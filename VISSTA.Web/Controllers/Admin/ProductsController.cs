@@ -53,7 +53,7 @@ public sealed class ProductsController(IMediator mediator, IWebHostEnvironment e
         try
         {
             var imageUrls = await SaveImagesAsync(model.ImageFiles, cancellationToken);
-            await mediator.Send(new CreateProductCommand(model.Name, model.Slug, model.Description, model.Price, model.StockS, model.StockM, model.StockL, model.StockXL, model.Sku, model.CategoryId, model.IsFeatured, imageUrls), cancellationToken);
+            await mediator.Send(new CreateProductCommand(model.Name, model.Slug, model.Description, model.Price, model.StockS, model.StockM, model.StockL, model.StockXL, model.Sku, model.CategoryId, model.IsFeatured, model.ShowOnHomePage, model.DiscountValue == 0 ? null : model.DiscountType, model.DiscountValue == 0 ? null : model.DiscountValue, imageUrls), cancellationToken);
             return RedirectToAction(nameof(Index));
         }
         catch (ValidationException ex)
@@ -96,7 +96,10 @@ public sealed class ProductsController(IMediator mediator, IWebHostEnvironment e
             CategoryId = product.CategoryId,
             Categories = categories,
             IsActive = product.IsActive,
-            IsFeatured = product.IsFeatured
+            IsFeatured = product.IsFeatured,
+            ShowOnHomePage = product.ShowOnHomePage,
+            DiscountType = product.DiscountType ?? "Percentage",
+            DiscountValue = product.DiscountValue ?? 0
         });
     }
 
@@ -121,7 +124,7 @@ public sealed class ProductsController(IMediator mediator, IWebHostEnvironment e
         try
         {
             var imageUrls = await SaveImagesAsync(model.ImageFiles, cancellationToken);
-            await mediator.Send(new UpdateProductCommand(id, model.Name, model.Slug, model.Description, model.Price, model.CategoryId, model.IsActive, model.IsFeatured, imageUrls, model.RemoveImageIds ?? Array.Empty<int>()), cancellationToken);
+            await mediator.Send(new UpdateProductCommand(id, model.Name, model.Slug, model.Description, model.Price, model.CategoryId, model.IsActive, model.IsFeatured, model.ShowOnHomePage, model.DiscountValue == 0 ? null : model.DiscountType, model.DiscountValue == 0 ? null : model.DiscountValue, imageUrls, model.RemoveImageIds ?? Array.Empty<int>()), cancellationToken);
             await mediator.Send(new UpdateStockCommand(id, model.StockS, model.StockM, model.StockL, model.StockXL), cancellationToken);
             return RedirectToAction(nameof(Index));
         }

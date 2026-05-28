@@ -181,6 +181,10 @@ public sealed class AdminProductFormViewModel
     public IReadOnlyCollection<CategoryDto> Categories { get; set; } = Array.Empty<CategoryDto>();
     public bool IsActive { get; set; } = true;
     public bool IsFeatured { get; set; }
+    public bool ShowOnHomePage { get; set; }
+    public string DiscountType { get; set; } = "Percentage";
+    [Range(0, 1000000)]
+    public decimal DiscountValue { get; set; }
 }
 
 public sealed record AdminOrdersViewModel(IReadOnlyCollection<OrderSummaryDto> Orders, OrderStatus? Status);

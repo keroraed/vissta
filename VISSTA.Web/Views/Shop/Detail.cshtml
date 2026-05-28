@@ -5,11 +5,15 @@
             var galleryImages = Model.Product.Images.DefaultIfEmpty(new ProductImageDto(0, "/assets/product-white-polo.webp", true, 1)).ToList();
         }
         <div class="pdp-gallery" data-pdp-gallery>
-            <div class="pdp-gallery-stack">
+            <div class="pdp-gallery-stack" style="position:relative">
                 @for (var index = 0; index < galleryImages.Count; index++)
                 {
                     var image = galleryImages[index];
                     <img class="pdp-gallery-image @(index == 0 ? "is-active" : null)" src="@image.Url" alt="@Model.Product.Name" loading="@(index == 0 ? "eager" : "lazy")" data-pdp-image />
+                }
+                @if (Model.Product.DiscountValue is > 0)
+                {
+                    <span class="discount-badge">@(Model.Product.DiscountType == "Fixed" ? $"-{Model.Product.DiscountValue.Value:N0} EGP" : $"-{(int)Model.Product.DiscountValue.Value}%")</span>
                 }
             </div>
             @if (galleryImages.Count > 1)
@@ -27,7 +31,20 @@
             }
             <p class="eyebrow">@Model.Product.CategoryName</p>
             <h1 class="section-title">@Model.Product.Name</h1>
-            <p class="price">@Model.Product.Price.ToString("N0") @Model.Product.Currency</p>
+            @if (Model.Product.DiscountValue is > 0)
+            {
+                <div class="pdp-price-group">
+                    <span class="pdp-price-original">@Model.Product.Price.ToString("N0") @Model.Product.Currency</span>
+                    <span class="pdp-price-sale">@Model.Product.EffectivePrice.ToString("N0") @Model.Product.Currency</span>
+                    <span class="pdp-saved-badge">
+                        You save @Model.Product.SavedAmount.ToString("N0") @Model.Product.Currency
+                    </span>
+                </div>
+            }
+            else
+            {
+                <p class="price">@Model.Product.Price.ToString("N0") @Model.Product.Currency</p>
+            }
             <p class="section-copy">@Model.Product.Description</p>
             <form asp-controller="Cart" asp-action="Add" method="post" data-cart-form data-cart-add class="buy-box glassmorphism buy-box-modern" data-buy-box>
                 <input type="hidden" name="productId" value="@Model.Product.Id" />

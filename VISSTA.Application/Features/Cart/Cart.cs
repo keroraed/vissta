@@ -112,7 +112,7 @@ public sealed class CartHandlers(ICartRepository carts, IProductRepository produ
         var items = cart.CartItems.Select(x =>
         {
             var product = x.Product;
-            var price = product?.Price.Amount ?? 0;
+            var price = product?.EffectivePrice ?? 0;
             var currency = product?.Price.Currency ?? "EGP";
             return new CartItemDto(
                 x.Id,

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VISSTA.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using VISSTA.Infrastructure.Persistence;
 namespace VISSTA.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(VISSTADbContext))]
-    partial class VISSTADbContextModelSnapshot : ModelSnapshot
+    [Migration("20260528161715_AddProductDiscountAndHomePage")]
+    partial class AddProductDiscountAndHomePage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -527,12 +530,8 @@ namespace VISSTA.Infrastructure.Persistence.Migrations
                         .HasMaxLength(4000)
                         .HasColumnType("nvarchar(4000)");
 
-                    b.Property<string>("DiscountType")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<decimal?>("DiscountValue")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<decimal?>("DiscountPercent")
+                        .HasColumnType("decimal(5,2)");
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()

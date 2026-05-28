@@ -9,10 +9,14 @@ public sealed record ProductListDto(
     string Name,
     string Slug,
     decimal Price,
+    decimal EffectivePrice,
     string Currency,
     string ImageUrl,
     string CategoryName,
     bool IsFeatured,
+    bool ShowOnHomePage,
+    string? DiscountType,
+    decimal? DiscountValue,
     int Stock,
     bool IsActive);
 
@@ -22,6 +26,10 @@ public sealed record ProductDetailDto(
     string Slug,
     string Description,
     decimal Price,
+    decimal EffectivePrice,
+    decimal SavedAmount,
+    string? DiscountType,
+    decimal? DiscountValue,
     string Currency,
     int Stock,
     string Sku,
@@ -29,6 +37,7 @@ public sealed record ProductDetailDto(
     string CategoryName,
     bool IsActive,
     bool IsFeatured,
+    bool ShowOnHomePage,
     IReadOnlyCollection<ProductSizeStockDto> SizeStocks,
     IReadOnlyCollection<ProductImageDto> Images,
     IReadOnlyCollection<ReviewDto> Reviews);

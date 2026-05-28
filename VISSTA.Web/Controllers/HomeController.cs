@@ -11,9 +11,9 @@ public sealed class HomeController(IMediator mediator) : Controller
     public async Task<IActionResult> Index(CancellationToken cancellationToken)
     {
         var featured = await mediator.Send(new GetFeaturedProductsQuery(3), cancellationToken);
-        var collection = await mediator.Send(new GetProductListQuery(null, null, null, "newest", null, false), cancellationToken);
+        var collection = await mediator.Send(new GetHomePageProductsQuery(4), cancellationToken);
         var categories = await mediator.Send(new GetCategoryListQuery(), cancellationToken);
-        return View(new HomeViewModel(featured, collection.Take(4).ToList(), categories));
+        return View(new HomeViewModel(featured, collection.ToList(), categories));
     }
 
     [HttpGet("/About")]

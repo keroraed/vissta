@@ -74,10 +74,24 @@
                     <article class="product-card reveal">
                         <a class="product-image" asp-controller="Shop" asp-action="Detail" asp-route-slug="@product.Slug">
                             <img src="@product.ImageUrl" alt="@product.Name" loading="lazy" />
-                            <span>Quick Add</span>
+                                <span class="product-image-cta">Quick Add</span>
+                            @if (product.DiscountValue is > 0)
+                            {
+                                <span class="discount-badge">@(product.DiscountType == "Fixed" ? $"-{product.DiscountValue.Value:N0} EGP" : $"-{(int)product.DiscountValue.Value}%")</span>
+                            }
                         </a>
                         <h4>@product.Name</h4>
-                        <p>@product.Price.ToString("N0") @product.Currency</p>
+                        @if (product.DiscountValue is > 0)
+                        {
+                            <div class="price-group">
+                                <span class="price-original">@product.Price.ToString("N0") @product.Currency</span>
+                                <span class="price-sale">@product.EffectivePrice.ToString("N0") @product.Currency</span>
+                            </div>
+                        }
+                        else
+                        {
+                            <p>@product.Price.ToString("N0") @product.Currency</p>
+                        }
                     </article>
                 }
             </div>

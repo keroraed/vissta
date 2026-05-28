@@ -38,6 +38,17 @@
             {
                 <small>Featured</small>
             }
+            @if (product.ShowOnHomePage)
+            {
+                <small class="admin-home-flag" title="Shown on Home Page">🏠 Home</small>
+            }
+            @if (product.DiscountValue is > 0)
+            {
+                <span class="admin-list-discount-badge">
+                    @if (product.DiscountType == "Fixed") { <text>−@((int)product.DiscountValue!.Value) EGP</text> }
+                    else { <text>−@((int)product.DiscountValue!.Value)%</text> }
+                </span>
+            }
         </div>
         <div class="admin-row-actions">
             <a class="text-button" href="/admin/products/edit/@product.Id">Edit</a>

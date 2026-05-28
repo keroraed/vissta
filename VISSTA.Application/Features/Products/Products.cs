@@ -9,14 +9,16 @@ namespace VISSTA.Application.Features.Products;
 
 public sealed record GetProductListQuery(int? CategoryId, decimal? MinPrice, decimal? MaxPrice, string? Sort, string? Search, bool IncludeInactive = false) : IRequest<IReadOnlyCollection<ProductListDto>>;
 public sealed record GetFeaturedProductsQuery(int Count = 3) : IRequest<IReadOnlyCollection<ProductListDto>>;
+public sealed record GetHomePageProductsQuery(int Count = 4) : IRequest<IReadOnlyCollection<ProductListDto>>;
 public sealed record GetProductByIdQuery(int Id) : IRequest<ProductDetailDto?>;
 public sealed record GetProductBySlugQuery(string Slug) : IRequest<ProductDetailDto?>;
 public sealed record SearchProductsQuery(string Term) : IRequest<IReadOnlyCollection<SearchSuggestionDto>>;
 
-public sealed record CreateProductCommand(string Name, string Slug, string Description, decimal Price, int StockS, int StockM, int StockL, int StockXL, string Sku, int CategoryId, bool IsFeatured, IReadOnlyCollection<string> ImageUrls) : IRequest<int>;
-public sealed record UpdateProductCommand(int Id, string Name, string Slug, string Description, decimal Price, int CategoryId, bool IsActive, bool IsFeatured, IReadOnlyCollection<string> ImageUrls, IReadOnlyCollection<int> RemoveImageIds) : IRequest<bool>;
+public sealed record CreateProductCommand(string Name, string Slug, string Description, decimal Price, int StockS, int StockM, int StockL, int StockXL, string Sku, int CategoryId, bool IsFeatured, bool ShowOnHomePage, string? DiscountType, decimal? DiscountValue, IReadOnlyCollection<string> ImageUrls) : IRequest<int>;
+public sealed record UpdateProductCommand(int Id, string Name, string Slug, string Description, decimal Price, int CategoryId, bool IsActive, bool IsFeatured, bool ShowOnHomePage, string? DiscountType, decimal? DiscountValue, IReadOnlyCollection<string> ImageUrls, IReadOnlyCollection<int> RemoveImageIds) : IRequest<bool>;
 public sealed record DeleteProductCommand(int Id) : IRequest<bool>;
 public sealed record UpdateStockCommand(int ProductId, int StockS, int StockM, int StockL, int StockXL) : IRequest<bool>;
+public sealed record SetDiscountCommand(int ProductId, string? DiscountType, decimal? DiscountValue) : IRequest<bool>;
 
 public sealed class CreateProductCommandValidator : AbstractValidator<CreateProductCommand>
 {
@@ -48,13 +50,15 @@ public sealed class UpdateProductCommandValidator : AbstractValidator<UpdateProd
 public sealed class ProductHandlers(IProductRepository products, IUnitOfWork unitOfWork) :
     IRequestHandler<GetProductListQuery, IReadOnlyCollection<ProductListDto>>,
     IRequestHandler<GetFeaturedProductsQuery, IReadOnlyCollection<ProductListDto>>,
+    IRequestHandler<GetHomePageProductsQuery, IReadOnlyCollection<ProductListDto>>,
     IRequestHandler<GetProductByIdQuery, ProductDetailDto?>,
     IRequestHandler<GetProductBySlugQuery, ProductDetailDto?>,
     IRequestHandler<SearchProductsQuery, IReadOnlyCollection<SearchSuggestionDto>>,
     IRequestHandler<CreateProductCommand, int>,
     IRequestHandler<UpdateProductCommand, bool>,
     IRequestHandler<DeleteProductCommand, bool>,
-    IRequestHandler<UpdateStockCommand, bool>
+    IRequestHandler<UpdateStockCommand, bool>,
+    IRequestHandler<SetDiscountCommand, bool>
 {
     public Task<IReadOnlyCollection<ProductListDto>> Handle(GetProductListQuery request, CancellationToken cancellationToken)
     {
@@ -108,6 +112,29 @@ public sealed class ProductHandlers(IProductRepository products, IUnitOfWork uni
         return Task.FromResult<IReadOnlyCollection<ProductListDto>>(items);
     }
 
+    public Task<IReadOnlyCollection<ProductListDto>> Handle(GetHomePageProductsQuery request, CancellationToken cancellationToken)
+    {
+        var query = products.QueryReadOnly()
+            .Where(x => x.IsActive && x.ShowOnHomePage)
+            .OrderByDescending(x => x.IsFeatured)
+            .ThenByDescending(x => x.UnitsSold);
+
+        var items = query.Take(request.Count).Select(ToListDto).ToList();
+
+        // Fallback to newest products if no home-page products are flagged
+        if (items.Count == 0)
+        {
+            items = products.QueryReadOnly()
+                .Where(x => x.IsActive)
+                .OrderByDescending(x => x.Id)
+                .Take(request.Count)
+                .Select(ToListDto)
+                .ToList();
+        }
+
+        return Task.FromResult<IReadOnlyCollection<ProductListDto>>(items);
+    }
+
     public async Task<ProductDetailDto?> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
     {
         var product = await products.GetByIdAsync(request.Id, cancellationToken);
@@ -147,6 +174,8 @@ public sealed class ProductHandlers(IProductRepository products, IUnitOfWork uni
     {
         var product = new Product(request.Name, request.Slug, request.Description, new Money(request.Price), request.StockS, request.Sku, request.CategoryId, request.IsFeatured);
         product.SetSizeStocks(request.StockS, request.StockM, request.StockL, request.StockXL);
+        product.SetShowOnHomePage(request.ShowOnHomePage);
+        product.SetDiscount(request.DiscountType, request.DiscountValue);
         await products.AddAsync(product, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
         if (request.ImageUrls.Count > 0)
@@ -165,7 +194,7 @@ public sealed class ProductHandlers(IProductRepository products, IUnitOfWork uni
             return false;
         }
 
-        product.Update(request.Name, request.Slug, request.Description, new Money(request.Price), request.CategoryId, request.IsActive, request.IsFeatured);
+        product.Update(request.Name, request.Slug, request.Description, new Money(request.Price), request.CategoryId, request.IsActive, request.IsFeatured, request.ShowOnHomePage, request.DiscountType, request.DiscountValue);
         if (request.ImageUrls.Count > 0 || request.RemoveImageIds.Count > 0)
         {
             var removeSet = request.RemoveImageIds.Count > 0 ? request.RemoveImageIds.ToHashSet() : null;
@@ -206,15 +235,32 @@ public sealed class ProductHandlers(IProductRepository products, IUnitOfWork uni
         return true;
     }
 
+    public async Task<bool> Handle(SetDiscountCommand request, CancellationToken cancellationToken)
+    {
+        var product = await products.GetByIdAsync(request.ProductId, cancellationToken);
+        if (product is null)
+        {
+            return false;
+        }
+
+        product.SetDiscount(request.DiscountType, request.DiscountValue);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+        return true;
+    }
+
     private static ProductListDto ToListDto(Product x) => new(
         x.Id,
         x.Name,
         x.Slug,
         x.Price.Amount,
+        x.EffectivePrice,
         x.Price.Currency,
         x.Images.OrderByDescending(i => i.IsPrimary).ThenBy(i => i.DisplayOrder).Select(i => i.Url).FirstOrDefault() ?? "/assets/product-white-polo.webp",
         x.Category == null ? "VISSTA" : x.Category.Name,
         x.IsFeatured,
+        x.ShowOnHomePage,
+        x.DiscountType,
+        x.DiscountValue,
         x.Stock,
         x.IsActive);
 
@@ -224,6 +270,10 @@ public sealed class ProductHandlers(IProductRepository products, IUnitOfWork uni
         x.Slug,
         x.Description,
         x.Price.Amount,
+        x.EffectivePrice,
+        x.SavedAmount,
+        x.DiscountType,
+        x.DiscountValue,
         x.Price.Currency,
         x.Stock,
         x.SKU,
@@ -231,6 +281,7 @@ public sealed class ProductHandlers(IProductRepository products, IUnitOfWork uni
         x.Category == null ? "VISSTA" : x.Category.Name,
         x.IsActive,
         x.IsFeatured,
+        x.ShowOnHomePage,
         [
             new ProductSizeStockDto("S", x.StockS),
             new ProductSizeStockDto("M", x.StockM),

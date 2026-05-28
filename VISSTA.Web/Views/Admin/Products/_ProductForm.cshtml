@@ -53,5 +53,51 @@
     </select>
     <label class="check"><input asp-for="IsFeatured" /> Featured</label>
     <label class="check"><input asp-for="IsActive" /> Active</label>
+    <label class="check"><input asp-for="ShowOnHomePage" /> Show on Home Page (New Collection)</label>
+
+    <div class="admin-discount-row">
+        <div class="admin-discount-field">
+            <span class="admin-field-label">Discount</span>
+            <div class="admin-discount-controls">
+                <select asp-for="DiscountType" id="DiscountType" class="admin-discount-type-select">
+                    <option value="Percentage">Percentage (%)</option>
+                    <option value="Fixed">Fixed Amount (EGP)</option>
+                </select>
+                <div class="admin-discount-input-wrap">
+                    <input asp-for="DiscountValue" type="number" min="0" step="0.01" placeholder="0" id="DiscountValue" />
+                    <span class="admin-discount-suffix" id="discount-suffix">%</span>
+                </div>
+            </div>
+            <small class="admin-field-hint">Leave 0 for no discount. Percentage: 0–100. Fixed: absolute amount deducted.</small>
+        </div>
+        <div id="discount-preview" class="admin-discount-preview" style="display:none">
+            <span class="admin-discount-badge-preview" id="discount-badge-text"></span>
+        </div>
+    </div>
+
     <button class="button button-primary" type="submit">Save</button>
 </form>
+<script>
+    (function() {
+        var typeSelect = document.getElementById('DiscountType');
+        var valueInput = document.getElementById('DiscountValue');
+        var preview   = document.getElementById('discount-preview');
+        var badge     = document.getElementById('discount-badge-text');
+        var suffix    = document.getElementById('discount-suffix');
+        function update() {
+            var type = typeSelect.value;
+            var val  = parseFloat(valueInput.value);
+            suffix.textContent = type === 'Percentage' ? '%' : 'EGP';
+            if (val > 0) {
+                badge.textContent = type === 'Percentage'
+                    ? '\u2212' + Math.round(val) + '%'
+                    : '\u2212' + val.toLocaleString('en-EG') + ' EGP';
+                preview.style.display = 'flex';
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+        if (typeSelect) { typeSelect.addEventListener('change', update); }
+        if (valueInput) { valueInput.addEventListener('input', update); update(); }
+    })();
+</script>

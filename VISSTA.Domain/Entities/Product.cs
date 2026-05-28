@@ -44,13 +44,27 @@ public sealed class Product : Entity, IAggregateRoot
     public string SKU { get; private set; }
     public bool IsActive { get; private set; }
     public bool IsFeatured { get; private set; }
+    public bool ShowOnHomePage { get; private set; }
+    /// <summary>"Percentage" or "Fixed"</summary>
+    public string? DiscountType { get; private set; }
+    /// <summary>Discount value — percent (0–100) when type is Percentage, absolute amount when Fixed</summary>
+    public decimal? DiscountValue { get; private set; }
     public int UnitsSold { get; private set; }
     public int CategoryId { get; private set; }
     public Category? Category { get; private set; }
     public IReadOnlyCollection<ProductImage> Images => _images.AsReadOnly();
     public IReadOnlyCollection<Review> Reviews => _reviews.AsReadOnly();
 
-    public void Update(string name, string slug, string description, Money price, int categoryId, bool isActive, bool isFeatured)
+    // Computed helpers (not persisted)
+    public bool HasDiscount => DiscountValue is > 0;
+    public decimal EffectivePrice => HasDiscount
+        ? DiscountType == "Fixed"
+            ? Math.Max(0, Math.Round(Price.Amount - DiscountValue!.Value, 2))
+            : Math.Round(Price.Amount * (1 - DiscountValue!.Value / 100m), 2)
+        : Price.Amount;
+    public decimal SavedAmount => Price.Amount - EffectivePrice;
+
+    public void Update(string name, string slug, string description, Money price, int categoryId, bool isActive, bool isFeatured, bool showOnHomePage, string? discountType = null, decimal? discountValue = null)
     {
         Name = name;
         Slug = slug;
@@ -59,6 +73,35 @@ public sealed class Product : Entity, IAggregateRoot
         CategoryId = categoryId;
         IsActive = isActive;
         IsFeatured = isFeatured;
+        ShowOnHomePage = showOnHomePage;
+        SetDiscount(discountType, discountValue);
+    }
+
+    public void SetDiscount(string? discountType, decimal? discountValue)
+    {
+        if (discountValue is null or 0)
+        {
+            DiscountType = null;
+            DiscountValue = null;
+            return;
+        }
+
+        if (discountType == "Percentage" && discountValue is < 0 or > 100)
+        {
+            throw new ArgumentOutOfRangeException(nameof(discountValue), "Percentage discount must be between 0 and 100.");
+        }
+        if (discountType == "Fixed" && discountValue < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(discountValue), "Fixed discount cannot be negative.");
+        }
+
+        DiscountType = discountType;
+        DiscountValue = discountValue;
+    }
+
+    public void SetShowOnHomePage(bool value)
+    {
+        ShowOnHomePage = value;
     }
 
     public void UpdateStock(int stock)

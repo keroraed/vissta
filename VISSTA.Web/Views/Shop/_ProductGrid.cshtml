@@ -5,11 +5,25 @@
     <article class="product-card">
         <a class="product-image" asp-controller="Shop" asp-action="Detail" asp-route-slug="@product.Slug">
             <img src="@product.ImageUrl" alt="@product.Name" loading="lazy" />
-            <span>View Piece</span>
+            <span class="product-image-cta">View Piece</span>
+            @if (product.DiscountValue is > 0)
+            {
+                <span class="discount-badge">@(product.DiscountType == "Fixed" ? $"-{product.DiscountValue.Value:N0} EGP" : $"-{(int)product.DiscountValue.Value}%")</span>
+            }
         </a>
         <div class="product-meta">
             <h4>@product.Name</h4>
-            <p>@product.Price.ToString("N0") @product.Currency</p>
+            @if (product.DiscountValue is > 0)
+            {
+                <div class="price-group">
+                    <span class="price-original">@product.Price.ToString("N0") @product.Currency</span>
+                    <span class="price-sale">@product.EffectivePrice.ToString("N0") @product.Currency</span>
+                </div>
+            }
+            else
+            {
+                <p>@product.Price.ToString("N0") @product.Currency</p>
+            }
         </div>
         <a class="text-button" asp-controller="Shop" asp-action="Detail" asp-route-slug="@product.Slug">Select Size</a>
     </article>
