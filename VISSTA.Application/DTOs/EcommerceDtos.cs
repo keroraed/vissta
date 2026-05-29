@@ -73,6 +73,8 @@ public sealed record OrderDetailDto(
     string Governorate,
     string PostalCode,
     string? CouponCode,
+    string PaymentMethod,
+    string? PaymentProofUrl,
     IReadOnlyCollection<OrderItemDto> Items,
     string CustomerId = "",
     string CustomerName = "VISSTA Customer",

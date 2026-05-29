@@ -43,6 +43,8 @@ public sealed class CheckoutViewModel
     public ShippingAddressInput? SavedAddress { get; set; }
     public bool UseSavedAddress { get; set; }
     public string? CouponCode { get; set; }
+    public PaymentMethod PaymentMethod { get; set; } = PaymentMethod.CashOnDelivery;
+    public IFormFile? PaymentProof { get; set; }
     public string PaymentToken { get; set; } = "mock";
     public bool HasSavedAddress => SavedAddress?.IsComplete == true;
 }

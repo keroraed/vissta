@@ -4,7 +4,7 @@
         <div>
             <p class="eyebrow">Checkout</p>
             <h1 class="section-title">Finish with care.</h1>
-            <form asp-controller="Checkout" asp-action="Confirm" method="post" class="checkout-form checkout-address-form glassmorphism" data-checkout-form>
+            <form asp-controller="Checkout" asp-action="Confirm" method="post" enctype="multipart/form-data" class="checkout-form checkout-address-form glassmorphism" data-checkout-form>
                 <div asp-validation-summary="ModelOnly" class="form-summary"></div>
                 @if (!(User.Identity?.IsAuthenticated ?? false))
                 {
@@ -104,7 +104,31 @@
                         </label>
                     </div>
                 }
-                <input asp-for="PaymentToken" type="hidden" value="mock" />
+                <div class="field-group">
+                    <p class="field-label">Payment method</p>
+                    <div class="payment-options">
+                        <input class="payment-radio" id="PaymentMethodCod" name="PaymentMethod" type="radio" value="CashOnDelivery" checked="@(Model.PaymentMethod == PaymentMethod.CashOnDelivery)" data-payment-method />
+                        <label class="payment-choice" for="PaymentMethodCod">
+                            <span>Cash on Delivery (COD)</span>
+                            <strong>Pay the courier on delivery.</strong>
+                            <small>No proof required.</small>
+                        </label>
+
+                        <input class="payment-radio" id="PaymentMethodInsta" name="PaymentMethod" type="radio" value="InstaPayWallet" checked="@(Model.PaymentMethod == PaymentMethod.InstaPayWallet)" data-payment-method />
+                        <label class="payment-choice" for="PaymentMethodInsta">
+                            <span>InstaPay / Cash Wallets</span>
+                            <strong>Upload your transfer receipt.</strong>
+                            <small>We confirm it before shipping.</small>
+                        </label>
+                    </div>
+                    <div class="field payment-proof is-hidden" data-payment-proof>
+                        <span>Payment proof</span>
+                        <input asp-for="PaymentProof" type="file" accept="image/*,application/pdf" />
+                        <small class="field-hint">Upload a screenshot or PDF receipt.</small>
+                        <span asp-validation-for="PaymentProof" class="field-error"></span>
+                    </div>
+                </div>
+                <input asp-for="PaymentToken" type="hidden" value="manual" />
                 <div class="checkout-action-row">
                     <div class="coupon-input-row">
                         <input asp-for="CouponCode" placeholder="Coupon code" data-coupon-input />

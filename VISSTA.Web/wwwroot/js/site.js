@@ -216,6 +216,8 @@ if (checkoutForm) {
   const discountEl = document.querySelector('[data-summary-discount]');
   const totalEl = document.querySelector('[data-summary-total]');
   const couponStatus = document.querySelector('[data-summary-coupon-status]');
+  const paymentProof = checkoutForm.querySelector('[data-payment-proof]');
+  const paymentMethods = checkoutForm.querySelectorAll('[data-payment-method]');
 
   const formatMoney = (value, currency) => `${Number(value).toLocaleString()} ${currency}`;
 
@@ -297,6 +299,18 @@ if (checkoutForm) {
   if (couponInput?.value) {
     scheduleValidation();
   }
+
+  const togglePaymentProof = () => {
+    if (!paymentProof) return;
+    const selected = checkoutForm.querySelector('[data-payment-method]:checked');
+    const needsProof = selected?.value === 'InstaPayWallet';
+    paymentProof.classList.toggle('is-hidden', !needsProof);
+  };
+
+  paymentMethods.forEach((input) => {
+    input.addEventListener('change', togglePaymentProof);
+  });
+  togglePaymentProof();
 }
 
 /* ─── COLLECTION MEGA-DROPDOWN ──────────────────────────────────── */

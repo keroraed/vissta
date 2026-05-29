@@ -47,6 +47,11 @@
             <h2>Summary</h2>
             <div class="admin-finance-row"><span>Subtotal</span><strong>@Model.Order.SubtotalAmount.ToString("N0") @Model.Order.Currency</strong></div>
             <div class="admin-finance-row"><span>Discount</span><strong>-@Model.Order.DiscountAmount.ToString("N0") @Model.Order.Currency</strong></div>
+            <div class="admin-finance-row"><span>Payment</span><strong>@Model.Order.PaymentMethod</strong></div>
+            @if (!string.IsNullOrWhiteSpace(Model.Order.PaymentProofUrl))
+            {
+                <div class="admin-finance-row"><span>Proof</span><a class="proof-link" href="@Model.Order.PaymentProofUrl" target="_blank" rel="noopener">View proof</a></div>
+            }
             @if (!string.IsNullOrWhiteSpace(Model.Order.CouponCode))
             {
                 <div class="admin-finance-row"><span>Coupon</span><strong>@Model.Order.CouponCode</strong></div>

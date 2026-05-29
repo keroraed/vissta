@@ -105,6 +105,8 @@ public sealed class VISSTADbContext(DbContextOptions<VISSTADbContext> options) :
             entity.HasKey(x => x.Id);
             entity.Property(x => x.CustomerId).HasMaxLength(450).IsRequired();
             entity.Property(x => x.Status).HasConversion<string>().HasMaxLength(32);
+            entity.Property(x => x.PaymentMethod).HasConversion<string>().HasMaxLength(32);
+            entity.Property(x => x.PaymentProofUrl).HasMaxLength(500);
             entity.OwnsOne(x => x.ShippingAddress, address =>
             {
                 address.Property(x => x.Street).HasMaxLength(240).IsRequired();

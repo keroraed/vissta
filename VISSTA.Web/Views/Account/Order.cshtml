@@ -21,6 +21,17 @@
                 </div>
             }
             <div class="summary-row">
+                <span>Payment</span>
+                <strong>@Model.PaymentMethod</strong>
+            </div>
+            @if (!string.IsNullOrWhiteSpace(Model.PaymentProofUrl))
+            {
+                <div class="summary-row">
+                    <span>Payment proof</span>
+                    <strong><a class="proof-link" href="@Model.PaymentProofUrl" target="_blank" rel="noopener">View proof</a></strong>
+                </div>
+            }
+            <div class="summary-row">
                 <span>Total</span>
                 <strong>@Model.TotalAmount.ToString("N0") @Model.Currency</strong>
             </div>

@@ -18,6 +18,8 @@ public sealed record PlaceOrderCommand(
     string Governorate,
     string PostalCode,
     string Country,
+    PaymentMethod PaymentMethod,
+    string? PaymentProofUrl,
     string PaymentToken,
     string? CouponCode,
     string? CustomerName,
@@ -114,10 +116,15 @@ public sealed class OrderHandlers(
             coupon.MarkUsed();
         }
 
-        var payment = await payments.ChargeAsync(order.TotalAmount.Amount, order.TotalAmount.Currency, request.PaymentToken, cancellationToken);
-        if (!payment.Succeeded)
+        order.SetPaymentDetails(request.PaymentMethod, request.PaymentProofUrl);
+
+        if (request.PaymentMethod is not (PaymentMethod.CashOnDelivery or PaymentMethod.InstaPayWallet))
         {
-            throw new InvalidOperationException(payment.FailureReason ?? "Payment failed.");
+            var payment = await payments.ChargeAsync(order.TotalAmount.Amount, order.TotalAmount.Currency, request.PaymentToken, cancellationToken);
+            if (!payment.Succeeded)
+            {
+                throw new InvalidOperationException(payment.FailureReason ?? "Payment failed.");
+            }
         }
 
         order.ChangeStatus(OrderStatus.Pending);
@@ -184,7 +191,7 @@ public sealed class OrderHandlers(
                         CustomerFirstName: firstName,
                         OrderNumber: $"#VST-{order.Id:D5}",
                         OrderDate: order.CreatedAt,
-                        PaymentSummary: "Card Payment",
+                        PaymentSummary: GetPaymentSummary(order),
                         EstimatedDelivery: "3–5 Business Days",
                         Lines: order.OrderItems.Select(oi =>
                         {
@@ -301,6 +308,8 @@ public sealed class OrderHandlers(
             order.ShippingAddress.Governorate,
             order.ShippingAddress.PostalCode,
             order.CouponCode,
+            GetPaymentSummary(order),
+            order.PaymentProofUrl,
             order.OrderItems.Select(x =>
             {
                 var imageUrl = x.Product?.Images
@@ -323,4 +332,11 @@ public sealed class OrderHandlers(
             order.Customer == null ? string.Empty : order.Customer.PhoneNumber,
             order.ShippingAddress.Country);
     }
+
+    private static string GetPaymentSummary(Order order) => order.PaymentMethod switch
+    {
+        PaymentMethod.CashOnDelivery => "Cash on Delivery",
+        PaymentMethod.InstaPayWallet => "InstaPay / Cash Wallet",
+        _ => "Payment"
+    };
 }

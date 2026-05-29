@@ -7,6 +7,7 @@ using VISSTA.Application.Features.Cart;
 using VISSTA.Application.Features.Orders;
 using VISSTA.Application.Interfaces;
 using VISSTA.Domain.Entities;
+using VISSTA.Domain.Enums;
 using VISSTA.Domain.ValueObjects;
 using VISSTA.Web.Models;
 
@@ -16,7 +17,8 @@ public sealed class CheckoutController(
     IMediator mediator,
     ICurrentUserService currentUser,
     IRepository<Customer> customers,
-    IRepository<Coupon> coupons) : Controller
+    IRepository<Coupon> coupons,
+    IFileStorageService fileStorage) : Controller
 {
     public async Task<IActionResult> Index(CancellationToken cancellationToken)
     {
@@ -55,6 +57,18 @@ public sealed class CheckoutController(
             }
         }
 
+        if (model.PaymentMethod == PaymentMethod.InstaPayWallet)
+        {
+            if (model.PaymentProof is null || model.PaymentProof.Length == 0)
+            {
+                ModelState.AddModelError(nameof(model.PaymentProof), "Please upload a payment proof.");
+            }
+            else if (!IsAllowedProof(model.PaymentProof, out var proofError))
+            {
+                ModelState.AddModelError(nameof(model.PaymentProof), proofError);
+            }
+        }
+
         if (!ModelState.IsValid)
         {
             var errors = string.Join("; ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
@@ -87,6 +101,12 @@ public sealed class CheckoutController(
         int orderId;
         try
         {
+            string? proofUrl = null;
+            if (model.PaymentMethod == PaymentMethod.InstaPayWallet && model.PaymentProof is not null && model.PaymentProof.Length > 0)
+            {
+                proofUrl = await fileStorage.SaveAsync(model.PaymentProof.OpenReadStream(), model.PaymentProof.FileName, model.PaymentProof.ContentType, cancellationToken);
+            }
+
             orderId = await mediator.Send(new PlaceOrderCommand(
                 customerId,
                 currentUser.SessionId,
@@ -95,6 +115,8 @@ public sealed class CheckoutController(
                 shippingAddress.Governorate,
                 shippingAddress.PostalCode,
                 shippingAddress.Country,
+                model.PaymentMethod,
+                proofUrl,
                 model.PaymentToken,
                 model.CouponCode,
                 currentUser.IsAuthenticated ? null : model.GuestName,
@@ -250,4 +272,24 @@ public sealed class CheckoutController(
         && !string.IsNullOrWhiteSpace(address.City)
         && !string.IsNullOrWhiteSpace(address.Governorate)
         && !string.IsNullOrWhiteSpace(address.Country);
+
+    private static bool IsAllowedProof(IFormFile file, out string error)
+    {
+        const long maxBytes = 5 * 1024 * 1024;
+        if (file.Length > maxBytes)
+        {
+            error = "Payment proof must be 5MB or less.";
+            return false;
+        }
+
+        var allowed = new[] { "image/jpeg", "image/png", "image/webp", "application/pdf" };
+        if (!allowed.Contains(file.ContentType, StringComparer.OrdinalIgnoreCase))
+        {
+            error = "Payment proof must be an image or PDF.";
+            return false;
+        }
+
+        error = string.Empty;
+        return true;
+    }
 }

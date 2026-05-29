@@ -16,6 +16,7 @@ public sealed class Order : Entity, IAggregateRoot
         TotalAmount = Money.Zero();
         SubtotalAmount = Money.Zero();
         DiscountAmount = Money.Zero();
+        PaymentMethod = PaymentMethod.CashOnDelivery;
     }
 
     public Order(string customerId, Address shippingAddress)
@@ -27,6 +28,7 @@ public sealed class Order : Entity, IAggregateRoot
         SubtotalAmount = Money.Zero();
         DiscountAmount = Money.Zero();
         CreatedAt = DateTime.UtcNow;
+        PaymentMethod = PaymentMethod.CashOnDelivery;
     }
 
     public int Id { get; private set; }
@@ -39,6 +41,8 @@ public sealed class Order : Entity, IAggregateRoot
     public Money DiscountAmount { get; private set; }
     public Money TotalAmount { get; private set; }
     public string? CouponCode { get; private set; }
+    public PaymentMethod PaymentMethod { get; private set; }
+    public string? PaymentProofUrl { get; private set; }
     public DateTime CreatedAt { get; private set; }
 
     public void AddItem(int productId, string size, int quantity, Money unitPrice)
@@ -83,5 +87,11 @@ public sealed class Order : Entity, IAggregateRoot
         CouponCode = couponCode.Trim().ToUpperInvariant();
         DiscountAmount = new Money(boundedDiscount, SubtotalAmount.Currency);
         RecalculateTotal();
+    }
+
+    public void SetPaymentDetails(PaymentMethod method, string? proofUrl)
+    {
+        PaymentMethod = method;
+        PaymentProofUrl = string.IsNullOrWhiteSpace(proofUrl) ? null : proofUrl;
     }
 }
