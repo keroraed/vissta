@@ -17,6 +17,7 @@ public sealed class VISSTADbContext(DbContextOptions<VISSTADbContext> options) :
     public DbSet<CartItem> CartItems => Set<CartItem>();
     public DbSet<Review> Reviews => Set<Review>();
     public DbSet<Coupon> Coupons => Set<Coupon>();
+    public DbSet<AdminNotification> AdminNotifications => Set<AdminNotification>();
     public DbSet<NewsletterSubscriber> NewsletterSubscribers => Set<NewsletterSubscriber>();
     public DbSet<NewsletterCampaign> NewsletterCampaigns => Set<NewsletterCampaign>();
     public DbSet<NewsletterCampaignProduct> NewsletterCampaignProducts => Set<NewsletterCampaignProduct>();
@@ -30,6 +31,20 @@ public sealed class VISSTADbContext(DbContextOptions<VISSTADbContext> options) :
 
         builder.ApplyConfiguration(new PasswordResetOtpConfiguration());
         builder.ApplyConfiguration(new NewsletterSubscriberConfiguration());
+
+        builder.Entity<AdminNotification>(entity =>
+        {
+            entity.ToTable("AdminNotifications");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.Type).HasMaxLength(40).IsRequired();
+            entity.Property(x => x.Title).HasMaxLength(140).IsRequired();
+            entity.Property(x => x.Body).HasMaxLength(280).IsRequired();
+            entity.Property(x => x.LinkUrl).HasMaxLength(500).IsRequired();
+            entity.Property(x => x.CreatedAt).IsRequired();
+            entity.Property(x => x.IsRead).HasDefaultValue(false);
+            entity.HasIndex(x => x.CreatedAt);
+            entity.HasIndex(x => x.IsRead);
+        });
 
         builder.Entity<NewsletterCampaign>(entity =>
         {

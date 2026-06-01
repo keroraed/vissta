@@ -23,6 +23,7 @@ public sealed class SubscribeNewsletterCommandValidator : AbstractValidator<Subs
 public sealed class SubscribeNewsletterHandler(
     INewsletterRepository newsletterRepository,
     IEmailService emailService,
+    IAdminNotificationService adminNotifications,
     ILogger<SubscribeNewsletterHandler> logger) : IRequestHandler<SubscribeNewsletterCommand, SubscribeNewsletterResult>
 {
     public async Task<SubscribeNewsletterResult> Handle(SubscribeNewsletterCommand request, CancellationToken cancellationToken)
@@ -50,6 +51,7 @@ public sealed class SubscribeNewsletterHandler(
                 logger.LogError(ex, "Failed to send newsletter welcome email to {Email}", normalizedEmail);
             }
 
+            await adminNotifications.NotifyNewSubscriberAsync(normalizedEmail, cancellationToken);
             return new SubscribeNewsletterResult(true, false, "Welcome back! You've been re-subscribed.");
         }
 
@@ -66,6 +68,7 @@ public sealed class SubscribeNewsletterHandler(
             logger.LogError(ex, "Failed to send newsletter welcome email to {Email}", normalizedEmail);
         }
 
+        await adminNotifications.NotifyNewSubscriberAsync(normalizedEmail, cancellationToken);
         return new SubscribeNewsletterResult(true, false, "You're in! Welcome to VISSTA.");
     }
 }

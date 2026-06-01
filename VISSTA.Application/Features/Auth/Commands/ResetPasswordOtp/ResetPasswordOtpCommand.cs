@@ -17,6 +17,9 @@ public sealed class ResetPasswordOtpCommandValidator : AbstractValidator<ResetPa
 {
     public ResetPasswordOtpCommandValidator()
     {
+        RuleFor(x => x.OtpId).NotEmpty();
+        RuleFor(x => x.Email).NotEmpty().EmailAddress().MaximumLength(256);
+
         RuleFor(x => x.NewPassword)
             .NotEmpty()
             .MinimumLength(8)

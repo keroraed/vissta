@@ -39,6 +39,8 @@ builder.Services.AddDomainServices();
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+builder.Services.AddSingleton<AdminNotificationStream>();
+builder.Services.AddScoped<IAdminNotificationService, AdminNotificationService>();
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));

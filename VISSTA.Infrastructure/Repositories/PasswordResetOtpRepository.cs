@@ -7,9 +7,14 @@ namespace VISSTA.Infrastructure.Repositories;
 
 public sealed class PasswordResetOtpRepository(VISSTADbContext db) : IPasswordResetOtpRepository
 {
+    public Task<PasswordResetOtp?> GetByIdAsync(Guid id)
+    {
+        return db.PasswordResetOtps.FirstOrDefaultAsync(x => x.Id == id);
+    }
+
     public Task<PasswordResetOtp?> GetActiveByEmailAsync(string email)
     {
-        var normalized = email.ToLowerInvariant();
+        var normalized = Normalize(email);
         return db.PasswordResetOtps
             .Where(x => x.Email == normalized
                      && !x.IsUsed
@@ -21,7 +26,7 @@ public sealed class PasswordResetOtpRepository(VISSTADbContext db) : IPasswordRe
 
     public async Task InvalidateAllForEmailAsync(string email)
     {
-        var normalized = email.ToLowerInvariant();
+        var normalized = Normalize(email);
         // Bulk update via ExecuteUpdateAsync for performance
         await db.PasswordResetOtps
             .Where(x => x.Email == normalized && !x.IsUsed)
@@ -34,4 +39,6 @@ public sealed class PasswordResetOtpRepository(VISSTADbContext db) : IPasswordRe
 
     public Task SaveChangesAsync()
         => db.SaveChangesAsync();
+
+    private static string Normalize(string email) => email.Trim().ToLowerInvariant();
 }

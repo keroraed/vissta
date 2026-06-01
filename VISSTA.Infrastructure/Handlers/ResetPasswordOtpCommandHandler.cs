@@ -19,11 +19,11 @@ public sealed class ResetPasswordOtpCommandHandler(
         ResetPasswordOtpCommand request,
         CancellationToken cancellationToken)
     {
-        var email = request.Email.ToLowerInvariant();
+        var email = request.Email.Trim().ToLowerInvariant();
 
-        // 1. Fetch OTP by Id AND email (both must match for security)
-        var otpEntity = await otpRepository.GetActiveByEmailAsync(email);
-        if (otpEntity is null || otpEntity.Id != request.OtpId)
+        // 1. Fetch OTP by exact Id, then verify the email still matches.
+        var otpEntity = await otpRepository.GetByIdAsync(request.OtpId);
+        if (otpEntity is null || !string.Equals(otpEntity.Email, email, StringComparison.OrdinalIgnoreCase))
         {
             return new ResetPasswordOtpResult(false, "Session expired. Please start again.");
         }
@@ -41,14 +41,12 @@ public sealed class ResetPasswordOtpCommandHandler(
             return new ResetPasswordOtpResult(false, "Session expired. Please start again.");
         }
 
-        // 4. Generate new password hash and update
-        var newHash = userManager.PasswordHasher.HashPassword(user, request.NewPassword);
-        user.PasswordHash = newHash;
-
-        var updateResult = await userManager.UpdateAsync(user);
-        if (!updateResult.Succeeded)
+        // 4. Reset through Identity so password validators and security stamp updates run.
+        var resetToken = await userManager.GeneratePasswordResetTokenAsync(user);
+        var resetResult = await userManager.ResetPasswordAsync(user, resetToken, request.NewPassword);
+        if (!resetResult.Succeeded)
         {
-            var errors = string.Join(" ", updateResult.Errors.Select(e => e.Description));
+            var errors = string.Join(" ", resetResult.Errors.Select(e => e.Description));
             return new ResetPasswordOtpResult(false, errors);
         }
 

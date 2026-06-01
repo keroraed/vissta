@@ -1,5 +1,6 @@
 using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
@@ -10,6 +11,7 @@ using VISSTA.Application.DTOs;
 using VISSTA.Application.Interfaces;
 using VISSTA.Domain.Enums;
 using VISSTA.Domain.ValueObjects;
+using VISSTA.Infrastructure.Identity;
 using VISSTA.Infrastructure.Settings;
 
 namespace VISSTA.Infrastructure.Services;
@@ -307,6 +309,20 @@ public sealed class SmtpEmailService(IOptions<EmailSettings> options, IOptions<S
 
         await client.SendAsync(message, cancellationToken);
         await client.DisconnectAsync(true, cancellationToken);
+    }
+}
+
+public sealed class IdentityAccountLookupService(UserManager<ApplicationUser> userManager) : IUserAccountLookupService
+{
+    public async Task<bool> EmailExistsAsync(string email)
+    {
+        var normalized = email.Trim();
+        if (string.IsNullOrWhiteSpace(normalized))
+        {
+            return false;
+        }
+
+        return await userManager.FindByEmailAsync(normalized) is not null;
     }
 }
 

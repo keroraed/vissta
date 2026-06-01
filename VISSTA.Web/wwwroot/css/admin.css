@@ -5,6 +5,7 @@
 .admin-sidebar a:not(.brand) { min-height: 42px; display: flex; align-items: center; padding: 0 12px; border-radius: 6px; color: rgba(245,241,234,.68); letter-spacing: .11em; text-transform: uppercase; font-size: .72rem; transition: background .25s ease, color .25s ease, transform .25s ease; }
 .admin-sidebar a:not(.brand):hover { background: rgba(212,175,115,.1); color: var(--gold); transform: translateX(2px); }
 .admin-main { min-width: 0; padding: 40px; }
+.admin-global-actions { position: relative; z-index: 25; display: flex; justify-content: flex-end; margin-bottom: 18px; }
 .admin-head { display: flex; justify-content: space-between; align-items: center; gap: 24px; margin-bottom: 32px; }
 .admin-head-actions { display: inline-flex; align-items: center; gap: 12px; }
 .admin-head h1 { margin: 0; font-family: var(--font-display); font-size: clamp(2.4rem, 5vw, 3.4rem); line-height: 1; font-weight: 500; }
@@ -61,6 +62,66 @@ a.admin-table-row:hover { border-color: rgba(212,175,115,.3); background: rgba(1
 .admin-product-status { display: grid; gap: 6px; justify-items: start; }
 .admin-message { margin: -16px 0 24px; color: #22c55e; }
 .admin-message.form-summary { color: #22c55e; }
+.admin-notifications { position: relative; }
+.admin-notification-button {
+  position: relative; width: 46px; height: 46px; display: grid; place-items: center;
+  border: 1px solid rgba(212,175,115,.32); border-radius: 50%;
+  background: rgba(212,175,115,.08); color: var(--gold); cursor: pointer;
+  transition: background .22s ease, border-color .22s ease, transform .22s ease;
+}
+.admin-notification-button:hover, .admin-notification-button[aria-expanded="true"] {
+  border-color: rgba(212,175,115,.68); background: rgba(212,175,115,.16); transform: translateY(-1px);
+}
+.admin-notification-button svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.admin-notification-button.is-ringing { animation: adminBellRing .85s ease both; }
+.admin-notification-badge {
+  position: absolute; top: -4px; right: -4px; min-width: 20px; height: 20px; display: grid; place-items: center;
+  padding: 0 5px; border-radius: 999px; background: #e05252; color: #fff;
+  font-size: .62rem; font-weight: 800; letter-spacing: 0;
+  box-shadow: 0 0 0 3px rgba(4,11,21,.96);
+}
+.admin-notification-menu {
+  position: absolute; top: calc(100% + 12px); right: 0; z-index: 50;
+  width: min(380px, calc(100vw - 32px)); overflow: hidden;
+  border: 1px solid rgba(212,175,115,.18); border-radius: 8px;
+  background: rgba(4,11,21,.98); box-shadow: 0 30px 90px rgba(0,0,0,.48);
+}
+.admin-notification-menu[hidden] { display: none; }
+.admin-notification-menu.is-open { display: block; }
+.admin-notification-menu-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  padding: 15px 16px; border-bottom: 1px solid rgba(255,255,255,.07);
+}
+.admin-notification-menu-head strong { color: var(--cream); font-family: var(--font-display); font-size: 1.25rem; font-weight: 500; }
+.admin-notification-menu-head button {
+  border: 0; background: transparent; color: var(--gold); cursor: pointer;
+  text-transform: uppercase; letter-spacing: .12em; font-size: .6rem; font-weight: 700;
+}
+.admin-notification-list { max-height: 430px; overflow: auto; padding: 8px; }
+.admin-notification-empty { margin: 0; padding: 18px; color: rgba(245,241,234,.58); text-align: center; }
+.admin-notification-item {
+  display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 12px;
+  padding: 12px; border-radius: 7px; color: rgba(245,241,234,.72);
+  transition: background .2s ease, transform .2s ease;
+}
+.admin-notification-item:hover { background: rgba(212,175,115,.09); transform: translateY(-1px); }
+.admin-notification-item.is-unread { background: rgba(212,175,115,.07); color: var(--cream); }
+.admin-notification-type {
+  width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%;
+  border: 1px solid rgba(212,175,115,.22); color: var(--gold); background: rgba(212,175,115,.08);
+  font-weight: 800;
+}
+.admin-notification-item strong { display: block; margin-bottom: 4px; color: var(--cream); font-weight: 700; }
+.admin-notification-item small { display: block; color: rgba(245,241,234,.64); line-height: 1.45; }
+.admin-notification-item em { display: block; margin-top: 6px; color: rgba(212,175,115,.72); font-size: .68rem; font-style: normal; }
+@keyframes adminBellRing {
+  0%, 100% { transform: rotate(0deg); }
+  15% { transform: rotate(13deg); }
+  30% { transform: rotate(-11deg); }
+  45% { transform: rotate(8deg); }
+  60% { transform: rotate(-6deg); }
+  75% { transform: rotate(3deg); }
+}
 .admin-finance-panel { display: grid; gap: 16px; }
 .admin-finance-row { display: flex; justify-content: space-between; gap: 18px; align-items: baseline; padding-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,.07); }
 .admin-finance-row span { color: rgba(245,241,234,.62); }

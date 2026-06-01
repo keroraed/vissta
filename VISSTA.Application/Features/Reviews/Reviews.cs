@@ -24,7 +24,7 @@ public sealed class SubmitReviewCommandValidator : AbstractValidator<SubmitRevie
     }
 }
 
-public sealed class ReviewHandlers(IRepository<Review> reviews, IRepository<Customer> customers, IUnitOfWork unitOfWork) :
+public sealed class ReviewHandlers(IRepository<Review> reviews, IRepository<Customer> customers, IUnitOfWork unitOfWork, IAdminNotificationService adminNotifications) :
     IRequestHandler<SubmitReviewCommand, int>,
     IRequestHandler<ApproveReviewCommand, bool>,
     IRequestHandler<GetProductReviewsQuery, IReadOnlyCollection<ReviewDto>>,
@@ -42,6 +42,7 @@ public sealed class ReviewHandlers(IRepository<Review> reviews, IRepository<Cust
         var review = new Review(request.ProductId, request.CustomerId, request.Rating, request.Body);
         await reviews.AddAsync(review, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
+        await adminNotifications.NotifyNewReviewAsync(review.Id, request.CustomerName, request.ProductId, cancellationToken);
         return review.Id;
     }
 

@@ -26,7 +26,7 @@ public sealed class VerifyOtpCommandHandler(
 {
     public async Task<VerifyOtpResult> Handle(VerifyOtpCommand request, CancellationToken cancellationToken)
     {
-        var email = request.Email.ToLowerInvariant();
+        var email = request.Email.Trim().ToLowerInvariant();
 
         // 1. Hash the submitted OTP the same way as at creation
         var submittedHash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(request.Otp)))

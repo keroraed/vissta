@@ -17,7 +17,7 @@ public sealed class PasswordResetOtp
         => new()
         {
             Id = Guid.NewGuid(),
-            Email = email.ToLowerInvariant(),
+            Email = email.Trim().ToLowerInvariant(),
             OtpHash = otpHash,
             ExpiresAt = DateTime.UtcNow.AddMinutes(10),
             IsUsed = false,

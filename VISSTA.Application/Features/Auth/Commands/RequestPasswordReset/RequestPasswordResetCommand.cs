@@ -28,6 +28,7 @@ public sealed class RequestPasswordResetCommandValidator : AbstractValidator<Req
 public sealed class RequestPasswordResetCommandHandler(
     IPasswordResetOtpRepository otpRepository,
     IEmailService emailService,
+    IUserAccountLookupService userAccountLookup,
     IMemoryCache cache) : IRequestHandler<RequestPasswordResetCommand, RequestPasswordResetResult>
 {
     private const string SuccessMessage = "If this email is registered, a reset code has been sent.";
@@ -36,13 +37,18 @@ public sealed class RequestPasswordResetCommandHandler(
         RequestPasswordResetCommand request,
         CancellationToken cancellationToken)
     {
-        var email = request.Email.ToLowerInvariant();
+        var email = request.Email.Trim().ToLowerInvariant();
         var cacheKey = $"otp_rl_{email}";
 
         // 1. Rate-limit check (max 3 requests per email per hour)
         if (cache.TryGetValue(cacheKey, out int count) && count >= 3)
         {
             // Do NOT reveal rate limiting — return same success message
+            return new RequestPasswordResetResult(true, SuccessMessage);
+        }
+
+        if (!await userAccountLookup.EmailExistsAsync(email))
+        {
             return new RequestPasswordResetResult(true, SuccessMessage);
         }
 

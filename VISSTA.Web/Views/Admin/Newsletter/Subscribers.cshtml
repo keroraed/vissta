@@ -29,7 +29,7 @@ else
             </div>
             @foreach (var subscriber in Model.Subscribers)
             {
-                <div class="admin-table-row">
+                <div class="admin-table-row" id="subscriber-@Uri.EscapeDataString(subscriber.Email.ToLowerInvariant())">
                     <span data-label="Email"><strong>@subscriber.Email</strong></span>
                     <span data-label="Status">
                         <span class="status-pill">@(subscriber.IsActive ? "Active" : "Unsubscribed")</span>

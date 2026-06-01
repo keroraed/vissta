@@ -50,6 +50,7 @@ public sealed class OrderHandlers(
     IPaymentService payments,
     IUnitOfWork unitOfWork,
     IEmailService emailService,
+    IAdminNotificationService adminNotifications,
     IHttpContextAccessor httpContextAccessor,
     ILogger<OrderHandlers> logger) :
     IRequestHandler<PlaceOrderCommand, int>,
@@ -132,6 +133,7 @@ public sealed class OrderHandlers(
         cart.Clear();
         await unitOfWork.SaveChangesAsync(cancellationToken);
         order.MarkPlaced();
+        await adminNotifications.NotifyNewOrderAsync(order.Id, order.TotalAmount.Amount, order.TotalAmount.Currency, cancellationToken);
 
         return order.Id;
     }

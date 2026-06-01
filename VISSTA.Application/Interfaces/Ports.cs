@@ -45,6 +45,11 @@ public interface IEmailService
     Task SendNewsletterCampaignAsync(string toEmail, string unsubscribeToken, NewsletterCampaignEmailDto dto);
 }
 
+public interface IUserAccountLookupService
+{
+    Task<bool> EmailExistsAsync(string email);
+}
+
 public interface IPaymentService
 {
     Task<PaymentResult> ChargeAsync(decimal amount, string currency, string paymentToken, CancellationToken cancellationToken = default);
@@ -62,6 +67,13 @@ public interface ICurrentUserService
     string? UserId { get; }
     string SessionId { get; }
     bool IsAuthenticated { get; }
+}
+
+public interface IAdminNotificationService
+{
+    Task NotifyNewOrderAsync(int orderId, decimal totalAmount, string currency, CancellationToken cancellationToken = default);
+    Task NotifyNewReviewAsync(int reviewId, string customerName, int productId, CancellationToken cancellationToken = default);
+    Task NotifyNewSubscriberAsync(string email, CancellationToken cancellationToken = default);
 }
 
 public interface ICurrencyFormatter

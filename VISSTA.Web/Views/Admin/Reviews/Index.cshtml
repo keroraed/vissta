@@ -23,7 +23,7 @@
             {
                 var review = item.Review;
                 var stars = new string('*', review.Rating).PadRight(5, '-');
-                <article class="admin-review-card">
+                <article class="admin-review-card" id="review-@review.Id">
                     <div>
                         <span class="admin-stars">@stars</span>
                         <strong>@review.ProductName</strong>

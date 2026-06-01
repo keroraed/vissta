@@ -48,6 +48,7 @@ public static class DependencyInjection
         services.AddScoped<IOrderRepository, OrderRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IEmailService, SmtpEmailService>();
+        services.AddScoped<IUserAccountLookupService, IdentityAccountLookupService>();
         services.AddScoped<IPaymentService, MockPaymentService>();
         services.AddScoped<IFileStorageService, LocalFileStorageService>();
         services.AddScoped<IPasswordResetOtpRepository, PasswordResetOtpRepository>();
