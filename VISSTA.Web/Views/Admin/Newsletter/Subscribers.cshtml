@@ -1,0 +1,49 @@
+@model AdminNewsletterSubscribersViewModel
+@{
+    Layout = "_AdminLayout";
+}
+
+<section class="admin-head">
+    <div>
+        <p>Newsletter</p>
+        <h1>Subscribers</h1>
+    </div>
+    <div class="admin-head-actions">
+        <a class="button button-secondary" href="/admin/newsletter">Back to campaigns</a>
+    </div>
+</section>
+
+@if (Model.Subscribers.Count == 0)
+{
+    <div class="form-summary admin-message">No subscribers yet.</div>
+}
+else
+{
+    <section class="admin-panel">
+        <div class="admin-table">
+            <div class="admin-table-row admin-table-row-head">
+                <span>Email</span>
+                <span>Status</span>
+                <span>Subscribed</span>
+                <span>Unsubscribed</span>
+            </div>
+            @foreach (var subscriber in Model.Subscribers)
+            {
+                <div class="admin-table-row">
+                    <span data-label="Email"><strong>@subscriber.Email</strong></span>
+                    <span data-label="Status">
+                        <span class="status-pill">@(subscriber.IsActive ? "Active" : "Unsubscribed")</span>
+                    </span>
+                    <span data-label="Subscribed">
+                        @subscriber.SubscribedAt.ToLocalTime().ToString("dd MMM yyyy, h:mm tt")
+                    </span>
+                    <span data-label="Unsubscribed">
+                        @(subscriber.UnsubscribedAt is null
+                            ? "-"
+                            : subscriber.UnsubscribedAt.Value.ToLocalTime().ToString("dd MMM yyyy, h:mm tt"))
+                    </span>
+                </div>
+            }
+        </div>
+    </section>
+}

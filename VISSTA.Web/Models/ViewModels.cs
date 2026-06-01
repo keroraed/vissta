@@ -206,6 +206,14 @@ public sealed record AdminCategoriesViewModel(IReadOnlyCollection<CategoryDto> C
 
 public sealed record AdminNewsletterCampaignsViewModel(IReadOnlyCollection<AdminNewsletterCampaignListItemViewModel> Campaigns);
 
+public sealed record AdminNewsletterSubscribersViewModel(IReadOnlyCollection<AdminNewsletterSubscriberItemViewModel> Subscribers);
+
+public sealed record AdminNewsletterSubscriberItemViewModel(
+    string Email,
+    bool IsActive,
+    DateTime SubscribedAt,
+    DateTime? UnsubscribedAt);
+
 public sealed record AdminNewsletterCampaignListItemViewModel(
     int Id,
     string Subject,

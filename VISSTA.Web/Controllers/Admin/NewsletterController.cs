@@ -57,6 +57,22 @@ public sealed class NewsletterController(
         return View("~/Views/Admin/Newsletter/Create.cshtml", model);
     }
 
+    [HttpGet("subscribers")]
+    public async Task<IActionResult> Subscribers(CancellationToken cancellationToken)
+    {
+        var subscribers = await db.NewsletterSubscribers
+            .OrderByDescending(x => x.SubscribedAt)
+            .Select(x => new AdminNewsletterSubscriberItemViewModel(
+                x.Email,
+                x.IsActive,
+                x.SubscribedAt,
+                x.UnsubscribedAt))
+            .ToListAsync(cancellationToken);
+
+        return View("~/Views/Admin/Newsletter/Subscribers.cshtml",
+            new AdminNewsletterSubscribersViewModel(subscribers));
+    }
+
     [HttpPost("create")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(AdminNewsletterCampaignFormViewModel model, CancellationToken cancellationToken)
