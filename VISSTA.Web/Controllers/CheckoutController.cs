@@ -18,6 +18,7 @@ public sealed class CheckoutController(
     ICurrentUserService currentUser,
     IRepository<Customer> customers,
     IRepository<Coupon> coupons,
+    IRepository<AppSetting> settings,
     IFileStorageService fileStorage) : Controller
 {
     public async Task<IActionResult> Index(CancellationToken cancellationToken)
@@ -223,6 +224,7 @@ public sealed class CheckoutController(
     {
         var model = posted ?? new CheckoutViewModel();
         model.Cart = cart;
+        await PopulatePaymentSettingsAsync(model, cancellationToken);
 
         if (currentUser.UserId is null)
         {
@@ -240,6 +242,19 @@ public sealed class CheckoutController(
         }
 
         return model;
+    }
+
+    private async Task PopulatePaymentSettingsAsync(CheckoutViewModel model, CancellationToken cancellationToken)
+    {
+        var values = await settings.QueryReadOnly()
+            .Where(x => PaymentSettingKeys.ManualPaymentPhoneNumbers.Contains(x.Key))
+            .ToDictionaryAsync(x => x.Key, x => x.Value, cancellationToken);
+
+        model.InstaPayPhoneNumber = values.GetValueOrDefault(PaymentSettingKeys.InstaPayPhoneNumber);
+        model.VodafoneCashPhoneNumber = values.GetValueOrDefault(PaymentSettingKeys.VodafoneCashPhoneNumber);
+        model.OrangeCashPhoneNumber = values.GetValueOrDefault(PaymentSettingKeys.OrangeCashPhoneNumber);
+        model.EtisalatCashPhoneNumber = values.GetValueOrDefault(PaymentSettingKeys.EtisalatCashPhoneNumber);
+        model.WePayPhoneNumber = values.GetValueOrDefault(PaymentSettingKeys.WePayPhoneNumber);
     }
 
     private async Task<Address?> GetSavedAddressAsync(string userId, CancellationToken cancellationToken)

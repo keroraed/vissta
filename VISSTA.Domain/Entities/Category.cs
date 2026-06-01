@@ -13,12 +13,13 @@ public sealed class Category : Entity, IAggregateRoot
         Slug = string.Empty;
     }
 
-    public Category(string name, string slug, int? parentCategoryId = null, string? imageUrl = null)
+    public Category(string name, string slug, int? parentCategoryId = null, string? imageUrl = null, bool showOnHomePage = false)
     {
         Name = name;
         Slug = slug;
         ParentCategoryId = parentCategoryId;
         ImageUrl = imageUrl;
+        ShowOnHomePage = showOnHomePage;
     }
 
     public int Id { get; private set; }
@@ -26,15 +27,17 @@ public sealed class Category : Entity, IAggregateRoot
     public string Slug { get; private set; }
     public int? ParentCategoryId { get; private set; }
     public string? ImageUrl { get; private set; }
+    public bool ShowOnHomePage { get; private set; }
     public Category? ParentCategory { get; private set; }
     public IReadOnlyCollection<Category> Children => _children.AsReadOnly();
     public IReadOnlyCollection<Product> Products => _products.AsReadOnly();
 
-    public void Update(string name, string slug, int? parentCategoryId, string? imageUrl)
+    public void Update(string name, string slug, int? parentCategoryId, string? imageUrl, bool showOnHomePage)
     {
         Name = name;
         Slug = slug;
         ParentCategoryId = parentCategoryId;
         ImageUrl = imageUrl;
+        ShowOnHomePage = showOnHomePage;
     }
 }

@@ -121,6 +121,47 @@
                             <small>We confirm it before shipping.</small>
                         </label>
                     </div>
+                    @if (Model.HasManualPaymentDetails)
+                    {
+                        <div class="manual-payment-details is-hidden" data-payment-details>
+                            <span>Transfer details</span>
+                            @if (!string.IsNullOrWhiteSpace(Model.InstaPayPhoneNumber))
+                            {
+                                <div>
+                                    <small>InstaPay</small>
+                                    <strong>@Model.InstaPayPhoneNumber</strong>
+                                </div>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(Model.VodafoneCashPhoneNumber))
+                            {
+                                <div>
+                                    <small>Vodafone Cash</small>
+                                    <strong>@Model.VodafoneCashPhoneNumber</strong>
+                                </div>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(Model.OrangeCashPhoneNumber))
+                            {
+                                <div>
+                                    <small>Orange Cash</small>
+                                    <strong>@Model.OrangeCashPhoneNumber</strong>
+                                </div>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(Model.EtisalatCashPhoneNumber))
+                            {
+                                <div>
+                                    <small>Etisalat Cash</small>
+                                    <strong>@Model.EtisalatCashPhoneNumber</strong>
+                                </div>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(Model.WePayPhoneNumber))
+                            {
+                                <div>
+                                    <small>WE Pay</small>
+                                    <strong>@Model.WePayPhoneNumber</strong>
+                                </div>
+                            }
+                        </div>
+                    }
                     <div class="field payment-proof is-hidden" data-payment-proof>
                         <span>Payment proof</span>
                         <input asp-for="PaymentProof" type="file" accept="image/*,application/pdf" />

@@ -67,6 +67,7 @@ public sealed class VISSTADbContext(DbContextOptions<VISSTADbContext> options) :
             entity.Property(x => x.Name).HasMaxLength(120).IsRequired();
             entity.Property(x => x.Slug).HasMaxLength(140).IsRequired();
             entity.Property(x => x.ImageUrl).HasMaxLength(500);
+            entity.Property(x => x.ShowOnHomePage).HasDefaultValue(false);
             entity.HasIndex(x => x.Slug).IsUnique();
             entity.HasOne(x => x.ParentCategory).WithMany(x => x.Children).HasForeignKey(x => x.ParentCategoryId).OnDelete(DeleteBehavior.Restrict);
             entity.Metadata.FindNavigation(nameof(Category.Children))?.SetPropertyAccessMode(PropertyAccessMode.Field);
@@ -245,10 +246,10 @@ public sealed class VISSTADbContext(DbContextOptions<VISSTADbContext> options) :
     private static void SeedCatalog(ModelBuilder builder)
     {
         builder.Entity<Category>().HasData(
-            new { Id = 2, Name = "Men's", Slug = "men", ParentCategoryId = (int?)null, ImageUrl = (string?)null },
-            new { Id = 4, Name = "T-shirt", Slug = "t-shirt", ParentCategoryId = (int?)2, ImageUrl = (string?)null },
-            new { Id = 5, Name = "Shirts", Slug = "shirts", ParentCategoryId = (int?)2, ImageUrl = (string?)null },
-            new { Id = 6, Name = "Bottoms", Slug = "bottoms", ParentCategoryId = (int?)2, ImageUrl = (string?)null });
+            new { Id = 2, Name = "Men's", Slug = "men", ParentCategoryId = (int?)null, ImageUrl = (string?)null, ShowOnHomePage = true },
+            new { Id = 4, Name = "T-shirt", Slug = "t-shirt", ParentCategoryId = (int?)2, ImageUrl = (string?)null, ShowOnHomePage = false },
+            new { Id = 5, Name = "Shirts", Slug = "shirts", ParentCategoryId = (int?)2, ImageUrl = (string?)null, ShowOnHomePage = false },
+            new { Id = 6, Name = "Bottoms", Slug = "bottoms", ParentCategoryId = (int?)2, ImageUrl = (string?)null, ShowOnHomePage = false });
 
         var products = new[]
         {

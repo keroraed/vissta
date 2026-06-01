@@ -50,7 +50,7 @@ public sealed class CategoriesController(IMediator mediator, IWebHostEnvironment
         try
         {
             var imageUrl = await SaveCategoryImageAsync(model.ImageFile, cancellationToken);
-            await mediator.Send(new CreateCategoryCommand(model.Name, model.Slug, model.ParentCategoryId, imageUrl), cancellationToken);
+            await mediator.Send(new CreateCategoryCommand(model.Name, model.Slug, model.ParentCategoryId, imageUrl, model.ShowOnHomePage), cancellationToken);
             return RedirectToAction(nameof(Index));
         }
         catch (ValidationException ex)
@@ -82,6 +82,7 @@ public sealed class CategoriesController(IMediator mediator, IWebHostEnvironment
             Slug = category.Slug,
             ParentCategoryId = category.ParentCategoryId,
             ImageUrl = category.ImageUrl,
+            ShowOnHomePage = category.ShowOnHomePage,
             Categories = categories.Where(c => c.Id != category.Id).ToList()
         });
     }
@@ -130,7 +131,7 @@ public sealed class CategoriesController(IMediator mediator, IWebHostEnvironment
                 imageUrl = await SaveCategoryImageAsync(model.ImageFile, cancellationToken);
             }
 
-            var updated = await mediator.Send(new UpdateCategoryCommand(id, model.Name, model.Slug, model.ParentCategoryId, imageUrl), cancellationToken);
+            var updated = await mediator.Send(new UpdateCategoryCommand(id, model.Name, model.Slug, model.ParentCategoryId, imageUrl, model.ShowOnHomePage), cancellationToken);
             if (!updated)
             {
                 return NotFound();

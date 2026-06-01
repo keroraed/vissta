@@ -26,7 +26,7 @@
 
     <section class="featured-grid">
         <div class="shell image-grid">
-            @foreach (var cat in Model.Categories.Where(c => c.ParentCategoryId == null).OrderBy(c => c.Name).Take(3))
+            @foreach (var cat in Model.Categories.Where(c => c.ShowOnHomePage).OrderBy(c => c.Name).Take(4))
             {
                 <a class="feature-tile reveal" asp-controller="Collection" asp-action="Index" asp-route-slug="@cat.Slug">
                     <img src="@(string.IsNullOrWhiteSpace(cat.ImageUrl) ? "/assets/hero-model.webp" : cat.ImageUrl)" alt="@cat.Name" loading="lazy" />

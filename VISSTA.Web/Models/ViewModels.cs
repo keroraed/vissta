@@ -47,6 +47,22 @@ public sealed class CheckoutViewModel
     public PaymentMethod PaymentMethod { get; set; } = PaymentMethod.CashOnDelivery;
     public IFormFile? PaymentProof { get; set; }
     public string PaymentToken { get; set; } = "mock";
+    [BindNever]
+    public string? InstaPayPhoneNumber { get; set; }
+    [BindNever]
+    public string? VodafoneCashPhoneNumber { get; set; }
+    [BindNever]
+    public string? OrangeCashPhoneNumber { get; set; }
+    [BindNever]
+    public string? EtisalatCashPhoneNumber { get; set; }
+    [BindNever]
+    public string? WePayPhoneNumber { get; set; }
+    public bool HasManualPaymentDetails =>
+        !string.IsNullOrWhiteSpace(InstaPayPhoneNumber)
+        || !string.IsNullOrWhiteSpace(VodafoneCashPhoneNumber)
+        || !string.IsNullOrWhiteSpace(OrangeCashPhoneNumber)
+        || !string.IsNullOrWhiteSpace(EtisalatCashPhoneNumber)
+        || !string.IsNullOrWhiteSpace(WePayPhoneNumber);
     public bool HasSavedAddress => SavedAddress?.IsComplete == true;
 }
 
@@ -164,6 +180,24 @@ public sealed class AdminStockSettingsViewModel
     public int LowStockThreshold { get; set; } = 5;
 }
 
+public sealed class AdminPaymentSettingsViewModel
+{
+    [Phone, MaxLength(32)]
+    public string? InstaPayPhoneNumber { get; set; }
+
+    [Phone, MaxLength(32)]
+    public string? VodafoneCashPhoneNumber { get; set; }
+
+    [Phone, MaxLength(32)]
+    public string? OrangeCashPhoneNumber { get; set; }
+
+    [Phone, MaxLength(32)]
+    public string? EtisalatCashPhoneNumber { get; set; }
+
+    [Phone, MaxLength(32)]
+    public string? WePayPhoneNumber { get; set; }
+}
+
 public sealed class AdminProductFormViewModel
 {
     public int Id { get; set; }
@@ -267,6 +301,7 @@ public sealed class AdminCategoryFormViewModel
     public string? ImageUrl { get; set; }
     public IFormFile? ImageFile { get; set; }
     public bool RemoveImage { get; set; }
+    public bool ShowOnHomePage { get; set; }
     public IReadOnlyCollection<CategoryDto> Categories { get; set; } = Array.Empty<CategoryDto>();
 }
 

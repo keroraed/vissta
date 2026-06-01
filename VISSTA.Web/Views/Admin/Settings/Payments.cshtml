@@ -1,0 +1,54 @@
+@model AdminPaymentSettingsViewModel
+@{
+    Layout = "_AdminLayout";
+}
+
+<section class="admin-head">
+    <div>
+        <p>Checkout</p>
+        <h1>Payments</h1>
+    </div>
+    <a class="text-button" href="/admin/orders">Back to orders</a>
+</section>
+
+@if (TempData["SettingsMessage"] is string message)
+{
+    <div class="form-summary admin-message">@message</div>
+}
+
+<form method="post" class="admin-form admin-payment-form glassmorphism">
+    @Html.AntiForgeryToken()
+    <label class="field">
+        <span>InstaPay phone number</span>
+        <input asp-for="InstaPayPhoneNumber" type="tel" placeholder="Phone linked to InstaPay" />
+        <small class="admin-field-hint">Shown to customers when they choose InstaPay / Cash Wallets.</small>
+        <span asp-validation-for="InstaPayPhoneNumber" class="field-error"></span>
+    </label>
+    <label class="field">
+        <span>Vodafone Cash phone number</span>
+        <input asp-for="VodafoneCashPhoneNumber" type="tel" placeholder="Phone linked to Vodafone Cash" />
+        <small class="admin-field-hint">Leave empty to hide Vodafone Cash from transfer details.</small>
+        <span asp-validation-for="VodafoneCashPhoneNumber" class="field-error"></span>
+    </label>
+    <label class="field">
+        <span>Orange Cash phone number</span>
+        <input asp-for="OrangeCashPhoneNumber" type="tel" placeholder="Phone linked to Orange Cash" />
+        <small class="admin-field-hint">Leave empty to hide Orange Cash from transfer details.</small>
+        <span asp-validation-for="OrangeCashPhoneNumber" class="field-error"></span>
+    </label>
+    <label class="field">
+        <span>Etisalat Cash phone number</span>
+        <input asp-for="EtisalatCashPhoneNumber" type="tel" placeholder="Phone linked to Etisalat Cash" />
+        <small class="admin-field-hint">Leave empty to hide Etisalat Cash from transfer details.</small>
+        <span asp-validation-for="EtisalatCashPhoneNumber" class="field-error"></span>
+    </label>
+    <label class="field">
+        <span>WE Pay phone number</span>
+        <input asp-for="WePayPhoneNumber" type="tel" placeholder="Phone linked to WE Pay" />
+        <small class="admin-field-hint">Leave empty to hide WE Pay from transfer details.</small>
+        <span asp-validation-for="WePayPhoneNumber" class="field-error"></span>
+    </label>
+    <div class="admin-form-actions">
+        <button type="submit" class="button button-primary">Save</button>
+    </div>
+</form>

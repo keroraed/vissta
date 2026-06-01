@@ -223,6 +223,7 @@ if (checkoutForm) {
   const totalEl = document.querySelector('[data-summary-total]');
   const couponStatus = document.querySelector('[data-summary-coupon-status]');
   const paymentProof = checkoutForm.querySelector('[data-payment-proof]');
+  const paymentDetails = checkoutForm.querySelector('[data-payment-details]');
   const paymentMethods = checkoutForm.querySelectorAll('[data-payment-method]');
 
   const formatMoney = (value, currency) => `${Number(value).toLocaleString()} ${currency}`;
@@ -307,10 +308,10 @@ if (checkoutForm) {
   }
 
   const togglePaymentProof = () => {
-    if (!paymentProof) return;
     const selected = checkoutForm.querySelector('[data-payment-method]:checked');
     const needsProof = selected?.value === 'InstaPayWallet';
-    paymentProof.classList.toggle('is-hidden', !needsProof);
+    paymentProof?.classList.toggle('is-hidden', !needsProof);
+    paymentDetails?.classList.toggle('is-hidden', !needsProof);
   };
 
   paymentMethods.forEach((input) => {

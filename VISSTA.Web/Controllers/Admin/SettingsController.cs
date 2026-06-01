@@ -56,4 +56,58 @@ public sealed class SettingsController(IRepository<AppSetting> settings, IUnitOf
         TempData["SettingsMessage"] = "Stock threshold updated.";
         return RedirectToAction(nameof(Stock));
     }
+
+    [HttpGet("payments")]
+    public async Task<IActionResult> Payments(CancellationToken cancellationToken)
+    {
+        var values = await settings.QueryReadOnly()
+            .Where(x => PaymentSettingKeys.ManualPaymentPhoneNumbers.Contains(x.Key))
+            .ToDictionaryAsync(x => x.Key, x => x.Value, cancellationToken);
+
+        var model = new AdminPaymentSettingsViewModel
+        {
+            InstaPayPhoneNumber = values.GetValueOrDefault(PaymentSettingKeys.InstaPayPhoneNumber),
+            VodafoneCashPhoneNumber = values.GetValueOrDefault(PaymentSettingKeys.VodafoneCashPhoneNumber),
+            OrangeCashPhoneNumber = values.GetValueOrDefault(PaymentSettingKeys.OrangeCashPhoneNumber),
+            EtisalatCashPhoneNumber = values.GetValueOrDefault(PaymentSettingKeys.EtisalatCashPhoneNumber),
+            WePayPhoneNumber = values.GetValueOrDefault(PaymentSettingKeys.WePayPhoneNumber)
+        };
+
+        return View("~/Views/Admin/Settings/Payments.cshtml", model);
+    }
+
+    [HttpPost("payments")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Payments(AdminPaymentSettingsViewModel model, CancellationToken cancellationToken)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View("~/Views/Admin/Settings/Payments.cshtml", model);
+        }
+
+        await UpsertSettingAsync(PaymentSettingKeys.InstaPayPhoneNumber, model.InstaPayPhoneNumber, cancellationToken);
+        await UpsertSettingAsync(PaymentSettingKeys.VodafoneCashPhoneNumber, model.VodafoneCashPhoneNumber, cancellationToken);
+        await UpsertSettingAsync(PaymentSettingKeys.OrangeCashPhoneNumber, model.OrangeCashPhoneNumber, cancellationToken);
+        await UpsertSettingAsync(PaymentSettingKeys.EtisalatCashPhoneNumber, model.EtisalatCashPhoneNumber, cancellationToken);
+        await UpsertSettingAsync(PaymentSettingKeys.WePayPhoneNumber, model.WePayPhoneNumber, cancellationToken);
+
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+        TempData["SettingsMessage"] = "Payment details updated.";
+        return RedirectToAction(nameof(Payments));
+    }
+
+    private async Task UpsertSettingAsync(string key, string? value, CancellationToken cancellationToken)
+    {
+        var setting = await settings.Query()
+            .FirstOrDefaultAsync(x => x.Key == key, cancellationToken);
+
+        if (setting is null)
+        {
+            await settings.AddAsync(new AppSetting(key, value ?? string.Empty), cancellationToken);
+            return;
+        }
+
+        setting.UpdateValue(value ?? string.Empty);
+        settings.Update(setting);
+    }
 }

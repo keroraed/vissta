@@ -42,7 +42,7 @@ public sealed record ProductDetailDto(
     IReadOnlyCollection<ProductImageDto> Images,
     IReadOnlyCollection<ReviewDto> Reviews);
 
-public sealed record CategoryDto(int Id, string Name, string Slug, int? ParentCategoryId, string? ImageUrl = null);
+public sealed record CategoryDto(int Id, string Name, string Slug, int? ParentCategoryId, string? ImageUrl = null, bool ShowOnHomePage = false);
 
 public sealed record CartItemDto(int Id, int ProductId, string ProductName, string Slug, string ImageUrl, decimal UnitPrice, string Currency, int Quantity, decimal LineTotal, string Size = "");
 
