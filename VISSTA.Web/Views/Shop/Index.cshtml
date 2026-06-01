@@ -1,4 +1,9 @@
 @model ShopViewModel
+@{
+    var parentCategories = Model.Categories.Where(c => c.ParentCategoryId == null).OrderBy(c => c.Name).ToList();
+    var childCategories = Model.Categories.Where(c => c.ParentCategoryId != null).ToList();
+    var hasActiveFilters = !string.IsNullOrWhiteSpace(Model.Search) || Model.CategoryId.HasValue || !string.IsNullOrWhiteSpace(Model.Sort);
+}
 <main class="simple-page">
     <section class="shell shop-header">
         <div>
@@ -16,16 +21,22 @@
                     <input type="search" name="search" value="@Model.Search" placeholder="Polo, tee, knit..." />
                 </span>
             </label>
-            <div class="filter-price-group" aria-label="Price range">
-                <label class="filter-control">
-                    <span>Min</span>
-                    <input type="number" name="minPrice" value="@Model.MinPrice" placeholder="0" min="0" />
-                </label>
-                <label class="filter-control">
-                    <span>Max</span>
-                    <input type="number" name="maxPrice" value="@Model.MaxPrice" placeholder="5000" min="0" />
-                </label>
-            </div>
+            <label class="filter-control filter-category">
+                <span>Category</span>
+                <select name="categoryId">
+                    <option value="">All Categories</option>
+                    @foreach (var parent in parentCategories)
+                    {
+                        var isSelected = Model.CategoryId == parent.Id;
+                        <option value="@parent.Id" selected="@isSelected">@parent.Name</option>
+                        @foreach (var child in childCategories.Where(c => c.ParentCategoryId == parent.Id).OrderBy(c => c.Name))
+                        {
+                            var isChildSelected = Model.CategoryId == child.Id;
+                            <option value="@child.Id" selected="@isChildSelected">&nbsp;&nbsp;— @child.Name</option>
+                        }
+                    }
+                </select>
+            </label>
             <label class="filter-control filter-sort">
                 <span>Sort</span>
                 <select name="sort">
@@ -37,7 +48,7 @@
             </label>
             <div class="filter-actions">
                 <button class="button button-primary" type="submit">Apply</button>
-                @if (!string.IsNullOrWhiteSpace(Model.Search) || Model.MinPrice.HasValue || Model.MaxPrice.HasValue || !string.IsNullOrWhiteSpace(Model.Sort))
+                @if (hasActiveFilters)
                 {
                     <a class="filter-clear" asp-controller="Shop" asp-action="Index">Clear</a>
                 }

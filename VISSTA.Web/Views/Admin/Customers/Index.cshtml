@@ -6,6 +6,10 @@
 <div class="table-list">
 @foreach (var customer in Model.Customers)
 {
-    <article class="table-row glassmorphism"><span>@customer.FullName</span><span>@customer.Email</span><span>@customer.PhoneNumber</span></article>
+    <article class="table-row glassmorphism admin-customer-row">
+        <span data-label="Name">@customer.FullName</span>
+        <span data-label="Email">@customer.Email</span>
+        <span data-label="Phone">@customer.PhoneNumber</span>
+    </article>
 }
 </div>

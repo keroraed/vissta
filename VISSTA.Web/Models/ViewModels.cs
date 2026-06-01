@@ -10,6 +10,7 @@ public sealed record HomeViewModel(IReadOnlyCollection<ProductListDto> FeaturedP
 
 public sealed record ShopViewModel(
     IReadOnlyCollection<ProductListDto> Products,
+    IReadOnlyCollection<CategoryDto> Categories,
     int? CategoryId,
     decimal? MinPrice,
     decimal? MaxPrice,

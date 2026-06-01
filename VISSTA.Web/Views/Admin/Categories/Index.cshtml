@@ -14,21 +14,21 @@
 <div class="table-list">
 @foreach (var category in Model.Categories)
 {
-    <article class="table-row glassmorphism admin-category-row" style="grid-template-columns: 50px minmax(0, 1.2fr) minmax(0, 1.2fr) minmax(0, 1fr) auto; align-items: center;">
-        <span class="admin-category-image" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background: rgba(212,175,115,0.05); border: 1px solid rgba(212,175,115,0.12); border-radius: 4px; overflow: hidden; margin-right: 8px;">
+    <article class="table-row glassmorphism admin-category-row">
+        <span class="admin-category-image">
             @if (!string.IsNullOrWhiteSpace(category.ImageUrl))
             {
-                <img src="@category.ImageUrl" alt="Category Image" style="width: 100%; height: 100%; object-fit: cover;" />
+                <img src="@category.ImageUrl" alt="Category Image" />
             }
             else
             {
-                <span style="font-size: 0.5rem; color: rgba(245,241,234,0.25); text-transform: uppercase; font-family: sans-serif;">None</span>
+                <span>None</span>
             }
         </span>
-        <span>@category.Name</span>
-        <span>@category.Slug</span>
-        <span>@(category.ParentCategoryId is null ? "-" : categoryLookup.GetValueOrDefault(category.ParentCategoryId.Value, "-"))</span>
-        <div class="admin-row-actions">
+        <span data-label="Name">@category.Name</span>
+        <span data-label="Slug">@category.Slug</span>
+        <span data-label="Parent">@(category.ParentCategoryId is null ? "-" : categoryLookup.GetValueOrDefault(category.ParentCategoryId.Value, "-"))</span>
+        <div class="admin-row-actions" data-label="Actions">
             <a class="text-button" href="/admin/categories/edit/@category.Id">Edit</a>
             <form method="post" action="/admin/categories/delete/@category.Id">
                 @Html.AntiForgeryToken()

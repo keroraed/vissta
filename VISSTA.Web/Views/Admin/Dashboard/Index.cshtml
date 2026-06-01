@@ -35,7 +35,7 @@
 </div>
 
 <div class="admin-dashboard-grid">
-    <section class="admin-panel glassmorphism">
+    <section class="admin-panel glassmorphism admin-orders-panel">
         <div class="admin-panel-head">
             <h2>Recent Orders</h2>
             <a href="/admin/orders">View all</a>
@@ -44,16 +44,16 @@
             @foreach (var order in Model.RecentOrders)
             {
                 <a class="admin-table-row" href="/admin/orders/@order.Id">
-                    <span>#@order.Id</span>
-                    <span class="status-pill">@order.Status</span>
-                    <span>@order.TotalAmount.ToString("N0") @order.Currency</span>
-                    <span>@order.CreatedAt.ToLocalTime().ToString("MMM d")</span>
+                    <span data-label="Order">#@order.Id</span>
+                    <span data-label="Status"><span class="status-pill">@order.Status</span></span>
+                    <span data-label="Total">@order.TotalAmount.ToString("N0") @order.Currency</span>
+                    <span data-label="Date">@order.CreatedAt.ToLocalTime().ToString("MMM d")</span>
                 </a>
             }
         </div>
     </section>
 
-    <section class="admin-panel glassmorphism">
+    <section class="admin-panel glassmorphism admin-stock-panel">
         <div class="admin-panel-head">
             <h2>Stock Watch</h2>
             <a href="/admin/products">Products</a>
@@ -69,15 +69,15 @@
                 {
                     <a class="admin-table-row" href="/admin/products/edit/@product.Id">
                         <img class="admin-product-image" src="@product.ImageUrl" alt="@product.Name" loading="lazy" />
-                        <span>@product.Name</span>
-                        <span>@product.Stock left</span>
+                        <span data-label="Product">@product.Name</span>
+                        <span data-label="Stock">@product.Stock left</span>
                     </a>
                 }
             </div>
         }
     </section>
 
-    <section class="admin-panel glassmorphism">
+    <section class="admin-panel glassmorphism admin-top-products-panel">
         <div class="admin-panel-head">
             <h2>Top Products</h2>
             <a href="/admin/products">Manage</a>

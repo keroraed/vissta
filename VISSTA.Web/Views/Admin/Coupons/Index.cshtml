@@ -24,12 +24,12 @@
         @foreach (var coupon in Model.Coupons)
         {
             <div class="admin-table-row">
-                <span>@coupon.Code</span>
-                <span>@(coupon.DiscountType == "Percentage" ? $"{coupon.Value:N0}%" : $"{coupon.Value:N0} EGP")</span>
-                <span>@coupon.UsedCount / @coupon.MaxUses</span>
-                <span>@coupon.ExpiryDate.ToLocalTime().ToString("MMM d, yyyy")</span>
-                <span class="status-pill">@(coupon.IsValid ? "Active" : "Inactive")</span>
-                <span class="admin-row-actions">
+                <span data-label="Code">@coupon.Code</span>
+                <span data-label="Discount">@(coupon.DiscountType == "Percentage" ? $"{coupon.Value:N0}%" : $"{coupon.Value:N0} EGP")</span>
+                <span data-label="Usage">@coupon.UsedCount / @coupon.MaxUses</span>
+                <span data-label="Expires">@coupon.ExpiryDate.ToLocalTime().ToString("MMM d, yyyy")</span>
+                <span data-label="Status"><span class="status-pill">@(coupon.IsValid ? "Active" : "Inactive")</span></span>
+                <span class="admin-row-actions" data-label="Actions">
                     <a href="/admin/coupons/edit/@coupon.Id">Edit</a>
                     <form method="post" action="/admin/coupons/delete/@coupon.Id">
                         @Html.AntiForgeryToken()

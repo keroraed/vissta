@@ -1,3 +1,9 @@
+(function () {
+  document.body.classList.remove('is-mobile-menu-open', 'is-cart-open');
+  document.querySelector('[data-mobile-menu]')?.classList.remove('is-open');
+  document.querySelector('[data-mobile-menu]')?.setAttribute('aria-hidden', 'true');
+})();
+
 const accountMenu = document.querySelector('[data-account-menu]');
 const accountToggle = document.querySelector('[data-account-toggle]');
 
@@ -385,4 +391,25 @@ if (checkoutForm) {
       group.classList.remove('is-open');
     });
   }
+})();
+
+/* ─── RELATED PIECES CAROUSEL ──────────────────────────────────── */
+(function () {
+  const section = document.querySelector('.related');
+  if (!section) return;
+
+  const carousel = section.querySelector('.catalog-grid');
+  const prevBtn = section.querySelector('[data-related-prev]');
+  const nextBtn = section.querySelector('[data-related-next]');
+
+  if (!carousel) return;
+
+  const scrollByCard = (direction) => {
+    const card = carousel.querySelector('.product-card');
+    const distance = card ? card.getBoundingClientRect().width + 20 : carousel.clientWidth * 0.8;
+    carousel.scrollBy({ left: direction * distance, behavior: 'smooth' });
+  };
+
+  prevBtn?.addEventListener('click', () => scrollByCard(-1));
+  nextBtn?.addEventListener('click', () => scrollByCard(1));
 })();

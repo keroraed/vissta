@@ -106,8 +106,14 @@
             </div>
         </div>
 
+        <div class="mobile-menu-overlay" id="mobile-menu-overlay"></div>
+
         <div class="mobile-menu" data-mobile-menu aria-hidden="true">
-            <button class="mobile-close" type="button" data-mobile-close aria-label="Close menu">×</button>
+            <div class="mobile-menu-header">
+                <span class="mobile-menu-brand">VISSTA</span>
+                <button class="mobile-close" type="button" data-mobile-close aria-label="Close menu">×</button>
+            </div>
+            <div class="mobile-menu-spacer"></div>
             <a asp-controller="Home" asp-action="Index">HOME</a>
             <a asp-controller="Shop" asp-action="Index">SHOP</a>
 
@@ -133,20 +139,29 @@
                 </div>
             </div>
 
-
             <a asp-controller="Home" asp-action="About">ABOUT</a>
+
+            <div class="mobile-menu-divider"></div>
             @if (User.Identity?.IsAuthenticated == true)
             {
+                <span class="mobile-menu-account-label">MY ACCOUNT</span>
                 @if (User.IsInRole("Admin"))
                 {
                     <a href="/admin/dashboard">DASHBOARD</a>
                 }
                 <a asp-controller="Account" asp-action="Profile">PROFILE</a>
                 <a asp-controller="Account" asp-action="Orders">ORDERS</a>
+                <div class="mobile-menu-footer">
+                    <form asp-controller="Account" asp-action="Logout" method="post" style="margin:0;">
+                        <button type="submit" class="mobile-close-button" style="width:100%;min-height:46px;border:1px solid rgba(212,175,115,.3);border-radius:999px;background:rgba(212,175,115,.08);color:var(--gold);text-transform:uppercase;letter-spacing:.18em;font-size:.7rem;font-weight:600;cursor:pointer;">LOGOUT</button>
+                    </form>
+                </div>
             }
             else
             {
-                <a asp-controller="Account" asp-action="Login">LOGIN</a>
+                <div class="mobile-menu-footer">
+                    <a asp-controller="Account" asp-action="Login">LOGIN</a>
+                </div>
             }
         </div>
 

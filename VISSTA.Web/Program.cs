@@ -23,7 +23,7 @@ builder.Services.AddMemoryCache();
 builder.Services.AddWebOptimizer(pipeline =>
 {
     pipeline.MinifyCssFiles("css/site.css", "css/admin.css");
-    pipeline.MinifyJsFiles("js/cart.js", "js/search.js", "js/animations.js", "js/site.js");
+    pipeline.MinifyJsFiles("js/cart.js", "js/search.js", "js/animations.js", "js/site.js", "js/admin.js");
 });
 
 builder.Services.AddRateLimiter(options =>

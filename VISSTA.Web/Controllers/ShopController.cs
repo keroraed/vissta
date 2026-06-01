@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using VISSTA.Application.Features.Categories;
 using VISSTA.Application.Features.Products;
 using VISSTA.Web.Models;
 
@@ -17,7 +18,8 @@ public sealed class ShopController(IMediator mediator) : Controller
             return PartialView("_ProductGrid", products);
         }
 
-        return View(new ShopViewModel(products, categoryId, minPrice, maxPrice, sort, search));
+        var categories = await mediator.Send(new GetCategoryListQuery(), cancellationToken);
+        return View(new ShopViewModel(products, categories, categoryId, minPrice, maxPrice, sort, search));
     }
 
     [HttpGet("/shop/{slug}")]

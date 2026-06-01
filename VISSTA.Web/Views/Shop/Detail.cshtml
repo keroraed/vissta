@@ -153,7 +153,13 @@
     </section>
 
     <section class="shell related">
-        <h2 class="compact-title">Related Pieces</h2>
+        <div class="related-section-head">
+            <h2 class="compact-title">Related Pieces</h2>
+            <div class="related-nav-controls" aria-label="Related products navigation">
+                <button class="related-nav-button" type="button" aria-label="Previous" data-related-prev>&#8592;</button>
+                <button class="related-nav-button" type="button" aria-label="Next" data-related-next>&#8594;</button>
+            </div>
+        </div>
         @await Html.PartialAsync("_ProductGrid", Model.RelatedProducts)
     </section>
 </main>

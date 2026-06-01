@@ -45,10 +45,23 @@
             {
                 <article class="glassmorphism table-row order-detail-row">
                     <img class="order-item-image" src="@item.ImageUrl" alt="@item.ProductName" loading="lazy" />
-                    <span>@item.ProductName<br /><small>Size @item.Size</small></span>
-                    <span>Qty @item.Quantity</span>
-                    <span>@item.UnitPrice.ToString("N0") @Model.Currency</span>
-                    <span>@item.LineTotal.ToString("N0") @Model.Currency</span>
+                    <div class="order-detail-cell">
+                        <span class="order-detail-cell-label">Product</span>
+                        <span class="order-detail-cell-value">@item.ProductName</span>
+                        <small style="color:rgba(245,241,234,.55);margin-top:2px;">Size @item.Size</small>
+                    </div>
+                    <div class="order-detail-cell">
+                        <span class="order-detail-cell-label">Quantity</span>
+                        <span class="order-detail-cell-value">@item.Quantity</span>
+                    </div>
+                    <div class="order-detail-cell">
+                        <span class="order-detail-cell-label">Unit Price</span>
+                        <span class="order-detail-cell-value">@item.UnitPrice.ToString("N0") @Model.Currency</span>
+                    </div>
+                    <div class="order-detail-cell">
+                        <span class="order-detail-cell-label">Subtotal</span>
+                        <span class="order-detail-cell-value" style="color:var(--gold);font-weight:600;">@item.LineTotal.ToString("N0") @Model.Currency</span>
+                    </div>
                 </article>
             }
         </div>
