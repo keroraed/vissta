@@ -1,0 +1,16 @@
+@model AdminNewsletterCampaignFormViewModel
+@{
+    Layout = "_AdminLayout";
+}
+
+<section class="admin-head">
+    <div>
+        <p>Newsletter</p>
+        <h1>Create Campaign</h1>
+    </div>
+    <div class="admin-head-actions">
+        <a class="button button-secondary" href="/admin/newsletter">Back</a>
+    </div>
+</section>
+
+@await Html.PartialAsync("~/Views/Admin/Newsletter/_CampaignForm.cshtml", Model)

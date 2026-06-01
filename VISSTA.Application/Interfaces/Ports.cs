@@ -41,6 +41,8 @@ public interface IEmailService
     Task SendPasswordResetAsync(string toEmail, string resetLink, CancellationToken cancellationToken = default);
     Task SendPasswordResetOtpAsync(string toEmail, string otp);
     Task SendNewsletterWelcomeAsync(string toEmail, string unsubscribeToken);
+    Task<string> RenderNewsletterCampaignAsync(NewsletterCampaignEmailDto dto, string toEmail = "", string unsubscribeToken = "");
+    Task SendNewsletterCampaignAsync(string toEmail, string unsubscribeToken, NewsletterCampaignEmailDto dto);
 }
 
 public interface IPaymentService

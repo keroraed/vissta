@@ -1,0 +1,48 @@
+@model AdminNewsletterCampaignFormViewModel
+@{
+    var isSent = Model.Status == NewsletterCampaignStatus.Sent;
+}
+
+<form method="post" class="admin-form admin-newsletter-form glassmorphism">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="form-summary"></div>
+    <input asp-for="Subject" placeholder="Subject" disabled="@isSent" />
+    <span asp-validation-for="Subject" class="field-error"></span>
+    <input asp-for="Headline" placeholder="Headline" disabled="@isSent" />
+    <span asp-validation-for="Headline" class="field-error"></span>
+    <textarea asp-for="Body" placeholder="Body text" disabled="@isSent"></textarea>
+    <span asp-validation-for="Body" class="field-error"></span>
+
+    <div class="admin-newsletter-products">
+        <div class="admin-panel-head">
+            <h2>Selected Products</h2>
+            <span class="admin-muted">@Model.SelectedProductIds.Length selected</span>
+        </div>
+        <span asp-validation-for="SelectedProductIds" class="field-error"></span>
+        <div class="admin-newsletter-product-grid">
+            @foreach (var product in Model.Products)
+            {
+                <label class="admin-newsletter-product-card @(product.IsSelected ? "is-selected" : "")">
+                    <input type="checkbox" name="SelectedProductIds" value="@product.Id" checked="@product.IsSelected" disabled="@isSent" />
+                    <img src="@product.ImageUrl" alt="@product.Name" loading="lazy" />
+                    <span>
+                        <strong>@product.Name</strong>
+                        <small>@product.CategoryName</small>
+                        <em>@product.Price.ToString("N0") @product.Currency</em>
+                    </span>
+                </label>
+            }
+        </div>
+    </div>
+
+    @if (!isSent)
+    {
+        <div class="admin-form-actions">
+            <button class="button button-primary" type="submit">Save Draft</button>
+        </div>
+    }
+    else
+    {
+        <p class="admin-muted">This campaign has already been sent, so its content is locked.</p>
+    }
+</form>

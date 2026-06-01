@@ -1,0 +1,65 @@
+@model AdminNewsletterCampaignsViewModel
+@{
+    Layout = "_AdminLayout";
+}
+
+<section class="admin-head">
+    <div>
+        <p>Newsletter</p>
+        <h1>Campaigns</h1>
+    </div>
+    <div class="admin-head-actions">
+        <a class="button button-primary" href="/admin/newsletter/create">Create</a>
+    </div>
+</section>
+
+@if (TempData["NewsletterAdminMessage"] is string message)
+{
+    <div class="form-summary admin-message">@message</div>
+}
+
+<section class="admin-panel">
+    <div class="admin-table admin-newsletter-table">
+        <div class="admin-table-row admin-table-row-head">
+            <span>Campaign</span>
+            <span>Status</span>
+            <span>Products</span>
+            <span>Activity</span>
+            <span></span>
+        </div>
+        @foreach (var campaign in Model.Campaigns)
+        {
+            <article class="admin-table-row admin-newsletter-row">
+                <span data-label="Campaign">
+                    <strong>@campaign.Subject</strong>
+                    <small>@campaign.Headline</small>
+                </span>
+                <span data-label="Status">
+                    <span class="status-pill">@campaign.Status</span>
+                </span>
+                <span data-label="Products">@campaign.ProductCount</span>
+                <span data-label="Activity">
+                    @if (campaign.Status == NewsletterCampaignStatus.Sent && campaign.SentAt is not null)
+                    {
+                        <strong>@campaign.SentCount sent</strong>
+                        <small>@campaign.SentAt.Value.ToLocalTime().ToString("dd MMM yyyy, h:mm tt")</small>
+                    }
+                    else if (campaign.Status == NewsletterCampaignStatus.Scheduled && campaign.ScheduledAt is not null)
+                    {
+                        <strong>Scheduled</strong>
+                        <small>@campaign.ScheduledAt.Value.ToLocalTime().ToString("dd MMM yyyy, h:mm tt")</small>
+                    }
+                    else
+                    {
+                        <strong>Draft</strong>
+                        <small>Updated @campaign.UpdatedAt.ToLocalTime().ToString("dd MMM yyyy")</small>
+                    }
+                </span>
+                <span class="admin-row-actions">
+                    <a class="text-button" href="/admin/newsletter/preview/@campaign.Id" target="_blank" rel="noreferrer">Preview</a>
+                    <a class="text-button" href="/admin/newsletter/edit/@campaign.Id">Edit</a>
+                </span>
+            </article>
+        }
+    </div>
+</section>

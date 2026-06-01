@@ -4,6 +4,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using MimeKit.Text;
+using System.Text.Encodings.Web;
+using System.Text.RegularExpressions;
 using VISSTA.Application.DTOs;
 using VISSTA.Application.Interfaces;
 using VISSTA.Domain.Enums;
@@ -12,9 +14,10 @@ using VISSTA.Infrastructure.Settings;
 
 namespace VISSTA.Infrastructure.Services;
 
-public sealed class SmtpEmailService(IOptions<EmailSettings> options, IWebHostEnvironment env, ILogger<SmtpEmailService> logger) : IEmailService
+public sealed class SmtpEmailService(IOptions<EmailSettings> options, IOptions<SiteSettings> siteOptions, IWebHostEnvironment env, ILogger<SmtpEmailService> logger) : IEmailService
 {
     private readonly EmailSettings _settings = options.Value;
+    private readonly SiteSettings _siteSettings = siteOptions.Value;
 
     public async Task SendOrderConfirmationAsync(OrderConfirmationEmailDto dto)
     {
@@ -95,15 +98,55 @@ public sealed class SmtpEmailService(IOptions<EmailSettings> options, IWebHostEn
 
     public async Task SendNewsletterWelcomeAsync(string toEmail, string unsubscribeToken)
     {
+        var dto = new NewsletterCampaignEmailDto(
+            "Welcome to VISSTA - The Edit",
+            "Welcome to VISSTA",
+            "You are now on the list for new drops, private edits, and quiet releases from VISSTA.",
+            Array.Empty<NewsletterCampaignProductEmailDto>(),
+            _siteSettings.PublicBaseUrl);
+
+        var html = await RenderNewsletterCampaignAsync(dto, toEmail, unsubscribeToken);
+
+        await SendHtmlAsync(toEmail, dto.Subject, html);
+    }
+
+    public async Task<string> RenderNewsletterCampaignAsync(NewsletterCampaignEmailDto dto, string toEmail = "", string unsubscribeToken = "")
+    {
         var templatePath = Path.Combine(env.WebRootPath, "email-templates", "newsletter-welcome.html");
         var html = await File.ReadAllTextAsync(templatePath);
+        var baseUrl = string.IsNullOrWhiteSpace(dto.PublicBaseUrl) ? _siteSettings.PublicBaseUrl : dto.PublicBaseUrl;
+        var unsubscribeUrl = string.IsNullOrWhiteSpace(unsubscribeToken)
+            ? "#"
+            : $"{baseUrl.TrimEnd('/')}/Newsletter/Unsubscribe?token={Uri.EscapeDataString(unsubscribeToken)}";
+
+        html = Regex.Replace(html, "<title>.*?</title>", "<title>{{EMAIL_TITLE}}</title>", RegexOptions.Singleline);
+        html = Regex.Replace(
+            html,
+            "\\s*<!-- New This Week label -->.*?<!-- Pull quote -->",
+            Environment.NewLine + "              {{PRODUCTS_SECTION_HTML}}" + Environment.NewLine + Environment.NewLine + "              <!-- Pull quote -->",
+            RegexOptions.Singleline);
 
         html = html
+            .Replace("{{EMAIL_TITLE}}", Html(dto.Subject))
+            .Replace("{{ISSUE_LABEL}}", "The Edit")
+            .Replace("{{EYEBROW}}", "VISSTA NEWSLETTER")
+            .Replace("{{HEADLINE_HTML}}", ToTextHtml(dto.Headline))
+            .Replace("{{BODY_HTML}}", ToMultilineHtml(dto.Body))
+            .Replace("{{PRODUCTS_SECTION_HTML}}", BuildNewsletterProductsSection(dto.Products, baseUrl))
+            .Replace("{{CTA_TITLE}}", "Explore VISSTA")
+            .Replace("{{CTA_BODY}}", "Discover the pieces currently shaping the collection.")
+            .Replace("{{SHOP_URL}}", $"{baseUrl.TrimEnd('/')}/shop")
             .Replace("{{YEAR}}", DateTime.UtcNow.Year.ToString())
-            .Replace("{{EMAIL}}", toEmail)
-            .Replace("{{UNSUBSCRIBE_TOKEN}}", unsubscribeToken ?? "");
+            .Replace("{{EMAIL}}", Html(toEmail))
+            .Replace("{{UNSUBSCRIBE_URL}}", Html(unsubscribeUrl));
 
-        await SendHtmlAsync(toEmail, "Welcome to VISSTA — The Edit", html);
+        return html;
+    }
+
+    public async Task SendNewsletterCampaignAsync(string toEmail, string unsubscribeToken, NewsletterCampaignEmailDto dto)
+    {
+        var html = await RenderNewsletterCampaignAsync(dto, toEmail, unsubscribeToken);
+        await SendHtmlAsync(toEmail, dto.Subject, html);
     }
 
     private static string BuildOrderLineRow(OrderLineDto line, string currency)
@@ -141,6 +184,90 @@ public sealed class SmtpEmailService(IOptions<EmailSettings> options, IWebHostEn
 
             "</tr></table></td></tr>";
     }
+
+    private static string BuildNewsletterProductsSection(IReadOnlyCollection<NewsletterCampaignProductEmailDto> products, string baseUrl)
+    {
+        if (products.Count == 0)
+        {
+            return string.Empty;
+        }
+
+        var rows = new List<string>();
+        var productArray = products.ToArray();
+        for (var i = 0; i < productArray.Length; i += 2)
+        {
+            var first = BuildNewsletterProductCell(productArray[i], baseUrl, true);
+            var second = i + 1 < productArray.Length
+                ? BuildNewsletterProductCell(productArray[i + 1], baseUrl, false)
+                : "<td class=\"em-product-td\" width=\"50%\" valign=\"top\" style=\"padding-left:7px;\">&nbsp;</td>";
+
+            rows.Add($"<tr>{first}{second}</tr>");
+        }
+
+        return
+            "<div class=\"em-force-text-gold\" style=\"color:#D4AF73;font-size:0.58rem;letter-spacing:0.26em;" +
+            "text-transform:uppercase;margin-bottom:18px;font-family:'Helvetica',Arial,sans-serif;font-weight:700;\">Featured Edit</div>" +
+            "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin-bottom:28px;\">" +
+            string.Concat(rows) +
+            "</table>" +
+            BuildSectionRule();
+    }
+
+    private static string BuildNewsletterProductCell(NewsletterCampaignProductEmailDto product, string baseUrl, bool left)
+    {
+        var padding = left ? "padding-right:7px;" : "padding-left:7px;";
+        var productUrl = AbsoluteUrl($"/shop/{product.Slug}", baseUrl);
+        var imageUrl = AbsoluteUrl(product.ImageUrl, baseUrl);
+        var price = product.DiscountValue is > 0 ? product.EffectivePrice : product.Price;
+
+        return
+            $"<td class=\"em-product-td\" width=\"50%\" valign=\"top\" style=\"{padding}padding-bottom:14px;\">" +
+            "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" class=\"em-product-card\" " +
+            "style=\"border:1px solid rgba(212,175,115,0.1);border-radius:2px;overflow:hidden;\">" +
+            "<tr><td class=\"em-product-img\" align=\"center\" valign=\"middle\" style=\"height:150px;background:rgba(212,175,115,0.07);" +
+            "border-bottom:1px solid rgba(212,175,115,0.08);\">" +
+            $"<a href=\"{Html(productUrl)}\" target=\"_blank\" style=\"display:block;text-decoration:none;\">" +
+            $"<img src=\"{Html(imageUrl)}\" width=\"100%\" height=\"150\" alt=\"{Html(product.Name)}\" " +
+            "style=\"display:block;width:100%;height:150px;border:none;object-fit:cover;\" /></a>" +
+            "</td></tr>" +
+            "<tr><td style=\"padding:14px 16px;\">" +
+            "<div class=\"em-force-text-gold\" style=\"color:rgba(212,175,115,0.5);font-size:0.58rem;letter-spacing:0.2em;" +
+            $"text-transform:uppercase;margin-bottom:5px;font-family:'Helvetica',Arial,sans-serif;\">{Html(product.CategoryName)}</div>" +
+            "<div class=\"em-force-text-cream\" style=\"color:#F5F1EA;font-size:0.8rem;letter-spacing:0.06em;" +
+            $"text-transform:uppercase;margin-bottom:4px;font-family:'Helvetica',Arial,sans-serif;font-weight:500;\">{Html(product.Name)}</div>" +
+            "<div class=\"em-force-text-gold\" style=\"color:#D4AF73;font-size:0.75rem;font-family:'Helvetica',Arial,sans-serif;\">" +
+            $"{Html(product.Currency)} {price:N0}</div>" +
+            "</td></tr></table></td>";
+    }
+
+    private static string BuildSectionRule() =>
+        "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin-bottom:28px;\">" +
+        "<tr><td style=\"height:1px;background:rgba(212,175,115,0.1);font-size:0;line-height:0;\">&nbsp;</td>" +
+        "<td width=\"30\" align=\"center\" style=\"padding:0 8px;background:#071426;\">" +
+        "<span class=\"em-force-text-dim\" style=\"color:rgba(212,175,115,0.35);font-size:0.5rem;\">&#9670;</span>" +
+        "</td><td style=\"height:1px;background:rgba(212,175,115,0.1);font-size:0;line-height:0;\">&nbsp;</td></tr></table>";
+
+    private static string AbsoluteUrl(string url, string baseUrl)
+    {
+        if (string.IsNullOrWhiteSpace(url))
+        {
+            url = "/assets/product-white-polo.webp";
+        }
+
+        if (Uri.TryCreate(url, UriKind.Absolute, out _))
+        {
+            return url;
+        }
+
+        return $"{baseUrl.TrimEnd('/')}/{url.TrimStart('/')}";
+    }
+
+    private static string ToTextHtml(string value) => Html(value).Replace("\n", "<br>");
+
+    private static string ToMultilineHtml(string value) =>
+        Html(value).Replace("\r\n", "\n").Replace("\n", "<br>");
+
+    private static string Html(string? value) => HtmlEncoder.Default.Encode(value ?? string.Empty);
 
     private async Task SendHtmlAsync(string toEmail, string subject, string html)
     {

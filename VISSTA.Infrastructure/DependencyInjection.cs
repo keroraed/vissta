@@ -19,6 +19,7 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<EmailSettings>(configuration.GetSection("Email"));
+        services.Configure<SiteSettings>(configuration.GetSection("Site"));
         services.Configure<StorageSettings>(configuration.GetSection("Storage"));
         services.Configure<PaymentSettings>(configuration.GetSection("Payment"));
 
@@ -52,6 +53,7 @@ public static class DependencyInjection
         services.AddScoped<IPasswordResetOtpRepository, PasswordResetOtpRepository>();
         services.AddScoped<INewsletterRepository, NewsletterRepository>();
         services.AddSingleton<ICurrencyFormatter, CurrencyFormatter>();
+        services.AddHostedService<NewsletterCampaignSchedulerService>();
 
         // Register MediatR handlers from this assembly (e.g. ResetPasswordOtpCommandHandler
         // which needs ApplicationUser and cannot live in the Application layer)

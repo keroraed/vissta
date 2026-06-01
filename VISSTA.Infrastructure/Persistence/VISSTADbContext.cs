@@ -18,6 +18,8 @@ public sealed class VISSTADbContext(DbContextOptions<VISSTADbContext> options) :
     public DbSet<Review> Reviews => Set<Review>();
     public DbSet<Coupon> Coupons => Set<Coupon>();
     public DbSet<NewsletterSubscriber> NewsletterSubscribers => Set<NewsletterSubscriber>();
+    public DbSet<NewsletterCampaign> NewsletterCampaigns => Set<NewsletterCampaign>();
+    public DbSet<NewsletterCampaignProduct> NewsletterCampaignProducts => Set<NewsletterCampaignProduct>();
     public DbSet<WishlistItem> WishlistItems => Set<WishlistItem>();
     public DbSet<AppSetting> AppSettings => Set<AppSetting>();
     public DbSet<PasswordResetOtp> PasswordResetOtps => Set<PasswordResetOtp>();
@@ -28,6 +30,35 @@ public sealed class VISSTADbContext(DbContextOptions<VISSTADbContext> options) :
 
         builder.ApplyConfiguration(new PasswordResetOtpConfiguration());
         builder.ApplyConfiguration(new NewsletterSubscriberConfiguration());
+
+        builder.Entity<NewsletterCampaign>(entity =>
+        {
+            entity.ToTable("NewsletterCampaigns");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.Subject).HasMaxLength(180).IsRequired();
+            entity.Property(x => x.Headline).HasMaxLength(220).IsRequired();
+            entity.Property(x => x.Body).HasMaxLength(1800).IsRequired();
+            entity.Property(x => x.Status).HasConversion<string>().HasMaxLength(24).IsRequired();
+            entity.Property(x => x.CreatedAt).IsRequired();
+            entity.Property(x => x.UpdatedAt).IsRequired();
+            entity.Property(x => x.SentCount).HasDefaultValue(0);
+            entity.Metadata.FindNavigation(nameof(NewsletterCampaign.Products))?.SetPropertyAccessMode(PropertyAccessMode.Field);
+        });
+
+        builder.Entity<NewsletterCampaignProduct>(entity =>
+        {
+            entity.ToTable("NewsletterCampaignProducts");
+            entity.HasKey(x => new { x.NewsletterCampaignId, x.ProductId });
+            entity.Property(x => x.DisplayOrder).IsRequired();
+            entity.HasOne(x => x.NewsletterCampaign)
+                .WithMany(x => x.Products)
+                .HasForeignKey(x => x.NewsletterCampaignId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(x => x.Product)
+                .WithMany()
+                .HasForeignKey(x => x.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
 
         builder.Entity<Category>(entity =>
         {

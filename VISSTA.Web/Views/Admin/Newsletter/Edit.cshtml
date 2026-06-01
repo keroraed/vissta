@@ -1,0 +1,89 @@
+@model AdminNewsletterCampaignFormViewModel
+@{
+    Layout = "_AdminLayout";
+    var isSent = Model.Status == NewsletterCampaignStatus.Sent;
+    var scheduleValue = Model.ScheduledAt?.ToString("yyyy-MM-ddTHH:mm") ?? DateTime.Now.AddHours(1).ToString("yyyy-MM-ddTHH:mm");
+}
+
+<section class="admin-head">
+    <div>
+        <p>Newsletter</p>
+        <h1>Edit Campaign</h1>
+    </div>
+    <div class="admin-head-actions">
+        <a class="button button-secondary" href="/admin/newsletter">Back</a>
+        <a class="button button-primary" href="/admin/newsletter/preview/@Model.Id" target="_blank" rel="noreferrer">Preview</a>
+    </div>
+</section>
+
+@if (TempData["NewsletterAdminMessage"] is string message)
+{
+    <div class="form-summary admin-message">@message</div>
+}
+
+<section class="admin-detail-grid">
+    <div>
+        @await Html.PartialAsync("~/Views/Admin/Newsletter/_CampaignForm.cshtml", Model)
+    </div>
+
+    <aside class="admin-side-stack">
+        <section class="admin-panel">
+            <div class="admin-panel-head">
+                <h2>Status</h2>
+                <span class="status-pill">@Model.Status</span>
+            </div>
+            <div class="admin-detail-list">
+                @if (Model.ScheduledAt is not null)
+                {
+                    <div>
+                        <span>Scheduled</span>
+                        <strong>@Model.ScheduledAt.Value.ToString("dd MMM yyyy, h:mm tt")</strong>
+                    </div>
+                }
+                @if (Model.SentAt is not null)
+                {
+                    <div>
+                        <span>Sent</span>
+                        <strong>@Model.SentAt.Value.ToString("dd MMM yyyy, h:mm tt")</strong>
+                        <small class="admin-muted">@Model.SentCount subscriber@(Model.SentCount == 1 ? "" : "s")</small>
+                    </div>
+                }
+            </div>
+
+            @if (!isSent)
+            {
+                <form class="admin-status-form" method="post" action="/admin/newsletter/send-test/@Model.Id">
+                    @Html.AntiForgeryToken()
+                    <input type="email" name="testEmail" placeholder="Test email" value="@Model.TestEmail" required />
+                    <button class="button button-secondary" type="submit">Send Test</button>
+                </form>
+
+                <form class="admin-status-form" method="post" action="/admin/newsletter/schedule/@Model.Id">
+                    @Html.AntiForgeryToken()
+                    <input type="datetime-local" name="scheduledAt" value="@scheduleValue" required />
+                    <button class="button button-secondary" type="submit">Schedule</button>
+                </form>
+
+                @if (Model.Status == NewsletterCampaignStatus.Scheduled)
+                {
+                    <form class="admin-status-form" method="post" action="/admin/newsletter/draft/@Model.Id">
+                        @Html.AntiForgeryToken()
+                        <button class="button button-secondary" type="submit">Return To Draft</button>
+                    </form>
+                }
+
+                <form class="admin-status-form" method="post" action="/admin/newsletter/send/@Model.Id">
+                    @Html.AntiForgeryToken()
+                    <button class="button button-primary" type="submit">Send Now</button>
+                </form>
+            }
+        </section>
+
+        <section class="admin-panel">
+            <div class="admin-panel-head">
+                <h2>Preview</h2>
+            </div>
+            <iframe class="admin-newsletter-preview" src="/admin/newsletter/preview/@Model.Id" title="Newsletter preview"></iframe>
+        </section>
+    </aside>
+</section>

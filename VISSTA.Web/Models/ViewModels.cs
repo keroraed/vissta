@@ -204,6 +204,52 @@ public sealed record AdminCouponsViewModel(IReadOnlyCollection<CouponDto> Coupon
 
 public sealed record AdminCategoriesViewModel(IReadOnlyCollection<CategoryDto> Categories);
 
+public sealed record AdminNewsletterCampaignsViewModel(IReadOnlyCollection<AdminNewsletterCampaignListItemViewModel> Campaigns);
+
+public sealed record AdminNewsletterCampaignListItemViewModel(
+    int Id,
+    string Subject,
+    string Headline,
+    NewsletterCampaignStatus Status,
+    DateTime UpdatedAt,
+    DateTime? ScheduledAt,
+    DateTime? SentAt,
+    int SentCount,
+    int ProductCount);
+
+public sealed class AdminNewsletterCampaignFormViewModel
+{
+    public int Id { get; set; }
+
+    [Required, MaxLength(180)]
+    public string Subject { get; set; } = string.Empty;
+
+    [Required, MaxLength(220)]
+    public string Headline { get; set; } = string.Empty;
+
+    [Required, MaxLength(1800)]
+    public string Body { get; set; } = string.Empty;
+
+    public NewsletterCampaignStatus Status { get; set; } = NewsletterCampaignStatus.Draft;
+    public DateTime? ScheduledAt { get; set; }
+    public DateTime? SentAt { get; set; }
+    public int SentCount { get; set; }
+    public int[] SelectedProductIds { get; set; } = Array.Empty<int>();
+    public IReadOnlyCollection<AdminNewsletterProductOptionViewModel> Products { get; set; } = Array.Empty<AdminNewsletterProductOptionViewModel>();
+
+    [EmailAddress, MaxLength(256)]
+    public string? TestEmail { get; set; }
+}
+
+public sealed record AdminNewsletterProductOptionViewModel(
+    int Id,
+    string Name,
+    string CategoryName,
+    string ImageUrl,
+    decimal Price,
+    string Currency,
+    bool IsSelected);
+
 public sealed class AdminCategoryFormViewModel
 {
     public int Id { get; set; }

@@ -11,6 +11,11 @@ public sealed class EmailSettings
     public bool UseSsl { get; set; }
 }
 
+public sealed class SiteSettings
+{
+    public string PublicBaseUrl { get; set; } = "https://vissta.com";
+}
+
 public sealed class StorageSettings
 {
     public string UploadRoot { get; set; } = "uploads";

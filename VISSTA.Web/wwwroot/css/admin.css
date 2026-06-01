@@ -31,6 +31,7 @@ a.admin-table-row:hover { border-color: rgba(212,175,115,.3); background: rgba(1
 .admin-table-row-head { color: var(--gold); text-transform: uppercase; letter-spacing: .12em; font-size: .64rem; font-weight: 700; background: transparent; border-color: rgba(212,175,115,.12); }
 .admin-coupon-table .admin-table-row { grid-template-columns: 1fr 1fr 1fr 1fr .8fr 1fr; }
 .admin-orders-table .admin-table-row { grid-template-columns: .7fr minmax(0, 1.4fr) .9fr .65fr .85fr 1fr; }
+.admin-newsletter-table .admin-table-row { grid-template-columns: minmax(0, 1.4fr) .75fr .55fr minmax(0, 1fr) auto; }
 .admin-order-row span { min-width: 0; }
 .admin-order-row strong, .admin-product-row small { display: block; color: var(--cream); font-weight: 600; overflow-wrap: anywhere; }
 .admin-order-row small, .admin-product-row small { margin-top: 5px; color: rgba(245,241,234,.55); font-size: .76rem; line-height: 1.4; }
@@ -98,6 +99,18 @@ a.admin-table-row:hover { border-color: rgba(212,175,115,.3); background: rgba(1
 .admin-status-form { display: grid; gap: 14px; margin-top: 8px; }
 .admin-row-actions { display: flex; align-items: center; justify-content: flex-end; gap: 14px; }
 .admin-row-actions form { margin: 0; }
+.admin-newsletter-form { max-width: none; }
+.admin-newsletter-products { display: grid; gap: 14px; padding-top: 6px; }
+.admin-newsletter-product-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.admin-newsletter-product-card { position: relative; display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 12px; align-items: center; min-height: 96px; padding: 12px; border: 1px solid rgba(255,255,255,.07); border-radius: 8px; background: rgba(4,11,21,.28); cursor: pointer; transition: border-color .2s ease, background .2s ease, transform .2s ease; }
+.admin-newsletter-product-card:hover, .admin-newsletter-product-card.is-selected { border-color: rgba(212,175,115,.42); background: rgba(212,175,115,.08); transform: translateY(-1px); }
+.admin-newsletter-product-card input { position: absolute; top: 10px; right: 10px; width: 18px; height: 18px; accent-color: var(--gold); }
+.admin-newsletter-product-card img { width: 72px; height: 72px; border-radius: 6px; object-fit: cover; background: var(--navy-dark); }
+.admin-newsletter-product-card span { display: grid; gap: 4px; min-width: 0; padding-right: 22px; }
+.admin-newsletter-product-card strong { color: var(--cream); font-weight: 600; overflow-wrap: anywhere; }
+.admin-newsletter-product-card small { color: rgba(245,241,234,.55); font-size: .72rem; }
+.admin-newsletter-product-card em { color: var(--gold); font-style: normal; font-size: .74rem; }
+.admin-newsletter-preview { width: 100%; min-height: 620px; border: 1px solid rgba(212,175,115,.16); border-radius: 8px; background: #040b15; }
 
 @media (max-width: 1100px) {
   .admin-body { grid-template-columns: 1fr; }
@@ -170,7 +183,7 @@ a.admin-table-row:hover { border-color: rgba(212,175,115,.3); background: rgba(1
   .admin-panel-head { align-items: flex-start; gap: 12px; }
   .admin-panel-actions { align-items: flex-end; flex-direction: column; gap: 8px; text-align: right; }
   .admin-dashboard-grid { gap: 16px; }
-  .admin-table-row, .admin-coupon-table .admin-table-row, .admin-orders-table .admin-table-row, .admin-product-row { grid-template-columns: 1fr; }
+  .admin-table-row, .admin-coupon-table .admin-table-row, .admin-orders-table .admin-table-row, .admin-newsletter-table .admin-table-row, .admin-product-row { grid-template-columns: 1fr; }
   .admin-table-row { gap: 10px; padding: 14px 12px; }
   .table-list { gap: 12px; }
   .table-row {
@@ -220,6 +233,7 @@ a.admin-table-row:hover { border-color: rgba(212,175,115,.3); background: rgba(1
   .admin-finance-row { align-items: flex-start; flex-direction: column; gap: 6px; }
   .admin-finance-row strong { text-align: left; overflow-wrap: anywhere; }
   .admin-size-stock-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .admin-newsletter-product-grid { grid-template-columns: 1fr; }
   .admin-table-row-head { display: none; }
   .admin-row-actions, .admin-form-actions { justify-content: stretch; flex-direction: column; align-items: stretch; }
   .admin-product-row .admin-row-actions { justify-self: stretch; }
