@@ -1,0 +1,65 @@
+@model ProductDetailDto
+@{
+    var galleryImage = Model.Images.OrderByDescending(i => i.IsPrimary).ThenBy(i => i.DisplayOrder).FirstOrDefault()?.Url ?? "/assets/product-white-polo.webp";
+    var hasAvailableSize = Model.SizeStocks.Any(sizeStock => sizeStock.Stock > 0);
+}
+<div class="quick-view-layout">
+    <a class="quick-view-media" asp-controller="Shop" asp-action="Detail" asp-route-slug="@Model.Slug" aria-label="View @Model.Name product page">
+        <img src="@galleryImage" alt="@Model.Name" loading="lazy" />
+        @if (Model.DiscountValue is > 0)
+        {
+            <span class="discount-badge">@(Model.DiscountType == "Fixed" ? $"-{Model.DiscountValue.Value:N0} EGP" : $"-{(int)Model.DiscountValue.Value}%")</span>
+        }
+    </a>
+    <div class="quick-view-info">
+        <p class="eyebrow">@Model.CategoryName</p>
+        <h2>@Model.Name</h2>
+        @if (Model.DiscountValue is > 0)
+        {
+            <div class="pdp-price-group">
+                <span class="pdp-price-original">@Model.Price.ToString("N0") @Model.Currency</span>
+                <span class="pdp-price-sale">@Model.EffectivePrice.ToString("N0") @Model.Currency</span>
+                <span class="pdp-saved-badge">You save @Model.SavedAmount.ToString("N0") @Model.Currency</span>
+            </div>
+        }
+        else
+        {
+            <p class="price">@Model.Price.ToString("N0") @Model.Currency</p>
+        }
+        <p class="quick-view-copy">@Model.Description</p>
+        <form asp-controller="Cart" asp-action="Add" method="post" data-cart-form data-cart-add class="buy-box buy-box-modern quick-view-buy-box" data-buy-box>
+            <input type="hidden" name="productId" value="@Model.Id" />
+            <div class="buy-control">
+                <span>Size</span>
+                <div class="size-options" role="radiogroup" aria-label="Select size">
+                    @foreach (var sizeStock in Model.SizeStocks)
+                    {
+                        var inputId = $"quick-size-{Model.Id}-{sizeStock.Size}";
+                        var isAvailable = sizeStock.Stock > 0;
+                        <label class="size-chip @(isAvailable ? null : "is-disabled")" for="@inputId">
+                            <input id="@inputId" type="radio" name="size" value="@sizeStock.Size" data-size-option data-stock="@sizeStock.Stock" disabled="@(!isAvailable)" required />
+                            <span>@sizeStock.Size</span>
+                            @if (!isAvailable)
+                            {
+                                <small>Out</small>
+                            }
+                        </label>
+                    }
+                </div>
+            </div>
+            <div class="buy-control quantity-control" data-quantity-control aria-hidden="true">
+                <span>Quantity</span>
+                <div class="quantity-stepper">
+                    <button type="button" data-qty-minus aria-label="Decrease quantity">-</button>
+                    <input type="number" min="1" max="@Model.Stock" name="quantity" value="1" data-buy-quantity readonly />
+                    <button type="button" data-qty-plus aria-label="Increase quantity">+</button>
+                </div>
+                <small data-size-stock-note>Select a size to check availability.</small>
+            </div>
+            <div class="quick-view-actions">
+                <button class="button button-primary" type="submit" disabled="@(!hasAvailableSize)">@(hasAvailableSize ? "Add to Cart" : "Out of Stock")</button>
+                <a class="text-button" asp-controller="Shop" asp-action="Detail" asp-route-slug="@Model.Slug">Full Details</a>
+            </div>
+        </form>
+    </div>
+</div>

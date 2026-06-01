@@ -34,4 +34,16 @@ public sealed class ShopController(IMediator mediator) : Controller
         var related = await mediator.Send(new GetProductListQuery(null, null, null, null, null, false), cancellationToken);
         return View(new ProductDetailViewModel(product, related.Where(x => x.Id != product.Id).Take(4).ToList()));
     }
+
+    [HttpGet("/shop/quick-view/{slug}")]
+    public async Task<IActionResult> QuickView(string slug, CancellationToken cancellationToken)
+    {
+        var product = await mediator.Send(new GetProductBySlugQuery(slug), cancellationToken);
+        if (product is null)
+        {
+            return NotFound();
+        }
+
+        return PartialView("_QuickView", product);
+    }
 }

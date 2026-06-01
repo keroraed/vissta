@@ -98,49 +98,118 @@ document.querySelectorAll('[data-review-carousel]').forEach((carousel) => {
   next?.addEventListener('click', () => scrollByCard(1));
 });
 
-document.querySelectorAll('[data-buy-box]').forEach((box) => {
-  const quantity = box.querySelector('[data-buy-quantity]');
-  const note = box.querySelector('[data-size-stock-note]');
-  const minus = box.querySelector('[data-qty-minus]');
-  const plus = box.querySelector('[data-qty-plus]');
+function initBuyBoxes(root = document) {
+  root.querySelectorAll('[data-buy-box]').forEach((box) => {
+    if (box.dataset.buyBoxReady === 'true') return;
+    box.dataset.buyBoxReady = 'true';
 
-  const clampQuantity = () => {
-    const max = Number(quantity?.max || 1);
-    const current = Number(quantity?.value || 1);
-    if (quantity) {
-      quantity.value = String(Math.min(Math.max(current, 1), max));
-    }
-  };
+    const quantity = box.querySelector('[data-buy-quantity]');
+    const note = box.querySelector('[data-size-stock-note]');
+    const minus = box.querySelector('[data-qty-minus]');
+    const plus = box.querySelector('[data-qty-plus]');
 
-  box.querySelectorAll('[data-size-option]').forEach((option) => {
-    option.addEventListener('change', () => {
-      const stock = Number(option.dataset.stock || 0);
-      box.classList.add('is-size-selected');
-      box.querySelector('[data-quantity-control]')?.setAttribute('aria-hidden', 'false');
+    const clampQuantity = () => {
+      const max = Number(quantity?.max || 1);
+      const current = Number(quantity?.value || 1);
       if (quantity) {
-        quantity.max = String(stock);
-        quantity.value = '1';
+        quantity.value = String(Math.min(Math.max(current, 1), max));
       }
-      if (note) {
-        note.textContent = `${stock} available in size ${option.value}.`;
+    };
+
+    box.querySelectorAll('[data-size-option]').forEach((option) => {
+      option.addEventListener('change', () => {
+        const stock = Number(option.dataset.stock || 0);
+        box.classList.add('is-size-selected');
+        box.querySelector('[data-quantity-control]')?.setAttribute('aria-hidden', 'false');
+        if (quantity) {
+          quantity.max = String(stock);
+          quantity.value = '1';
+        }
+        if (note) {
+          note.textContent = `${stock} available in size ${option.value}.`;
+        }
+      });
+    });
+
+    minus?.addEventListener('click', () => {
+      if (quantity) {
+        quantity.value = String(Number(quantity.value || 1) - 1);
+        clampQuantity();
+      }
+    });
+
+    plus?.addEventListener('click', () => {
+      if (quantity) {
+        quantity.value = String(Number(quantity.value || 1) + 1);
+        clampQuantity();
       }
     });
   });
+}
 
-  minus?.addEventListener('click', () => {
-    if (quantity) {
-      quantity.value = String(Number(quantity.value || 1) - 1);
-      clampQuantity();
+initBuyBoxes();
+
+(function () {
+  const modal = document.querySelector('[data-quick-view-modal]');
+  const overlay = document.querySelector('[data-quick-view-overlay]');
+  const body = document.querySelector('[data-quick-view-body]');
+  const closeButton = document.querySelector('[data-quick-view-close]');
+  let activeTrigger = null;
+  let requestId = 0;
+
+  if (!modal || !overlay || !body) return;
+
+  const setOpen = (isOpen) => {
+    modal.classList.toggle('is-open', isOpen);
+    overlay.classList.toggle('is-visible', isOpen);
+    modal.setAttribute('aria-hidden', String(!isOpen));
+    document.body.classList.toggle('is-quick-view-open', isOpen);
+    if (!isOpen) {
+      body.replaceChildren();
+      activeTrigger?.focus();
     }
+  };
+
+  const openQuickView = async (trigger) => {
+    const slug = trigger.dataset.productSlug;
+    if (!slug) return;
+
+    activeTrigger = trigger;
+    const currentRequest = ++requestId;
+    body.innerHTML = '<div class="quick-view-loading">Loading piece...</div>';
+    setOpen(true);
+
+    const response = await fetch(`/shop/quick-view/${encodeURIComponent(slug)}`, {
+      headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    });
+
+    if (currentRequest !== requestId) return;
+
+    if (!response.ok) {
+      body.innerHTML = '<div class="quick-view-loading">This piece could not be loaded.</div>';
+      return;
+    }
+
+    body.innerHTML = await response.text();
+    initBuyBoxes(body);
+    modal.querySelector('[data-size-option]:not(:disabled)')?.focus();
+  };
+
+  document.addEventListener('click', (event) => {
+    const trigger = event.target.closest('[data-quick-view-open]');
+    if (!trigger) return;
+    event.preventDefault();
+    openQuickView(trigger);
   });
 
-  plus?.addEventListener('click', () => {
-    if (quantity) {
-      quantity.value = String(Number(quantity.value || 1) + 1);
-      clampQuantity();
+  closeButton?.addEventListener('click', () => setOpen(false));
+  overlay.addEventListener('click', () => setOpen(false));
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && modal.classList.contains('is-open')) {
+      setOpen(false);
     }
   });
-});
+})();
 
 document.querySelectorAll('[data-edit-saved-address]').forEach((button) => {
   button.addEventListener('click', (event) => {

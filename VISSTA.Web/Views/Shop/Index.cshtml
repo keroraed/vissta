@@ -58,4 +58,12 @@
     <section class="shell" data-catalog-target>
         @await Html.PartialAsync("_ProductGrid", Model.Products)
     </section>
+    <div class="quick-view-overlay" data-quick-view-overlay></div>
+    <section class="quick-view-modal glassmorphism" data-quick-view-modal aria-hidden="true" role="dialog" aria-modal="true" aria-label="Quick product view">
+        <div class="quick-view-head">
+            <span>Quick View</span>
+            <button class="quick-view-close" type="button" data-quick-view-close aria-label="Close quick view">&times;</button>
+        </div>
+        <div class="quick-view-body" data-quick-view-body></div>
+    </section>
 </main>
