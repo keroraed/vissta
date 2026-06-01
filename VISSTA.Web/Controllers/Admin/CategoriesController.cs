@@ -49,8 +49,10 @@ public sealed class CategoriesController(IMediator mediator, IWebHostEnvironment
 
         try
         {
-            var imageUrl = await SaveCategoryImageAsync(model.ImageFile, cancellationToken);
-            await mediator.Send(new CreateCategoryCommand(model.Name, model.Slug, model.ParentCategoryId, imageUrl, model.ShowOnHomePage), cancellationToken);
+            var imageUrl = await SaveCategoryImageAsync(model.ImageFile, "cat", cancellationToken);
+            var sizeChartImageUrl = await SaveCategoryImageAsync(model.SizeChartImageFile, "size-chart", cancellationToken);
+            var washingInstructionsImageUrl = await SaveCategoryImageAsync(model.WashingInstructionsImageFile, "wash", cancellationToken);
+            await mediator.Send(new CreateCategoryCommand(model.Name, model.Slug, model.ParentCategoryId, imageUrl, model.ShowOnHomePage, sizeChartImageUrl, washingInstructionsImageUrl), cancellationToken);
             return RedirectToAction(nameof(Index));
         }
         catch (ValidationException ex)
@@ -82,6 +84,8 @@ public sealed class CategoriesController(IMediator mediator, IWebHostEnvironment
             Slug = category.Slug,
             ParentCategoryId = category.ParentCategoryId,
             ImageUrl = category.ImageUrl,
+            SizeChartImageUrl = category.SizeChartImageUrl,
+            WashingInstructionsImageUrl = category.WashingInstructionsImageUrl,
             ShowOnHomePage = category.ShowOnHomePage,
             Categories = categories.Where(c => c.Id != category.Id).ToList()
         });
@@ -108,6 +112,8 @@ public sealed class CategoriesController(IMediator mediator, IWebHostEnvironment
             if (existing is not null)
             {
                 model.ImageUrl = existing.ImageUrl;
+                model.SizeChartImageUrl = existing.SizeChartImageUrl;
+                model.WashingInstructionsImageUrl = existing.WashingInstructionsImageUrl;
             }
             model.Categories = model.Categories.Where(c => c.Id != id).ToList();
             return View("~/Views/Admin/Categories/Edit.cshtml", model);
@@ -128,10 +134,30 @@ public sealed class CategoriesController(IMediator mediator, IWebHostEnvironment
             }
             if (model.ImageFile is not null)
             {
-                imageUrl = await SaveCategoryImageAsync(model.ImageFile, cancellationToken);
+                imageUrl = await SaveCategoryImageAsync(model.ImageFile, "cat", cancellationToken);
             }
 
-            var updated = await mediator.Send(new UpdateCategoryCommand(id, model.Name, model.Slug, model.ParentCategoryId, imageUrl, model.ShowOnHomePage), cancellationToken);
+            var sizeChartImageUrl = existing.SizeChartImageUrl;
+            if (model.RemoveSizeChartImage)
+            {
+                sizeChartImageUrl = null;
+            }
+            if (model.SizeChartImageFile is not null)
+            {
+                sizeChartImageUrl = await SaveCategoryImageAsync(model.SizeChartImageFile, "size-chart", cancellationToken);
+            }
+
+            var washingInstructionsImageUrl = existing.WashingInstructionsImageUrl;
+            if (model.RemoveWashingInstructionsImage)
+            {
+                washingInstructionsImageUrl = null;
+            }
+            if (model.WashingInstructionsImageFile is not null)
+            {
+                washingInstructionsImageUrl = await SaveCategoryImageAsync(model.WashingInstructionsImageFile, "wash", cancellationToken);
+            }
+
+            var updated = await mediator.Send(new UpdateCategoryCommand(id, model.Name, model.Slug, model.ParentCategoryId, imageUrl, model.ShowOnHomePage, sizeChartImageUrl, washingInstructionsImageUrl), cancellationToken);
             if (!updated)
             {
                 return NotFound();
@@ -151,6 +177,8 @@ public sealed class CategoriesController(IMediator mediator, IWebHostEnvironment
         if (fallback is not null)
         {
             model.ImageUrl = fallback.ImageUrl;
+            model.SizeChartImageUrl = fallback.SizeChartImageUrl;
+            model.WashingInstructionsImageUrl = fallback.WashingInstructionsImageUrl;
         }
         model.Categories = model.Categories.Where(c => c.Id != id).ToList();
         return View("~/Views/Admin/Categories/Edit.cshtml", model);
@@ -169,7 +197,7 @@ public sealed class CategoriesController(IMediator mediator, IWebHostEnvironment
         return RedirectToAction(nameof(Index));
     }
 
-    private async Task<string?> SaveCategoryImageAsync(IFormFile? file, CancellationToken cancellationToken)
+    private async Task<string?> SaveCategoryImageAsync(IFormFile? file, string prefix, CancellationToken cancellationToken)
     {
         if (file is null || file.Length == 0)
         {
@@ -180,7 +208,7 @@ public sealed class CategoriesController(IMediator mediator, IWebHostEnvironment
         Directory.CreateDirectory(uploadsRoot);
 
         var extension = Path.GetExtension(file.FileName);
-        var fileName = $"cat-{Guid.NewGuid():N}{extension}";
+        var fileName = $"{prefix}-{Guid.NewGuid():N}{extension}";
         var filePath = Path.Combine(uploadsRoot, fileName);
         await using var stream = new FileStream(filePath, FileMode.Create);
         await file.CopyToAsync(stream, cancellationToken);

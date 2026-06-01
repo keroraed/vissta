@@ -1,4 +1,36 @@
 @model ProductDetailViewModel
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+@{
+    ViewData["Title"] = $"{Model.Product.Name} - VISSTA";
+    var shareDescription = Model.Product.Description.Length > 155
+        ? $"{Model.Product.Description[..152]}..."
+        : Model.Product.Description;
+    var configuredBaseUrl = Configuration["Site:PublicBaseUrl"]?.TrimEnd('/');
+    var requestBaseUrl = $"{Context.Request.Scheme}://{Context.Request.Host}";
+    var publicBaseUrl = string.IsNullOrWhiteSpace(configuredBaseUrl) ? requestBaseUrl : configuredBaseUrl;
+    var shareImagePath = Model.Product.Images.OrderByDescending(i => i.IsPrimary).ThenBy(i => i.DisplayOrder).Select(i => i.Url).FirstOrDefault() ?? "/assets/product-white-polo.webp";
+    var shareImageUrl = shareImagePath.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+        ? shareImagePath
+        : $"{publicBaseUrl}{Url.Content(shareImagePath)}";
+    var shareUrl = $"{publicBaseUrl}/shop/{Model.Product.Slug}";
+    var sharePrice = Model.Product.EffectivePrice.ToString(System.Globalization.CultureInfo.InvariantCulture);
+}
+@section Head {
+    <meta name="description" content="@shareDescription" />
+    <meta property="og:type" content="product" />
+    <meta property="og:site_name" content="VISSTA" />
+    <meta property="og:title" content="@Model.Product.Name" />
+    <meta property="og:description" content="@shareDescription" />
+    <meta property="og:url" content="@shareUrl" />
+    <meta property="og:image" content="@shareImageUrl" />
+    <meta property="og:image:secure_url" content="@shareImageUrl" />
+    <meta property="product:price:amount" content="@sharePrice" />
+    <meta property="product:price:currency" content="@Model.Product.Currency" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="@Model.Product.Name" />
+    <meta name="twitter:description" content="@shareDescription" />
+    <meta name="twitter:image" content="@shareImageUrl" />
+}
 <main class="simple-page">
     <section class="shell pdp">
         @{
@@ -77,6 +109,35 @@
                 </div>
                 <button class="button button-primary" type="submit" disabled="@(!hasAvailableSize)">@(hasAvailableSize ? "Add to Cart" : "Out of Stock")</button>
             </form>
+            @if (!string.IsNullOrWhiteSpace(Model.Product.CategorySizeChartImageUrl) || !string.IsNullOrWhiteSpace(Model.Product.CategoryWashingInstructionsImageUrl))
+            {
+                <div class="pdp-accordions" aria-label="Product information">
+                    @if (!string.IsNullOrWhiteSpace(Model.Product.CategorySizeChartImageUrl))
+                    {
+                        <details class="pdp-accordion">
+                            <summary>
+                                <span>Size Chart</span>
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+                            </summary>
+                            <div class="pdp-accordion-panel">
+                                <img src="@Model.Product.CategorySizeChartImageUrl" alt="@Model.Product.CategoryName size chart" loading="lazy" />
+                            </div>
+                        </details>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(Model.Product.CategoryWashingInstructionsImageUrl))
+                    {
+                        <details class="pdp-accordion">
+                            <summary>
+                                <span>Washing Instructions</span>
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+                            </summary>
+                            <div class="pdp-accordion-panel">
+                                <img src="@Model.Product.CategoryWashingInstructionsImageUrl" alt="@Model.Product.CategoryName washing instructions" loading="lazy" />
+                            </div>
+                        </details>
+                    }
+                </div>
+            }
         </div>
     </section>
 

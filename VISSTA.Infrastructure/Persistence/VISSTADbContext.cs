@@ -82,6 +82,8 @@ public sealed class VISSTADbContext(DbContextOptions<VISSTADbContext> options) :
             entity.Property(x => x.Name).HasMaxLength(120).IsRequired();
             entity.Property(x => x.Slug).HasMaxLength(140).IsRequired();
             entity.Property(x => x.ImageUrl).HasMaxLength(500);
+            entity.Property(x => x.SizeChartImageUrl).HasMaxLength(500);
+            entity.Property(x => x.WashingInstructionsImageUrl).HasMaxLength(500);
             entity.Property(x => x.ShowOnHomePage).HasDefaultValue(false);
             entity.HasIndex(x => x.Slug).IsUnique();
             entity.HasOne(x => x.ParentCategory).WithMany(x => x.Children).HasForeignKey(x => x.ParentCategoryId).OnDelete(DeleteBehavior.Restrict);

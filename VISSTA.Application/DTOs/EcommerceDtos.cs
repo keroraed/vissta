@@ -40,9 +40,19 @@ public sealed record ProductDetailDto(
     bool ShowOnHomePage,
     IReadOnlyCollection<ProductSizeStockDto> SizeStocks,
     IReadOnlyCollection<ProductImageDto> Images,
-    IReadOnlyCollection<ReviewDto> Reviews);
+    IReadOnlyCollection<ReviewDto> Reviews,
+    string? CategorySizeChartImageUrl = null,
+    string? CategoryWashingInstructionsImageUrl = null);
 
-public sealed record CategoryDto(int Id, string Name, string Slug, int? ParentCategoryId, string? ImageUrl = null, bool ShowOnHomePage = false);
+public sealed record CategoryDto(
+    int Id,
+    string Name,
+    string Slug,
+    int? ParentCategoryId,
+    string? ImageUrl = null,
+    bool ShowOnHomePage = false,
+    string? SizeChartImageUrl = null,
+    string? WashingInstructionsImageUrl = null);
 
 public sealed record CartItemDto(int Id, int ProductId, string ProductName, string Slug, string ImageUrl, decimal UnitPrice, string Currency, int Quantity, decimal LineTotal, string Size = "");
 

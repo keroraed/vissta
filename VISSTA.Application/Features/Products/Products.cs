@@ -298,5 +298,7 @@ public sealed class ProductHandlers(IProductRepository products, IUnitOfWork uni
             r.ProductId,
             x.Name,
             x.Slug,
-            r.IsApproved)).ToList());
+            r.IsApproved)).ToList(),
+        x.Category?.SizeChartImageUrl,
+        x.Category?.WashingInstructionsImageUrl);
 }

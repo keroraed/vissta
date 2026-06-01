@@ -301,6 +301,12 @@ public sealed class AdminCategoryFormViewModel
     public string? ImageUrl { get; set; }
     public IFormFile? ImageFile { get; set; }
     public bool RemoveImage { get; set; }
+    public string? SizeChartImageUrl { get; set; }
+    public IFormFile? SizeChartImageFile { get; set; }
+    public bool RemoveSizeChartImage { get; set; }
+    public string? WashingInstructionsImageUrl { get; set; }
+    public IFormFile? WashingInstructionsImageFile { get; set; }
+    public bool RemoveWashingInstructionsImage { get; set; }
     public bool ShowOnHomePage { get; set; }
     public IReadOnlyCollection<CategoryDto> Categories { get; set; } = Array.Empty<CategoryDto>();
 }

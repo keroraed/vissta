@@ -8,8 +8,8 @@ namespace VISSTA.Application.Features.Categories;
 
 public sealed record GetCategoryListQuery() : IRequest<IReadOnlyCollection<CategoryDto>>;
 public sealed record GetCategoryByIdQuery(int Id) : IRequest<CategoryDto?>;
-public sealed record CreateCategoryCommand(string Name, string Slug, int? ParentCategoryId, string? ImageUrl, bool ShowOnHomePage) : IRequest<int>;
-public sealed record UpdateCategoryCommand(int Id, string Name, string Slug, int? ParentCategoryId, string? ImageUrl, bool ShowOnHomePage) : IRequest<bool>;
+public sealed record CreateCategoryCommand(string Name, string Slug, int? ParentCategoryId, string? ImageUrl, bool ShowOnHomePage, string? SizeChartImageUrl, string? WashingInstructionsImageUrl) : IRequest<int>;
+public sealed record UpdateCategoryCommand(int Id, string Name, string Slug, int? ParentCategoryId, string? ImageUrl, bool ShowOnHomePage, string? SizeChartImageUrl, string? WashingInstructionsImageUrl) : IRequest<bool>;
 public sealed record DeleteCategoryCommand(int Id) : IRequest<bool>;
 
 public sealed class CreateCategoryCommandValidator : AbstractValidator<CreateCategoryCommand>
@@ -42,7 +42,7 @@ public sealed class CategoryHandlers(IRepository<Category> categories, IProductR
     {
         var items = categories.QueryReadOnly()
             .OrderBy(x => x.Name)
-            .Select(x => new CategoryDto(x.Id, x.Name, x.Slug, x.ParentCategoryId, x.ImageUrl, x.ShowOnHomePage))
+            .Select(x => new CategoryDto(x.Id, x.Name, x.Slug, x.ParentCategoryId, x.ImageUrl, x.ShowOnHomePage, x.SizeChartImageUrl, x.WashingInstructionsImageUrl))
             .ToList();
 
         return Task.FromResult<IReadOnlyCollection<CategoryDto>>(items);
@@ -51,12 +51,12 @@ public sealed class CategoryHandlers(IRepository<Category> categories, IProductR
     public async Task<CategoryDto?> Handle(GetCategoryByIdQuery request, CancellationToken cancellationToken)
     {
         var category = await categories.GetByIdAsync(request.Id, cancellationToken);
-        return category is null ? null : new CategoryDto(category.Id, category.Name, category.Slug, category.ParentCategoryId, category.ImageUrl, category.ShowOnHomePage);
+        return category is null ? null : new CategoryDto(category.Id, category.Name, category.Slug, category.ParentCategoryId, category.ImageUrl, category.ShowOnHomePage, category.SizeChartImageUrl, category.WashingInstructionsImageUrl);
     }
 
     public async Task<int> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
     {
-        var category = new Category(request.Name, request.Slug, request.ParentCategoryId, request.ImageUrl, request.ShowOnHomePage);
+        var category = new Category(request.Name, request.Slug, request.ParentCategoryId, request.ImageUrl, request.ShowOnHomePage, request.SizeChartImageUrl, request.WashingInstructionsImageUrl);
         await categories.AddAsync(category, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
         return category.Id;
@@ -70,7 +70,7 @@ public sealed class CategoryHandlers(IRepository<Category> categories, IProductR
             return false;
         }
 
-        category.Update(request.Name, request.Slug, request.ParentCategoryId, request.ImageUrl, request.ShowOnHomePage);
+        category.Update(request.Name, request.Slug, request.ParentCategoryId, request.ImageUrl, request.ShowOnHomePage, request.SizeChartImageUrl, request.WashingInstructionsImageUrl);
         await unitOfWork.SaveChangesAsync(cancellationToken);
         return true;
     }

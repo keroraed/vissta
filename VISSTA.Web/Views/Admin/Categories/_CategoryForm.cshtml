@@ -39,6 +39,36 @@
         <input type="file" asp-for="ImageFile" accept="image/*" style="border: 1px dashed rgba(212,175,115,0.25); padding: 10px; border-radius: 4px; background: rgba(10,29,55,0.4);" />
     </label>
 
+    <label class="field">
+        <span>Size Chart Image</span>
+        @if (!string.IsNullOrWhiteSpace(Model.SizeChartImageUrl))
+        {
+            <div class="existing-image-preview" style="margin-bottom: 12px; display: flex; align-items: center; gap: 14px;">
+                <img src="@Model.SizeChartImageUrl" alt="Size Chart Image" style="width: 80px; height: 80px; object-fit: cover; border-radius: 4px; border: 1px solid rgba(212,175,115,0.2);" />
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.85rem; color: rgba(245,241,234,0.75);">
+                    <input type="checkbox" asp-for="RemoveSizeChartImage" />
+                    <span>Remove current image</span>
+                </label>
+            </div>
+        }
+        <input type="file" asp-for="SizeChartImageFile" accept="image/*" style="border: 1px dashed rgba(212,175,115,0.25); padding: 10px; border-radius: 4px; background: rgba(10,29,55,0.4);" />
+    </label>
+
+    <label class="field">
+        <span>Washing Instructions Image</span>
+        @if (!string.IsNullOrWhiteSpace(Model.WashingInstructionsImageUrl))
+        {
+            <div class="existing-image-preview" style="margin-bottom: 12px; display: flex; align-items: center; gap: 14px;">
+                <img src="@Model.WashingInstructionsImageUrl" alt="Washing Instructions Image" style="width: 80px; height: 80px; object-fit: cover; border-radius: 4px; border: 1px solid rgba(212,175,115,0.2);" />
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.85rem; color: rgba(245,241,234,0.75);">
+                    <input type="checkbox" asp-for="RemoveWashingInstructionsImage" />
+                    <span>Remove current image</span>
+                </label>
+            </div>
+        }
+        <input type="file" asp-for="WashingInstructionsImageFile" accept="image/*" style="border: 1px dashed rgba(212,175,115,0.25); padding: 10px; border-radius: 4px; background: rgba(10,29,55,0.4);" />
+    </label>
+
     <label class="check">
         <input asp-for="ShowOnHomePage" />
         Show in Home Page Featured Categories

@@ -13,13 +13,22 @@ public sealed class Category : Entity, IAggregateRoot
         Slug = string.Empty;
     }
 
-    public Category(string name, string slug, int? parentCategoryId = null, string? imageUrl = null, bool showOnHomePage = false)
+    public Category(
+        string name,
+        string slug,
+        int? parentCategoryId = null,
+        string? imageUrl = null,
+        bool showOnHomePage = false,
+        string? sizeChartImageUrl = null,
+        string? washingInstructionsImageUrl = null)
     {
         Name = name;
         Slug = slug;
         ParentCategoryId = parentCategoryId;
         ImageUrl = imageUrl;
         ShowOnHomePage = showOnHomePage;
+        SizeChartImageUrl = sizeChartImageUrl;
+        WashingInstructionsImageUrl = washingInstructionsImageUrl;
     }
 
     public int Id { get; private set; }
@@ -28,16 +37,27 @@ public sealed class Category : Entity, IAggregateRoot
     public int? ParentCategoryId { get; private set; }
     public string? ImageUrl { get; private set; }
     public bool ShowOnHomePage { get; private set; }
+    public string? SizeChartImageUrl { get; private set; }
+    public string? WashingInstructionsImageUrl { get; private set; }
     public Category? ParentCategory { get; private set; }
     public IReadOnlyCollection<Category> Children => _children.AsReadOnly();
     public IReadOnlyCollection<Product> Products => _products.AsReadOnly();
 
-    public void Update(string name, string slug, int? parentCategoryId, string? imageUrl, bool showOnHomePage)
+    public void Update(
+        string name,
+        string slug,
+        int? parentCategoryId,
+        string? imageUrl,
+        bool showOnHomePage,
+        string? sizeChartImageUrl,
+        string? washingInstructionsImageUrl)
     {
         Name = name;
         Slug = slug;
         ParentCategoryId = parentCategoryId;
         ImageUrl = imageUrl;
         ShowOnHomePage = showOnHomePage;
+        SizeChartImageUrl = sizeChartImageUrl;
+        WashingInstructionsImageUrl = washingInstructionsImageUrl;
     }
 }
