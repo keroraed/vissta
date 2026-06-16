@@ -24,6 +24,8 @@ public sealed class VISSTADbContext(DbContextOptions<VISSTADbContext> options) :
     public DbSet<WishlistItem> WishlistItems => Set<WishlistItem>();
     public DbSet<AppSetting> AppSettings => Set<AppSetting>();
     public DbSet<PasswordResetOtp> PasswordResetOtps => Set<PasswordResetOtp>();
+    public DbSet<Size> Sizes => Set<Size>();
+    public DbSet<ProductSizeStock> ProductSizeStocks => Set<ProductSizeStock>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -31,6 +33,32 @@ public sealed class VISSTADbContext(DbContextOptions<VISSTADbContext> options) :
 
         builder.ApplyConfiguration(new PasswordResetOtpConfiguration());
         builder.ApplyConfiguration(new NewsletterSubscriberConfiguration());
+
+        builder.Entity<Size>(entity =>
+        {
+            entity.ToTable("Sizes");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.Name).HasMaxLength(8).IsRequired();
+            entity.HasIndex(x => x.Name).IsUnique();
+            entity.Property(x => x.DisplayOrder).IsRequired().HasDefaultValue(0);
+        });
+
+        builder.Entity<ProductSizeStock>(entity =>
+        {
+            entity.ToTable("ProductSizeStocks");
+            entity.HasKey(x => x.Id);
+            entity.HasOne(x => x.Product)
+                .WithMany(x => x.SizeStocks)
+                .HasForeignKey(x => x.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(x => x.Size)
+                .WithMany()
+                .HasForeignKey(x => x.SizeId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.Property(x => x.Stock).IsRequired().HasDefaultValue(0);
+            entity.Property(x => x.IsAvailable).IsRequired().HasDefaultValue(true);
+            entity.HasIndex(x => new { x.ProductId, x.SizeId }).IsUnique();
+        });
 
         builder.Entity<AdminNotification>(entity =>
         {
@@ -102,10 +130,6 @@ public sealed class VISSTADbContext(DbContextOptions<VISSTADbContext> options) :
             entity.Property(x => x.SKU).HasMaxLength(64).IsRequired();
             entity.HasIndex(x => x.SKU).IsUnique();
             entity.Property(x => x.Stock).IsRequired();
-            entity.Property(x => x.StockS).IsRequired().HasDefaultValue(0);
-            entity.Property(x => x.StockM).IsRequired().HasDefaultValue(0);
-            entity.Property(x => x.StockL).IsRequired().HasDefaultValue(0);
-            entity.Property(x => x.StockXL).IsRequired().HasDefaultValue(0);
             entity.Property(x => x.IsActive).HasDefaultValue(true);
             entity.Property(x => x.IsFeatured).HasDefaultValue(false);
             entity.Property(x => x.ShowOnHomePage).HasDefaultValue(false);
@@ -119,6 +143,7 @@ public sealed class VISSTADbContext(DbContextOptions<VISSTADbContext> options) :
             entity.HasOne(x => x.Category).WithMany(x => x.Products).HasForeignKey(x => x.CategoryId);
             entity.Metadata.FindNavigation(nameof(Product.Images))?.SetPropertyAccessMode(PropertyAccessMode.Field);
             entity.Metadata.FindNavigation(nameof(Product.Reviews))?.SetPropertyAccessMode(PropertyAccessMode.Field);
+            entity.Metadata.FindNavigation(nameof(Product.SizeStocks))?.SetPropertyAccessMode(PropertyAccessMode.Field);
         });
 
         builder.Entity<ProductImage>(entity =>
@@ -295,10 +320,6 @@ public sealed class VISSTADbContext(DbContextOptions<VISSTADbContext> options) :
             x.Slug,
             x.Description,
             x.Stock,
-            StockS = x.Stock,
-            StockM = 0,
-            StockL = 0,
-            StockXL = 0,
             x.SKU,
             x.CategoryId,
             x.IsActive,

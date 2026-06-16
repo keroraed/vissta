@@ -4,7 +4,9 @@
 {
     <article class="product-card">
         <div class="product-image">
-            <img src="@product.ImageUrl" alt="@product.Name" loading="lazy" />
+            <a class="product-link" asp-controller="Shop" asp-action="Detail" asp-route-slug="@product.Slug" aria-label="View @product.Name product page">
+                <img src="@product.ImageUrl" alt="@product.Name" loading="lazy" />
+            </a>
             <button class="product-image-cta" type="button" data-quick-view-open data-product-slug="@product.Slug">Quick View</button>
             @if (product.DiscountValue is > 0)
             {
@@ -12,7 +14,9 @@
             }
         </div>
         <div class="product-meta">
-            <h4>@product.Name</h4>
+            <h4>
+                <a class="product-link" asp-controller="Shop" asp-action="Detail" asp-route-slug="@product.Slug">@product.Name</a>
+            </h4>
             @if (product.DiscountValue is > 0)
             {
                 <div class="price-group">
@@ -25,7 +29,6 @@
                 <p>@product.Price.ToString("N0") @product.Currency</p>
             }
         </div>
-        <button class="text-button" type="button" data-quick-view-open data-product-slug="@product.Slug">Quick View</button>
     </article>
 }
 </div>

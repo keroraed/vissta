@@ -54,6 +54,10 @@ public sealed class NotificationsController(
                 await Response.Body.FlushAsync(cancellationToken);
             }
         }
+        catch (OperationCanceledException)
+        {
+            // Client disconnected, exit stream gracefully
+        }
         finally
         {
             stream.Unsubscribe(subscription.Id);

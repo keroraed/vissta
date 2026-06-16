@@ -29,7 +29,8 @@ public sealed class ProductRepository(VISSTADbContext dbContext) : Repository<Pr
     public override IQueryable<Product> Query() => DbContext.Products
         .Include(x => x.Category)
         .Include(x => x.Images)
-        .Include(x => x.Reviews).ThenInclude(x => x.Customer);
+        .Include(x => x.Reviews).ThenInclude(x => x.Customer)
+        .Include(x => x.SizeStocks).ThenInclude(x => x.Size);
 
     public override IQueryable<Product> QueryReadOnly() => Query().AsNoTracking();
 

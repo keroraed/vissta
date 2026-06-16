@@ -198,6 +198,14 @@ public sealed class AdminPaymentSettingsViewModel
     public string? WePayPhoneNumber { get; set; }
 }
 
+public class AdminProductSizeStockViewModel
+{
+    public int SizeId { get; set; }
+    public string SizeName { get; set; } = string.Empty;
+    public int Stock { get; set; }
+    public bool IsAvailable { get; set; }
+}
+
 public sealed class AdminProductFormViewModel
 {
     public int Id { get; set; }
@@ -209,10 +217,7 @@ public sealed class AdminProductFormViewModel
     public IFormFile[]? ImageFiles { get; set; }
     public decimal Price { get; set; }
     public int Stock { get; set; }
-    public int StockS { get; set; }
-    public int StockM { get; set; }
-    public int StockL { get; set; }
-    public int StockXL { get; set; }
+    public List<AdminProductSizeStockViewModel> SizeStocks { get; set; } = new();
     public string Sku { get; set; } = string.Empty;
     public int CategoryId { get; set; } = 2;
     public IReadOnlyCollection<CategoryDto> Categories { get; set; } = Array.Empty<CategoryDto>();
@@ -222,6 +227,19 @@ public sealed class AdminProductFormViewModel
     public string DiscountType { get; set; } = "Percentage";
     [Range(0, 1000000)]
     public decimal DiscountValue { get; set; }
+}
+
+public sealed record AdminSizesViewModel(IReadOnlyCollection<SizeDto> Sizes);
+
+public sealed class AdminSizeFormViewModel
+{
+    public int Id { get; set; }
+
+    [Required, MaxLength(8)]
+    public string Name { get; set; } = string.Empty;
+
+    [Required, Range(0, 1000)]
+    public int DisplayOrder { get; set; }
 }
 
 public sealed record AdminOrdersViewModel(IReadOnlyCollection<OrderSummaryDto> Orders, OrderStatus? Status);

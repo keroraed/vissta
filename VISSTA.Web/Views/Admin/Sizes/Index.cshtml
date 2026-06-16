@@ -1,0 +1,36 @@
+@model AdminSizesViewModel
+@{
+    Layout = "_AdminLayout";
+}
+
+<section class="admin-head">
+    <div>
+        <p>Products Configuration</p>
+        <h1>Sizes</h1>
+    </div>
+    <a class="button button-primary" href="/admin/sizes/create">Create Size</a>
+</section>
+
+<section class="admin-panel glassmorphism">
+    <div class="admin-table admin-sizes-table">
+        <div class="admin-table-row admin-table-row-head">
+            <span>Size Name</span>
+            <span>Display Order</span>
+            <span></span>
+        </div>
+        @foreach (var size in Model.Sizes)
+        {
+            <div class="admin-table-row">
+                <span data-label="Size Name">@size.Name</span>
+                <span data-label="Display Order">@size.DisplayOrder</span>
+                <span class="admin-row-actions" data-label="Actions">
+                    <a href="/admin/sizes/edit/@size.Id">Edit</a>
+                    <form method="post" action="/admin/sizes/delete/@size.Id" onsubmit="return confirm('Are you sure you want to delete size @size.Name? This will also remove any product stocks for this size.');">
+                        @Html.AntiForgeryToken()
+                        <button class="text-button text-button-danger" type="submit">Delete</button>
+                    </form>
+                </span>
+            </div>
+        }
+    </div>
+</section>

@@ -27,25 +27,24 @@
     <div class="admin-image-preview" data-image-preview></div>
     <input asp-for="Price" type="number" step="0.01" placeholder="Price" />
     <div class="admin-size-stock-grid">
-        <label>
-            <span>S stock</span>
-            <input asp-for="StockS" type="number" min="0" placeholder="0" />
-        </label>
-        <label>
-            <span>M stock</span>
-            <input asp-for="StockM" type="number" min="0" placeholder="0" />
-        </label>
-        <label>
-            <span>L stock</span>
-            <input asp-for="StockL" type="number" min="0" placeholder="0" />
-        </label>
-        <label>
-            <span>XL stock</span>
-            <input asp-for="StockXL" type="number" min="0" placeholder="0" />
-        </label>
+        @for (int i = 0; i < Model.SizeStocks.Count; i++)
+        {
+            <div class="admin-size-stock-item">
+                <input type="hidden" asp-for="SizeStocks[i].SizeId" />
+                <input type="hidden" asp-for="SizeStocks[i].SizeName" />
+                <label class="check">
+                    <input asp-for="SizeStocks[i].IsAvailable" type="checkbox" id="HasSize-@Model.SizeStocks[i].SizeId" />
+                    <span>@Model.SizeStocks[i].SizeName size</span>
+                </label>
+                <div class="admin-size-stock-input-wrap" id="Stock-@Model.SizeStocks[i].SizeId-wrap">
+                    <span>Stock</span>
+                    <input asp-for="SizeStocks[i].Stock" type="number" min="0" placeholder="0" />
+                </div>
+            </div>
+        }
     </div>
     <select asp-for="CategoryId">
-        <option value="">Select category</option>
+        <option value="0">Select category</option>
         @foreach (var category in Model.Categories)
         {
             <option value="@category.Id" selected="@(Model.CategoryId == category.Id)">@category.Name</option>
@@ -99,5 +98,35 @@
         }
         if (typeSelect) { typeSelect.addEventListener('change', update); }
         if (valueInput) { valueInput.addEventListener('input', update); update(); }
+
+        var sizeIds = @Json.Serialize(Model.SizeStocks.Select(x => x.SizeId));
+        function toggleSizeStock(sizeId) {
+            var checkbox = document.getElementById('HasSize-' + sizeId);
+            var wrap = document.getElementById('Stock-' + sizeId + '-wrap');
+            if (checkbox && wrap) {
+                var input = wrap.querySelector('input');
+                if (checkbox.checked) {
+                    wrap.style.opacity = '1';
+                    wrap.style.pointerEvents = 'auto';
+                    if (input) {
+                        input.disabled = false;
+                    }
+                } else {
+                    wrap.style.opacity = '0.35';
+                    wrap.style.pointerEvents = 'none';
+                    if (input) {
+                        input.disabled = true;
+                        input.value = '0';
+                    }
+                }
+            }
+        }
+        sizeIds.forEach(function(sizeId) {
+            var checkbox = document.getElementById('HasSize-' + sizeId);
+            if (checkbox) {
+                checkbox.addEventListener('change', function() { toggleSizeStock(sizeId); });
+                toggleSizeStock(sizeId);
+            }
+        });
     })();
 </script>

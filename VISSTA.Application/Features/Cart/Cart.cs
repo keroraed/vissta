@@ -18,7 +18,7 @@ public sealed class AddToCartCommandValidator : AbstractValidator<AddToCartComma
     {
         RuleFor(x => x.SessionId).NotEmpty();
         RuleFor(x => x.ProductId).GreaterThan(0);
-        RuleFor(x => x.Size).NotEmpty().Must(size => size.Trim().ToUpperInvariant() is "S" or "M" or "L" or "XL");
+        RuleFor(x => x.Size).NotEmpty().MaximumLength(8);
         RuleFor(x => x.Quantity).InclusiveBetween(1, 20);
     }
 }
@@ -46,10 +46,15 @@ public sealed class CartHandlers(ICartRepository carts, IProductRepository produ
         }
 
         var requestedSize = Product.NormalizeSize(request.Size);
+        var sizeStock = product.SizeStocks.FirstOrDefault(x => x.Size != null && x.Size.Name.ToUpperInvariant() == requestedSize && x.IsAvailable);
+        if (sizeStock is null)
+        {
+            throw new InvalidOperationException("Selected size is not available.");
+        }
         var existingQuantity = cart.CartItems
             .Where(x => x.ProductId == request.ProductId && x.Size == requestedSize)
             .Sum(x => x.Quantity);
-        if (existingQuantity + request.Quantity > product.GetStockForSize(requestedSize))
+        if (existingQuantity + request.Quantity > sizeStock.Stock)
         {
             throw new InvalidOperationException("Selected size does not have enough stock.");
         }

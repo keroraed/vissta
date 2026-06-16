@@ -9,6 +9,8 @@ public sealed class Product : Entity, IAggregateRoot
     private readonly List<ProductImage> _images = [];
     private readonly List<Review> _reviews = [];
 
+    private readonly List<ProductSizeStock> _sizeStocks = [];
+
     private Product()
     {
         Name = string.Empty;
@@ -28,7 +30,7 @@ public sealed class Product : Entity, IAggregateRoot
         CategoryId = categoryId;
         IsActive = true;
         IsFeatured = isFeatured;
-        SetSizeStocks(stock, 0, 0, 0);
+        Stock = stock;
     }
 
     public int Id { get; private set; }
@@ -37,10 +39,6 @@ public sealed class Product : Entity, IAggregateRoot
     public string Description { get; private set; }
     public Money Price { get; private set; }
     public int Stock { get; private set; }
-    public int StockS { get; private set; }
-    public int StockM { get; private set; }
-    public int StockL { get; private set; }
-    public int StockXL { get; private set; }
     public string SKU { get; private set; }
     public bool IsActive { get; private set; }
     public bool IsFeatured { get; private set; }
@@ -54,6 +52,7 @@ public sealed class Product : Entity, IAggregateRoot
     public Category? Category { get; private set; }
     public IReadOnlyCollection<ProductImage> Images => _images.AsReadOnly();
     public IReadOnlyCollection<Review> Reviews => _reviews.AsReadOnly();
+    public IReadOnlyCollection<ProductSizeStock> SizeStocks => _sizeStocks.AsReadOnly();
 
     // Computed helpers (not persisted)
     public bool HasDiscount => DiscountValue is > 0;
@@ -104,37 +103,44 @@ public sealed class Product : Entity, IAggregateRoot
         ShowOnHomePage = value;
     }
 
-    public void UpdateStock(int stock)
+    public void AddSizeStock(int sizeId, int stock, bool isAvailable)
     {
-        SetSizeStocks(stock, 0, 0, 0);
+        if (stock < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(stock));
+        }
+        var sizeStock = new ProductSizeStock(Id, sizeId, stock, isAvailable);
+        _sizeStocks.Add(sizeStock);
+        UpdateTotalStock();
     }
 
-    public void SetSizeStocks(int stockS, int stockM, int stockL, int stockXL)
+    public void UpdateSizeStocks(IEnumerable<(int SizeId, int Stock, bool IsAvailable)> stocks)
     {
-        if (stockS < 0 || stockM < 0 || stockL < 0 || stockXL < 0)
+        foreach (var item in stocks)
         {
-            throw new ArgumentOutOfRangeException(nameof(stockS));
+            var existing = _sizeStocks.FirstOrDefault(x => x.SizeId == item.SizeId);
+            if (existing is not null)
+            {
+                existing.Update(item.Stock, item.IsAvailable);
+            }
+            else
+            {
+                _sizeStocks.Add(new ProductSizeStock(Id, item.SizeId, item.Stock, item.IsAvailable));
+            }
         }
-
-        StockS = stockS;
-        StockM = stockM;
-        StockL = stockL;
-        StockXL = stockXL;
-        Stock = stockS + stockM + stockL + stockXL;
-        if (Stock <= 0)
-        {
-            AddDomainEvent(new ProductStockDepletedEvent(Id, SKU));
-        }
+        UpdateTotalStock();
     }
 
-    public int GetStockForSize(string size) => NormalizeSize(size) switch
+    public void UpdateTotalStock()
     {
-        "S" => StockS,
-        "M" => StockM,
-        "L" => StockL,
-        "XL" => StockXL,
-        _ => 0
-    };
+        Stock = _sizeStocks.Where(x => x.IsAvailable).Sum(x => x.Stock);
+    }
+
+    public int GetStockForSize(string size)
+    {
+        var normalized = NormalizeSize(size);
+        return _sizeStocks.FirstOrDefault(x => x.Size != null && x.Size.Name.ToUpperInvariant() == normalized)?.Stock ?? 0;
+    }
 
     public void Deactivate()
     {
@@ -148,30 +154,14 @@ public sealed class Product : Entity, IAggregateRoot
             throw new ArgumentOutOfRangeException(nameof(quantity));
         }
 
-        var normalizedSize = NormalizeSize(size);
-        if (GetStockForSize(normalizedSize) < quantity)
+        var normalized = NormalizeSize(size);
+        var sizeStock = _sizeStocks.FirstOrDefault(x => x.Size != null && x.Size.Name.ToUpperInvariant() == normalized);
+        if (sizeStock is null || !sizeStock.IsAvailable || sizeStock.Stock < quantity)
         {
-            throw new InvalidOperationException("Insufficient stock.");
+            throw new InvalidOperationException("Insufficient stock or size not available.");
         }
 
-        switch (normalizedSize)
-        {
-            case "S":
-                StockS -= quantity;
-                break;
-            case "M":
-                StockM -= quantity;
-                break;
-            case "L":
-                StockL -= quantity;
-                break;
-            case "XL":
-                StockXL -= quantity;
-                break;
-            default:
-                throw new InvalidOperationException("Invalid size.");
-        }
-
+        sizeStock.Update(sizeStock.Stock - quantity, sizeStock.IsAvailable);
         Stock -= quantity;
         UnitsSold += quantity;
 
@@ -183,8 +173,7 @@ public sealed class Product : Entity, IAggregateRoot
 
     public static string NormalizeSize(string size)
     {
-        var normalized = size.Trim().ToUpperInvariant();
-        return normalized is "S" or "M" or "L" or "XL" ? normalized : throw new ArgumentOutOfRangeException(nameof(size));
+        return size.Trim().ToUpperInvariant();
     }
 
     public void ReplaceImages(IEnumerable<string> urls)

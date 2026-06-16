@@ -1,0 +1,6 @@
+@model AdminSizeFormViewModel
+@{
+    Layout = "_AdminLayout";
+}
+<section class="admin-head"><h1>Edit Size</h1></section>
+@await Html.PartialAsync("~/Views/Admin/Sizes/_SizeForm.cshtml", Model)

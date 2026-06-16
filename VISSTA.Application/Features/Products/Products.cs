@@ -14,10 +14,9 @@ public sealed record GetProductByIdQuery(int Id) : IRequest<ProductDetailDto?>;
 public sealed record GetProductBySlugQuery(string Slug) : IRequest<ProductDetailDto?>;
 public sealed record SearchProductsQuery(string Term) : IRequest<IReadOnlyCollection<SearchSuggestionDto>>;
 
-public sealed record CreateProductCommand(string Name, string Slug, string Description, decimal Price, int StockS, int StockM, int StockL, int StockXL, string Sku, int CategoryId, bool IsFeatured, bool ShowOnHomePage, string? DiscountType, decimal? DiscountValue, IReadOnlyCollection<string> ImageUrls) : IRequest<int>;
-public sealed record UpdateProductCommand(int Id, string Name, string Slug, string Description, decimal Price, int CategoryId, bool IsActive, bool IsFeatured, bool ShowOnHomePage, string? DiscountType, decimal? DiscountValue, IReadOnlyCollection<string> ImageUrls, IReadOnlyCollection<int> RemoveImageIds) : IRequest<bool>;
+public sealed record CreateProductCommand(string Name, string Slug, string Description, decimal Price, IReadOnlyCollection<ProductSizeStockInputDto> SizeStocks, string Sku, int CategoryId, bool IsFeatured, bool ShowOnHomePage, string? DiscountType, decimal? DiscountValue, IReadOnlyCollection<string> ImageUrls) : IRequest<int>;
+public sealed record UpdateProductCommand(int Id, string Name, string Slug, string Description, decimal Price, int CategoryId, bool IsActive, bool IsFeatured, bool ShowOnHomePage, string? DiscountType, decimal? DiscountValue, IReadOnlyCollection<string> ImageUrls, IReadOnlyCollection<int> RemoveImageIds, IReadOnlyCollection<ProductSizeStockInputDto> SizeStocks) : IRequest<bool>;
 public sealed record DeleteProductCommand(int Id) : IRequest<bool>;
-public sealed record UpdateStockCommand(int ProductId, int StockS, int StockM, int StockL, int StockXL) : IRequest<bool>;
 public sealed record SetDiscountCommand(int ProductId, string? DiscountType, decimal? DiscountValue) : IRequest<bool>;
 
 public sealed class CreateProductCommandValidator : AbstractValidator<CreateProductCommand>
@@ -27,12 +26,13 @@ public sealed class CreateProductCommandValidator : AbstractValidator<CreateProd
         RuleFor(x => x.Name).NotEmpty().MaximumLength(160);
         RuleFor(x => x.Slug).NotEmpty().MaximumLength(180);
         RuleFor(x => x.Price).GreaterThan(0);
-        RuleFor(x => x.StockS).GreaterThanOrEqualTo(0);
-        RuleFor(x => x.StockM).GreaterThanOrEqualTo(0);
-        RuleFor(x => x.StockL).GreaterThanOrEqualTo(0);
-        RuleFor(x => x.StockXL).GreaterThanOrEqualTo(0);
         RuleFor(x => x.Sku).NotEmpty().MaximumLength(64);
         RuleFor(x => x.CategoryId).GreaterThan(0);
+        RuleFor(x => x.SizeStocks).NotEmpty();
+        RuleForEach(x => x.SizeStocks).ChildRules(stock =>
+        {
+            stock.RuleFor(s => s.Stock).GreaterThanOrEqualTo(0);
+        });
     }
 }
 
@@ -44,10 +44,19 @@ public sealed class UpdateProductCommandValidator : AbstractValidator<UpdateProd
         RuleFor(x => x.Name).NotEmpty().MaximumLength(160);
         RuleFor(x => x.Price).GreaterThan(0);
         RuleFor(x => x.CategoryId).GreaterThan(0);
+        RuleFor(x => x.SizeStocks).NotEmpty();
+        RuleForEach(x => x.SizeStocks).ChildRules(stock =>
+        {
+            stock.RuleFor(s => s.Stock).GreaterThanOrEqualTo(0);
+        });
     }
 }
 
-public sealed class ProductHandlers(IProductRepository products, IUnitOfWork unitOfWork) :
+public sealed class ProductHandlers(
+    IProductRepository products,
+    IUnitOfWork unitOfWork,
+    IRepository<CartItem> cartItems,
+    IRepository<NewsletterCampaignProduct> campaignProducts) :
     IRequestHandler<GetProductListQuery, IReadOnlyCollection<ProductListDto>>,
     IRequestHandler<GetFeaturedProductsQuery, IReadOnlyCollection<ProductListDto>>,
     IRequestHandler<GetHomePageProductsQuery, IReadOnlyCollection<ProductListDto>>,
@@ -57,7 +66,6 @@ public sealed class ProductHandlers(IProductRepository products, IUnitOfWork uni
     IRequestHandler<CreateProductCommand, int>,
     IRequestHandler<UpdateProductCommand, bool>,
     IRequestHandler<DeleteProductCommand, bool>,
-    IRequestHandler<UpdateStockCommand, bool>,
     IRequestHandler<SetDiscountCommand, bool>
 {
     public Task<IReadOnlyCollection<ProductListDto>> Handle(GetProductListQuery request, CancellationToken cancellationToken)
@@ -172,10 +180,13 @@ public sealed class ProductHandlers(IProductRepository products, IUnitOfWork uni
 
     public async Task<int> Handle(CreateProductCommand request, CancellationToken cancellationToken)
     {
-        var product = new Product(request.Name, request.Slug, request.Description, new Money(request.Price), request.StockS, request.Sku, request.CategoryId, request.IsFeatured);
-        product.SetSizeStocks(request.StockS, request.StockM, request.StockL, request.StockXL);
+        var product = new Product(request.Name, request.Slug, request.Description, new Money(request.Price), 0, request.Sku, request.CategoryId, request.IsFeatured);
         product.SetShowOnHomePage(request.ShowOnHomePage);
         product.SetDiscount(request.DiscountType, request.DiscountValue);
+        foreach (var sizeStock in request.SizeStocks)
+        {
+            product.AddSizeStock(sizeStock.SizeId, sizeStock.Stock, sizeStock.IsAvailable);
+        }
         await products.AddAsync(product, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
         if (request.ImageUrls.Count > 0)
@@ -195,6 +206,7 @@ public sealed class ProductHandlers(IProductRepository products, IUnitOfWork uni
         }
 
         product.Update(request.Name, request.Slug, request.Description, new Money(request.Price), request.CategoryId, request.IsActive, request.IsFeatured, request.ShowOnHomePage, request.DiscountType, request.DiscountValue);
+        product.UpdateSizeStocks(request.SizeStocks.Select(x => (x.SizeId, x.Stock, x.IsAvailable)));
         if (request.ImageUrls.Count > 0 || request.RemoveImageIds.Count > 0)
         {
             var removeSet = request.RemoveImageIds.Count > 0 ? request.RemoveImageIds.ToHashSet() : null;
@@ -217,20 +229,27 @@ public sealed class ProductHandlers(IProductRepository products, IUnitOfWork uni
             return false;
         }
 
-        product.Deactivate();
-        await unitOfWork.SaveChangesAsync(cancellationToken);
-        return true;
-    }
-
-    public async Task<bool> Handle(UpdateStockCommand request, CancellationToken cancellationToken)
-    {
-        var product = await products.GetByIdAsync(request.ProductId, cancellationToken);
-        if (product is null)
+        if (!product.IsActive)
         {
-            return false;
+            var cartItemsList = cartItems.Query().Where(x => x.ProductId == request.Id).ToList();
+            foreach (var item in cartItemsList)
+            {
+                cartItems.Remove(item);
+            }
+
+            var campaignProductsList = campaignProducts.Query().Where(x => x.ProductId == request.Id).ToList();
+            foreach (var cp in campaignProductsList)
+            {
+                campaignProducts.Remove(cp);
+            }
+
+            products.Remove(product);
+        }
+        else
+        {
+            product.Deactivate();
         }
 
-        product.SetSizeStocks(request.StockS, request.StockM, request.StockL, request.StockXL);
         await unitOfWork.SaveChangesAsync(cancellationToken);
         return true;
     }
@@ -282,12 +301,11 @@ public sealed class ProductHandlers(IProductRepository products, IUnitOfWork uni
         x.IsActive,
         x.IsFeatured,
         x.ShowOnHomePage,
-        [
-            new ProductSizeStockDto("S", x.StockS),
-            new ProductSizeStockDto("M", x.StockM),
-            new ProductSizeStockDto("L", x.StockL),
-            new ProductSizeStockDto("XL", x.StockXL)
-        ],
+        x.SizeStocks
+            .Where(s => s.IsAvailable)
+            .OrderBy(s => s.Size != null ? s.Size.DisplayOrder : 0)
+            .Select(s => new ProductSizeStockDto(s.Size?.Name ?? string.Empty, s.Stock))
+            .ToList(),
         x.Images.OrderByDescending(i => i.IsPrimary).ThenBy(i => i.DisplayOrder).Select(i => new ProductImageDto(i.Id, i.Url, i.IsPrimary, i.DisplayOrder)).ToList(),
         x.Reviews.Where(r => r.IsApproved).Select(r => new ReviewDto(
             r.Id,

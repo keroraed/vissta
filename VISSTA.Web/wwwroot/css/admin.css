@@ -301,3 +301,47 @@ a.admin-table-row:hover { border-color: rgba(212,175,115,.3); background: rgba(1
   .admin-form-actions .button { width: 100%; }
   .admin-dashboard-reviews .admin-review-list { grid-template-columns: 1fr; }
 }
+
+.text-button-danger {
+  color: #e05252 !important;
+  transition: color 0.25s ease;
+}
+.text-button-danger:hover {
+  color: #f87171 !important;
+}
+
+.admin-size-stock-item {
+  border: 1px solid rgba(212, 175, 115, 0.15);
+  border-radius: 8px;
+  padding: 16px;
+  background: rgba(4, 11, 21, 0.2);
+  display: grid;
+  gap: 12px;
+  transition: border-color 0.25s ease, background 0.25s ease;
+}
+.admin-size-stock-item:hover {
+  border-color: rgba(212, 175, 115, 0.3);
+  background: rgba(10, 29, 55, 0.35);
+}
+.admin-size-stock-item .check {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.admin-size-stock-input-wrap {
+  display: grid;
+  gap: 6px;
+  transition: opacity 0.25s ease;
+}
+.admin-size-stock-input-wrap span {
+  color: rgba(245, 241, 234, 0.55);
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.admin-sizes-table .admin-table-row { grid-template-columns: 2fr 2fr 1fr; }
+@media (max-width: 720px) {
+  .admin-sizes-table .admin-table-row { grid-template-columns: 1fr; }
+}

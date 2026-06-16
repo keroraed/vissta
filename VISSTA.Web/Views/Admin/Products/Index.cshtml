@@ -54,7 +54,14 @@
             <a class="text-button" href="/admin/products/edit/@product.Id">Edit</a>
             <form method="post" action="/admin/products/delete/@product.Id">
                 @Html.AntiForgeryToken()
-                <button class="text-button" type="submit">Delete</button>
+                @if (product.IsActive)
+                {
+                    <button class="text-button" type="submit">Delete</button>
+                }
+                else
+                {
+                    <button class="text-button text-button-danger" type="submit">Delete Permanently</button>
+                }
             </form>
         </div>
     </article>

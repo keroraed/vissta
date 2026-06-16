@@ -10,13 +10,14 @@ using System.Text.RegularExpressions;
 using VISSTA.Application.DTOs;
 using VISSTA.Application.Features.Categories;
 using VISSTA.Application.Features.Products;
+using VISSTA.Application.Features.Sizes;
 using VISSTA.Web.Models;
 
 namespace VISSTA.Web.Controllers.Admin;
 
 [Authorize(Policy = "AdminOnly")]
 [Route("admin/products")]
-public sealed class ProductsController(IMediator mediator, IWebHostEnvironment environment) : Controller
+public sealed class ProductsController(IMediator mediator, IWebHostEnvironment environment, ILogger<ProductsController> logger) : Controller
 {
     [HttpGet("")]
     public async Task<IActionResult> Index(CancellationToken cancellationToken)
@@ -29,7 +30,19 @@ public sealed class ProductsController(IMediator mediator, IWebHostEnvironment e
     public async Task<IActionResult> Create(CancellationToken cancellationToken)
     {
         var categories = await LoadCategoriesAsync(cancellationToken);
-        return View("~/Views/Admin/Products/Create.cshtml", new AdminProductFormViewModel { Categories = categories });
+        var sizes = await mediator.Send(new GetSizesQuery(), cancellationToken);
+        var model = new AdminProductFormViewModel
+        {
+            Categories = categories,
+            SizeStocks = sizes.Select(x => new AdminProductSizeStockViewModel
+            {
+                SizeId = x.Id,
+                SizeName = x.Name,
+                Stock = 0,
+                IsAvailable = true
+            }).ToList()
+        };
+        return View("~/Views/Admin/Products/Create.cshtml", model);
     }
 
     [HttpPost("create")]
@@ -45,15 +58,25 @@ public sealed class ProductsController(IMediator mediator, IWebHostEnvironment e
         {
             model.Sku = GenerateSku(model.Slug);
         }
+        ModelState.Remove(nameof(model.Slug));
+        ModelState.Remove(nameof(model.Sku));
+        if (model.CategoryId <= 0)
+        {
+            ModelState.AddModelError(nameof(model.CategoryId), "Please select a category.");
+        }
         if (!ModelState.IsValid)
         {
+            var errors = ModelState.Where(x => x.Value?.Errors.Count > 0)
+                .Select(x => $"{x.Key}: {string.Join(", ", x.Value!.Errors.Select(e => e.ErrorMessage))}");
+            logger.LogWarning("Create product ModelState invalid: {Errors}", string.Join(" | ", errors));
             return View("~/Views/Admin/Products/Create.cshtml", model);
         }
 
         try
         {
             var imageUrls = await SaveImagesAsync(model.ImageFiles, cancellationToken);
-            await mediator.Send(new CreateProductCommand(model.Name, model.Slug, model.Description, model.Price, model.StockS, model.StockM, model.StockL, model.StockXL, model.Sku, model.CategoryId, model.IsFeatured, model.ShowOnHomePage, model.DiscountValue == 0 ? null : model.DiscountType, model.DiscountValue == 0 ? null : model.DiscountValue, imageUrls), cancellationToken);
+            var sizeStocksDto = model.SizeStocks.Select(x => new ProductSizeStockInputDto(x.SizeId, x.Stock, x.IsAvailable)).ToList();
+            await mediator.Send(new CreateProductCommand(model.Name, model.Slug, model.Description, model.Price, sizeStocksDto, model.Sku, model.CategoryId, model.IsFeatured, model.ShowOnHomePage, model.DiscountValue == 0 ? null : model.DiscountType, model.DiscountValue == 0 ? null : model.DiscountValue, imageUrls), cancellationToken);
             return RedirectToAction(nameof(Index));
         }
         catch (ValidationException ex)
@@ -78,6 +101,18 @@ public sealed class ProductsController(IMediator mediator, IWebHostEnvironment e
         }
 
         var categories = await LoadCategoriesAsync(cancellationToken);
+        var sizes = await mediator.Send(new GetSizesQuery(), cancellationToken);
+        var sizeStocksViewModel = sizes.Select(s =>
+        {
+            var existing = product.SizeStocks.FirstOrDefault(x => x.Size == s.Name);
+            return new AdminProductSizeStockViewModel
+            {
+                SizeId = s.Id,
+                SizeName = s.Name,
+                Stock = existing?.Stock ?? 0,
+                IsAvailable = existing is not null
+            };
+        }).ToList();
 
         return View("~/Views/Admin/Products/Edit.cshtml", new AdminProductFormViewModel
         {
@@ -88,10 +123,7 @@ public sealed class ProductsController(IMediator mediator, IWebHostEnvironment e
             ExistingImages = product.Images,
             Price = product.Price,
             Stock = product.Stock,
-            StockS = product.SizeStocks.FirstOrDefault(x => x.Size == "S")?.Stock ?? 0,
-            StockM = product.SizeStocks.FirstOrDefault(x => x.Size == "M")?.Stock ?? 0,
-            StockL = product.SizeStocks.FirstOrDefault(x => x.Size == "L")?.Stock ?? 0,
-            StockXL = product.SizeStocks.FirstOrDefault(x => x.Size == "XL")?.Stock ?? 0,
+            SizeStocks = sizeStocksViewModel,
             Sku = product.Sku,
             CategoryId = product.CategoryId,
             Categories = categories,
@@ -124,8 +156,8 @@ public sealed class ProductsController(IMediator mediator, IWebHostEnvironment e
         try
         {
             var imageUrls = await SaveImagesAsync(model.ImageFiles, cancellationToken);
-            await mediator.Send(new UpdateProductCommand(id, model.Name, model.Slug, model.Description, model.Price, model.CategoryId, model.IsActive, model.IsFeatured, model.ShowOnHomePage, model.DiscountValue == 0 ? null : model.DiscountType, model.DiscountValue == 0 ? null : model.DiscountValue, imageUrls, model.RemoveImageIds ?? Array.Empty<int>()), cancellationToken);
-            await mediator.Send(new UpdateStockCommand(id, model.StockS, model.StockM, model.StockL, model.StockXL), cancellationToken);
+            var sizeStocksDto = model.SizeStocks.Select(x => new ProductSizeStockInputDto(x.SizeId, x.Stock, x.IsAvailable)).ToList();
+            await mediator.Send(new UpdateProductCommand(id, model.Name, model.Slug, model.Description, model.Price, model.CategoryId, model.IsActive, model.IsFeatured, model.ShowOnHomePage, model.DiscountValue == 0 ? null : model.DiscountType, model.DiscountValue == 0 ? null : model.DiscountValue, imageUrls, model.RemoveImageIds ?? Array.Empty<int>(), sizeStocksDto), cancellationToken);
             return RedirectToAction(nameof(Index));
         }
         catch (ValidationException ex)
@@ -153,10 +185,31 @@ public sealed class ProductsController(IMediator mediator, IWebHostEnvironment e
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
     {
-        var deleted = await mediator.Send(new DeleteProductCommand(id), cancellationToken);
-        if (!deleted)
+        try
         {
-            TempData["ProductAdminMessage"] = "Product was not found.";
+            var product = await mediator.Send(new GetProductByIdQuery(id), cancellationToken);
+            if (product is null)
+            {
+                TempData["ProductAdminMessage"] = "Product was not found.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            bool wasActive = product.IsActive;
+            var deleted = await mediator.Send(new DeleteProductCommand(id), cancellationToken);
+            if (!deleted)
+            {
+                TempData["ProductAdminMessage"] = "Product was not found.";
+            }
+            else
+            {
+                TempData["ProductAdminMessage"] = wasActive
+                    ? $"Product '{product.Name}' was successfully made inactive."
+                    : $"Product '{product.Name}' was removed completely.";
+            }
+        }
+        catch (DbUpdateException)
+        {
+            TempData["ProductAdminMessage"] = "Product cannot be removed completely because it is associated with existing orders.";
         }
 
         return RedirectToAction(nameof(Index));

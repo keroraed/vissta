@@ -8,10 +8,17 @@ public sealed class GlobalExceptionHandlingMiddleware(RequestDelegate next, ILog
         {
             await next(context);
         }
+        catch (OperationCanceledException)
+        {
+            logger.LogInformation("Request was cancelled.");
+        }
         catch (Exception ex)
         {
             logger.LogError(ex, "Unhandled request failure.");
-            context.Response.Redirect("/Home/Error");
+            if (!context.Response.HasStarted)
+            {
+                context.Response.Redirect("/Home/Error");
+            }
         }
     }
 }

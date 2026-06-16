@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VISSTA.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using VISSTA.Infrastructure.Persistence;
 namespace VISSTA.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(VISSTADbContext))]
-    partial class VISSTADbContextModelSnapshot : ModelSnapshot
+    [Migration("20260603061604_AddProductSizeAvailability")]
+    partial class AddProductSizeAvailability
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -673,6 +676,26 @@ namespace VISSTA.Infrastructure.Persistence.Migrations
                     b.Property<decimal?>("DiscountValue")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<bool>("HasSizeL")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("HasSizeM")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("HasSizeS")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("HasSizeXL")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -706,6 +729,26 @@ namespace VISSTA.Infrastructure.Persistence.Migrations
                     b.Property<int>("Stock")
                         .HasColumnType("int");
 
+                    b.Property<int>("StockL")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("StockM")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("StockS")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("StockXL")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
                     b.Property<int>("UnitsSold")
                         .HasColumnType("int");
 
@@ -727,12 +770,20 @@ namespace VISSTA.Infrastructure.Persistence.Migrations
                             Id = 1,
                             CategoryId = 4,
                             Description = "A breathable cream knit polo with understated structure.",
+                            HasSizeL = true,
+                            HasSizeM = true,
+                            HasSizeS = true,
+                            HasSizeXL = true,
                             IsActive = true,
                             IsFeatured = true,
                             Name = "Textured Knit Polo",
                             SKU = "VIS-MEN-POLO-001",
                             Slug = "textured-knit-polo",
                             Stock = 34,
+                            StockL = 0,
+                            StockM = 0,
+                            StockS = 34,
+                            StockXL = 0,
                             UnitsSold = 46
                         },
                         new
@@ -740,12 +791,20 @@ namespace VISSTA.Infrastructure.Persistence.Migrations
                             Id = 2,
                             CategoryId = 4,
                             Description = "A soft ribbed knit in a refined graphite tone.",
+                            HasSizeL = true,
+                            HasSizeM = true,
+                            HasSizeS = true,
+                            HasSizeXL = true,
                             IsActive = true,
                             IsFeatured = true,
                             Name = "Ribbed Grey Polo",
                             SKU = "VIS-MEN-POLO-002",
                             Slug = "ribbed-grey-polo",
                             Stock = 28,
+                            StockL = 0,
+                            StockM = 0,
+                            StockS = 28,
+                            StockXL = 0,
                             UnitsSold = 39
                         },
                         new
@@ -753,12 +812,20 @@ namespace VISSTA.Infrastructure.Persistence.Migrations
                             Id = 3,
                             CategoryId = 4,
                             Description = "Clean lines, open collar, and an easy old-money drape.",
+                            HasSizeL = true,
+                            HasSizeM = true,
+                            HasSizeS = true,
+                            HasSizeXL = true,
                             IsActive = true,
                             IsFeatured = true,
                             Name = "Modern Knit Polo",
                             SKU = "VIS-MEN-POLO-003",
                             Slug = "modern-knit-polo",
                             Stock = 41,
+                            StockL = 0,
+                            StockM = 0,
+                            StockS = 41,
+                            StockXL = 0,
                             UnitsSold = 44
                         },
                         new
@@ -766,12 +833,20 @@ namespace VISSTA.Infrastructure.Persistence.Migrations
                             Id = 4,
                             CategoryId = 4,
                             Description = "A dark elevated tee with quiet contrast texture.",
+                            HasSizeL = true,
+                            HasSizeM = true,
+                            HasSizeS = true,
+                            HasSizeXL = true,
                             IsActive = true,
                             IsFeatured = false,
                             Name = "Contrast Knit Tee",
                             SKU = "VIS-MEN-TEE-001",
                             Slug = "contrast-knit-tee",
                             Stock = 22,
+                            StockL = 0,
+                            StockM = 0,
+                            StockS = 22,
+                            StockXL = 0,
                             UnitsSold = 23
                         },
                         new
@@ -779,12 +854,20 @@ namespace VISSTA.Infrastructure.Persistence.Migrations
                             Id = 7,
                             CategoryId = 4,
                             Description = "Soft pearl-toned knitwear with a sculpted neckline.",
+                            HasSizeL = true,
+                            HasSizeM = true,
+                            HasSizeS = true,
+                            HasSizeXL = true,
                             IsActive = true,
                             IsFeatured = false,
                             Name = "Pearl Knit Top",
                             SKU = "VIS-MEN-TOP-001",
                             Slug = "pearl-knit-top",
                             Stock = 30,
+                            StockL = 0,
+                            StockM = 0,
+                            StockS = 30,
+                            StockXL = 0,
                             UnitsSold = 32
                         },
                         new
@@ -792,12 +875,20 @@ namespace VISSTA.Infrastructure.Persistence.Migrations
                             Id = 12,
                             CategoryId = 4,
                             Description = "Structured canvas with navy trim and daily utility.",
+                            HasSizeL = true,
+                            HasSizeM = true,
+                            HasSizeS = true,
+                            HasSizeXL = true,
                             IsActive = true,
                             IsFeatured = false,
                             Name = "Heritage Tote",
                             SKU = "VIS-MEN-TOTE-001",
                             Slug = "heritage-tote",
                             Stock = 12,
+                            StockL = 0,
+                            StockM = 0,
+                            StockS = 12,
+                            StockXL = 0,
                             UnitsSold = 15
                         },
                         new
@@ -805,12 +896,20 @@ namespace VISSTA.Infrastructure.Persistence.Migrations
                             Id = 5,
                             CategoryId = 5,
                             Description = "A relaxed summer shirt for sharp, unforced dressing.",
+                            HasSizeL = true,
+                            HasSizeM = true,
+                            HasSizeS = true,
+                            HasSizeXL = true,
                             IsActive = true,
                             IsFeatured = false,
                             Name = "Ivory Resort Shirt",
                             SKU = "VIS-MEN-SHIRT-001",
                             Slug = "ivory-resort-shirt",
                             Stock = 18,
+                            StockL = 0,
+                            StockM = 0,
+                            StockS = 18,
+                            StockXL = 0,
                             UnitsSold = 18
                         },
                         new
@@ -818,12 +917,20 @@ namespace VISSTA.Infrastructure.Persistence.Migrations
                             Id = 8,
                             CategoryId = 5,
                             Description = "Light linen with a softened golden hue.",
+                            HasSizeL = true,
+                            HasSizeM = true,
+                            HasSizeS = true,
+                            HasSizeXL = true,
                             IsActive = true,
                             IsFeatured = false,
                             Name = "Champagne Linen Shirt",
                             SKU = "VIS-MEN-SHIRT-002",
                             Slug = "champagne-linen-shirt",
                             Stock = 24,
+                            StockL = 0,
+                            StockM = 0,
+                            StockS = 24,
+                            StockXL = 0,
                             UnitsSold = 27
                         },
                         new
@@ -831,12 +938,20 @@ namespace VISSTA.Infrastructure.Persistence.Migrations
                             Id = 11,
                             CategoryId = 5,
                             Description = "A small flash of cream silk for considered outfits.",
+                            HasSizeL = true,
+                            HasSizeM = true,
+                            HasSizeS = true,
+                            HasSizeXL = true,
                             IsActive = true,
                             IsFeatured = false,
                             Name = "Silk Pocket Square",
                             SKU = "VIS-MEN-SILK-001",
                             Slug = "silk-pocket-square",
                             Stock = 60,
+                            StockL = 0,
+                            StockM = 0,
+                            StockS = 60,
+                            StockXL = 0,
                             UnitsSold = 17
                         },
                         new
@@ -844,12 +959,20 @@ namespace VISSTA.Infrastructure.Persistence.Migrations
                             Id = 6,
                             CategoryId = 6,
                             Description = "A minimal trouser cut for movement and polish.",
+                            HasSizeL = true,
+                            HasSizeM = true,
+                            HasSizeS = true,
+                            HasSizeXL = true,
                             IsActive = true,
                             IsFeatured = false,
                             Name = "Navy Tailored Trouser",
                             SKU = "VIS-MEN-PANT-001",
                             Slug = "navy-tailored-trouser",
                             Stock = 16,
+                            StockL = 0,
+                            StockM = 0,
+                            StockS = 16,
+                            StockXL = 0,
                             UnitsSold = 14
                         },
                         new
@@ -857,12 +980,20 @@ namespace VISSTA.Infrastructure.Persistence.Migrations
                             Id = 9,
                             CategoryId = 6,
                             Description = "A clean tapered cut in a refined cream tone.",
+                            HasSizeL = true,
+                            HasSizeM = true,
+                            HasSizeS = true,
+                            HasSizeXL = true,
                             IsActive = true,
                             IsFeatured = false,
                             Name = "Cream Tailored Trouser",
                             SKU = "VIS-MEN-PANT-002",
                             Slug = "cream-tailored-trouser",
                             Stock = 14,
+                            StockL = 0,
+                            StockM = 0,
+                            StockS = 14,
+                            StockXL = 0,
                             UnitsSold = 12
                         },
                         new
@@ -870,12 +1001,20 @@ namespace VISSTA.Infrastructure.Persistence.Migrations
                             Id = 10,
                             CategoryId = 6,
                             Description = "Smooth leather, restrained hardware, precise finish.",
+                            HasSizeL = true,
+                            HasSizeM = true,
+                            HasSizeS = true,
+                            HasSizeXL = true,
                             IsActive = true,
                             IsFeatured = false,
                             Name = "Gold Edge Belt",
                             SKU = "VIS-MEN-BELT-001",
                             Slug = "gold-edge-belt",
                             Stock = 50,
+                            StockL = 0,
+                            StockM = 0,
+                            StockS = 50,
+                            StockXL = 0,
                             UnitsSold = 21
                         });
                 });
@@ -1007,40 +1146,6 @@ namespace VISSTA.Infrastructure.Persistence.Migrations
                         });
                 });
 
-            modelBuilder.Entity("VISSTA.Domain.Entities.ProductSizeStock", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("IsAvailable")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SizeId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Stock")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SizeId");
-
-                    b.HasIndex("ProductId", "SizeId")
-                        .IsUnique();
-
-                    b.ToTable("ProductSizeStocks", (string)null);
-                });
-
             modelBuilder.Entity("VISSTA.Domain.Entities.Review", b =>
                 {
                     b.Property<int>("Id")
@@ -1078,32 +1183,6 @@ namespace VISSTA.Infrastructure.Persistence.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("Reviews", (string)null);
-                });
-
-            modelBuilder.Entity("VISSTA.Domain.Entities.Size", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("DisplayOrder")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(8)
-                        .HasColumnType("nvarchar(8)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.ToTable("Sizes", (string)null);
                 });
 
             modelBuilder.Entity("VISSTA.Domain.Entities.WishlistItem", b =>
@@ -1657,25 +1736,6 @@ namespace VISSTA.Infrastructure.Persistence.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("VISSTA.Domain.Entities.ProductSizeStock", b =>
-                {
-                    b.HasOne("VISSTA.Domain.Entities.Product", "Product")
-                        .WithMany("SizeStocks")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("VISSTA.Domain.Entities.Size", "Size")
-                        .WithMany()
-                        .HasForeignKey("SizeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-
-                    b.Navigation("Size");
-                });
-
             modelBuilder.Entity("VISSTA.Domain.Entities.Review", b =>
                 {
                     b.HasOne("VISSTA.Domain.Entities.Customer", "Customer")
@@ -1740,8 +1800,6 @@ namespace VISSTA.Infrastructure.Persistence.Migrations
                     b.Navigation("Images");
 
                     b.Navigation("Reviews");
-
-                    b.Navigation("SizeStocks");
                 });
 #pragma warning restore 612, 618
         }

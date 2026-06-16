@@ -4,6 +4,8 @@ public sealed record ProductImageDto(int Id, string Url, bool IsPrimary, int Dis
 
 public sealed record ProductSizeStockDto(string Size, int Stock);
 
+public sealed record ProductSizeStockInputDto(int SizeId, int Stock, bool IsAvailable);
+
 public sealed record ProductListDto(
     int Id,
     string Name,
@@ -103,6 +105,8 @@ public sealed record CouponDto(
     int UsedCount,
     bool IsActive,
     bool IsValid);
+
+public sealed record SizeDto(int Id, string Name, int DisplayOrder);
 
 public sealed record ReviewDto(
     int Id,
